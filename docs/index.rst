@@ -16,6 +16,7 @@ for technical Minecraft.
 
    usage/install
    usage/logging
+   usage/server-integrations
 
 .. _`Carpet Mod`: https://github.com/gnembon/carpetmod
 

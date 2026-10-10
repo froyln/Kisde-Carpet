@@ -1,76 +1,47 @@
-#### This is a migration into an official fork for my [old Bullet Carpet repo](https://github.com/Dioswilson/Bullet-carpet_old)
+<div align="center">
 
-# Carpet Mod
-Yes.
+# Bullet Carpet
 
-## Getting Started
-### Setting up your sources
-- Clone this repository.
-- Run `gradlew setupCarpetmod` in the root project directory.
+**A Minecraft 1.12.2 Carpet server mod with optional server-authoritative schematic and inventory integrations.**
 
-### Using an IDE
-- To use Eclipse, run `gradlew eclipse`, then import the project in Eclipse.
-- To use Intellij, run `gradlew idea`, then import the project in Intellij.
+[![Minecraft 1.12.2](https://img.shields.io/badge/Minecraft-1.12.2-green)](docs/usage/server-integrations.rst)
+[![Java 8](https://img.shields.io/badge/Java-8-blue)](docs/usage/server-integrations.rst)
 
-## Using the build system
-Edit the files in the `src` folder, like you would for a normal project. The only special things you have to do are as follows:
-### To generate patch files so they show up in version control
-Use `gradlew genPatches`
-### To apply patches after pulling
-Use `gradlew setupCarpetmod`. It WILL overwrite your local changes to src, so be careful.
-### To create a release / patch files
-In case you made changes to the local copy of the code in `src`, run `genPatches` to update the project according to your src.
-Use `gradlew createRelease`. The release will be a ZIP file containing all modified classes, obfuscated, in the `build/distributions` folder.
-### To run the server locally (Windows)
-Use `mktest.cmd` to run the modified server with generated patches as a localhost server. It requires `gradlew createRelease` to finish successfully as well as using default paths for your minecraft installation folder.
+</div>
 
-In case you use different paths, you might need to modify the build script.
-This will leave a ready server jar file in your saves folder.
+---
 
-It requires to have 7za installed in your paths
+## Features
 
-### Vales changes:
-Vales is an external user who I asked permission to use his code, here are things he did:
-You need his carpet client for village marker to work
-```/carpet doorSearchOptimization
-/carpet doorCheckOptimization
-/carpet ironFarmAABBOptimization
-/carpet ironGolemsSwim 
-/carpet villagerQueue
-/carpet villagerQueueLength 
-/carpet villagerTickingRate  
-/carpet villagersRandomStart
-/carpet doorDeregistrationTime 
-/log villagerPos
-/log villages <dynamic|overworld|nether|end>
-/log golems 
-/log counter all 
-/log portalCaching uncaching 
-/log pathfinding
-fixed NullPointerException with /log
-readded time and total to /counter
-fixed /log items not tracking items that change dimensions
-Added /ticktimes <start|stop> [filename]
-```
-### Bullet changes:
-Here I will list what we did:
+- Carpet rules for server-controlled Litematica capture and paste, plus read-only Tweakeroo inventory previews.
+- Existing Bullet Carpet commands, rules, logging and Prometheus integration.
+- A separate LiteLoader companion provides the client integrations; client classes and dependencies are not part of the server jar.
 
-- Changed some minecraft internal behaviour on player profile, I yeeted the toLowerCase method on it and changed a map into a tree map
-- Added "bullet" as a carpet command category
-- Added `modern` redstoneDustBehaviour
-- Fixed `/rng randomtickedChunksCount`
-- I also added the following settings:
-```
-/carpet updateTabEveryGametick
-/carpet alwaysSetPlayerIntoSurvival
-/carpet commandEnderchest
-/carpet commandInventory(coded by slowik)
-/carpet scoreboardStats
-/carpet blockStateSyncing
-/carpet extremeBehaviours
-/carpet prometheusExtension
-```
+## Getting started
 
-### Prometheus addition:
-I added prometheus integration(https://github.com/prometheus/client_java) into this for monitoring`/prometheus` to configure port.(Pasted license since i had to copy the code)
+1. Use a Minecraft 1.12.2 server and Java 8.
+2. Build the patched server distribution with `./gradlew createRelease`.
+3. Install the generated `build/distributions/Carpetmod_dev.zip` contents alongside the matching Carpet server setup.
+4. In the companion client project root, run `./gradlew build` and install `build/libs/Bullet-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
+5. Enable server-side access only for trusted operators. The integration rules below default to `false`:
 
+   ```text
+   /carpet schematicSave true
+   /carpet schematicPaste true
+   /carpet schematicPasteNoUpdates true
+   /carpet pcaProtocol true
+   ```
+
+`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. See [integration documentation](docs/usage/server-integrations.rst) for pinned versions, limits, supported data and current verification status.
+
+## Documentation
+
+- [Server integrations](docs/usage/server-integrations.rst)
+- [Carpet installation](docs/usage/install.rst)
+- [Carpet manual](docs/index.rst)
+
+## Building from source
+
+Run `./gradlew setupCarpetmod` to generate the source tree, then make source changes and run `./gradlew createRelease`. This task creates an obfuscated patch archive under `build/distributions/`. The generated `src/` tree can be overwritten by setup tasks; preserve local edits before syncing.
+
+The separate companion client project targets LiteLoader and Java 8. Its build is `./gradlew build --offline` when pinned dependencies are already cached.
