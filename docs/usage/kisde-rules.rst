@@ -33,3 +33,8 @@ playerSit
 ---------
 
 Default: ``false``. Three start-sneak transitions, each less than 300 ms apart while on the ground, create an invisible seat. Release sneak between presses; another sneak dismounts. Seats disappear after dismount, death, disconnect, dimension change or disabling the rule. Seats are transient and never saved to the world; ordinary armor stands are unaffected.
+
+hopperCountersUnlimitedSpeed
+----------------------------
+
+Default: ``false``. When ``hopperCounters`` is enabled and the hopper points into wool, it repeats normal output and extraction without the eight-tick cooldown, stopping when no progress is possible. Each tick performs at most 32,767 attempts so permanent sources yield to the server. Hoppers without output wool keep their normal speed, including ``hopperCounters all``.

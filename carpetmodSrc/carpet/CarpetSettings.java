@@ -1138,6 +1138,9 @@ public class CarpetSettings
     @Rule(desc = "Toggle whether fake players take fall damage", category = {CREATIVE, KISDE})
     public static boolean fakePlayerFallDamage = true;
 
+    @Rule(desc = "Wool counter hoppers transfer without normal cooldown.", category = {CREATIVE, KISDE})
+    public static boolean hopperCountersUnlimitedSpeed = false;
+
     @Rule(desc = "Sit after three quick sneaks while on the ground.", category = {CREATIVE, KISDE})
     public static boolean playerSit = false;
 

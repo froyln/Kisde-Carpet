@@ -12,6 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public final class KisdeRuleLiveCheck {
+    private static WorldServer testWorld;
+    private static EntityPlayerMPFake testPlayer;
+    private static net.minecraft.tileentity.TileEntityHopper testHopper;
+    private static net.minecraft.inventory.IInventory testSource;
+    private static net.minecraft.util.math.BlockPos testHopperPos;
     private static void check(boolean result, String message) {
         if (!result) throw new AssertionError(message);
     }
@@ -26,8 +31,8 @@ public final class KisdeRuleLiveCheck {
 
     public static void run(MinecraftServer server) throws Exception {
         check(Files.exists(Paths.get(".kisde-rule-check")), "Disposable fixture marker missing");
-        WorldServer world = server.getWorld(0);
-        EntityPlayerMPFake player = EntityPlayerMPFake.createFake("DropOff", server, 80, 6, 80, 0, 0, 0, 1);
+        WorldServer world = testWorld = server.getWorld(0);
+        EntityPlayerMPFake player = testPlayer = EntityPlayerMPFake.createFake("DropOff", server, 80, 6, 80, 0, 0, 0, 1);
         EntityCow cow = new EntityCow(world);
         cow.setPosition(80, 6, 80);
         CarpetSettings.creativeOneHitKill = false;
@@ -100,8 +105,49 @@ public final class KisdeRuleLiveCheck {
         check(!seat.writeToNBTOptional(new net.minecraft.nbt.NBTTagCompound()), "Seat persisted");
         CarpetSettings.playerSit = false; carpet.helpers.PlayerSitHelper.tick(server);
         check(!player.isRiding() && seat.isDead, "Rule off did not clean seat");
-        outside.setDead(); stand.setDead(); player.setSneaking(false); player.despawn();
-        CarpetSettings.creativeOneHitKill = false;
+        net.minecraft.util.math.BlockPos hopperPos = testHopperPos = new net.minecraft.util.math.BlockPos(96, 6, 80);
+        world.setBlockState(hopperPos, net.minecraft.init.Blocks.HOPPER.getDefaultState().withProperty(net.minecraft.block.BlockHopper.FACING, net.minecraft.util.EnumFacing.EAST));
+        world.setBlockState(hopperPos.east(), net.minecraft.init.Blocks.WOOL.getDefaultState());
+        world.setBlockState(hopperPos.up(), net.minecraft.init.Blocks.CHEST.getDefaultState());
+        net.minecraft.tileentity.TileEntityHopper hopper = testHopper = (net.minecraft.tileentity.TileEntityHopper) world.getTileEntity(hopperPos);
+        net.minecraft.inventory.IInventory source = testSource = (net.minecraft.inventory.IInventory) world.getTileEntity(hopperPos.up());
+        for (int i = 0; i < source.getSizeInventory(); i++) source.setInventorySlotContents(i, new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 64));
+        CarpetSettings.hopperCounters = CarpetSettings.HopperCounters.wool;
+        carpet.helpers.HopperCounter.getCounter("white").reset(server);
+        CarpetSettings.hopperCountersUnlimitedSpeed = false; hopper.update();
+        check(source.getStackInSlot(0).getCount() == 63 && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() == 0, "Native hopper control failed");
+        net.minecraft.item.EnumDyeColor pointed = carpet.utils.WoolTool.getWoolColorAtPosition(world, hopperPos.east());
+        check(pointed == net.minecraft.item.EnumDyeColor.WHITE, "Fixture wool not detected: " + pointed + ", facing=" + net.minecraft.block.BlockHopper.getFacing(hopper.getBlockMetadata()) + ", wool=" + world.getBlockState(hopperPos.east()));
+        CarpetSettings.hopperCountersUnlimitedSpeed = true;
+        outside.setDead(); stand.setDead();
+        return;
+    }
+
+    public static void finish(MinecraftServer server) {
+        check(testSource.isEmpty() && testHopper.isEmpty() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() == 1728,
+                "Unlimited counter drain/count failed after world ticks: source=" + testSource.getStackInSlot(0) + ", counted=" + carpet.helpers.HopperCounter.getCounter("white").getTotalItems());
+        net.minecraft.tileentity.TileEntityHopper hopper = testHopper;
+        net.minecraft.inventory.IInventory source = testSource;
+        net.minecraft.world.WorldServer world = testWorld = server.getWorld(0);
+        net.minecraft.util.math.BlockPos hopperPos = testHopperPos;
+        carpet.patches.EntityPlayerMPFake player = testPlayer;
+        net.minecraft.entity.item.EntityItem pickup = new net.minecraft.entity.item.EntityItem(world, 96, 6, 80, new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 64));
+        check(net.minecraft.tileentity.TileEntityHopper.putDropInInventoryAllSlots(null, hopper, pickup), "Item pickup failed");
+        check(!net.minecraft.tileentity.TileEntityHopper.putDropInInventoryAllSlots(null, hopper, pickup) && hopper.getStackInSlot(0).getCount() == 64, "Dead item picked up twice");
+        for (int i = 0; i < hopper.getSizeInventory(); i++) hopper.setInventorySlotContents(i, net.minecraft.item.ItemStack.EMPTY);
+        world.setBlockToAir(hopperPos.east()); CarpetSettings.hopperCounters = CarpetSettings.HopperCounters.all;
+        source.setInventorySlotContents(0, new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 64));
+        net.minecraft.nbt.NBTTagCompound hopperNbt = hopper.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
+        hopperNbt.setInteger("TransferCooldown", 0); hopper.readFromNBT(hopperNbt); hopper.update();
+        check(source.getStackInSlot(0).getCount() == 63, "All mode without wool accelerated");
+        CarpetSettings.hopperCounters = CarpetSettings.HopperCounters.off;
+        world.setBlockState(hopperPos.east(), net.minecraft.init.Blocks.WOOL.getDefaultState());
+        hopperNbt = hopper.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
+        hopperNbt.setInteger("TransferCooldown", 0); hopper.readFromNBT(hopperNbt); hopper.update();
+        check(source.getStackInSlot(0).getCount() == 62, "Disabled counter accelerated");
+        CarpetSettings.hopperCountersUnlimitedSpeed = false;
+        world.setBlockToAir(hopperPos.up()); world.setBlockToAir(hopperPos.east()); world.setBlockToAir(hopperPos);
+        player.setSneaking(false);
         System.out.println("Kisde live checks passed");
     }
 }
