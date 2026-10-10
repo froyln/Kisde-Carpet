@@ -1156,6 +1156,9 @@ public class CarpetSettings
     @Rule(desc = "Creative players kill entities in one hit; sneaking also kills nearby entities.", category = {CREATIVE, KISDE})
     public static boolean creativeOneHitKill = false;
 
+    @Rule(desc = "Blocks OP players from using gamemode, tp, teleport, give, setblock and summon", category = {COMMANDS, KISDE})
+    public static boolean opPlayerNoCheat = false;
+
     // ===== API ===== //
 
     /**

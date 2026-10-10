@@ -188,6 +188,7 @@ public final class KisdeRuleLiveCheck {
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         check(server.getCommandManager().executeCommand(player, "scounter red reset") == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 0, "scounter reset failed");
         CarpetSettings.hopperNoItemCost = false;
+        KisdeOpPlayerNoCheatCheck.run(server, player);
         check(!new carpet.commands.CommandSupplierCounter().checkPermission(server, player), "scounter permission not gated by rule");
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         world.setBlockToAir(hopperPos.up()); world.setBlockToAir(hopperPos.east()); world.setBlockToAir(hopperPos);

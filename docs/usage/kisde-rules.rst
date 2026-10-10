@@ -43,3 +43,6 @@ hopperNoItemCost
 ----------------
 
 Default: ``false``. Wool above a hopper selects the supplier counter color. After each successful transfer, the hopper restores the exact stack it had before transfer, including item tags; blocked transfers do not count. This also enables ``/scounter`` and the ``scounter`` HUD logger.
+
+``opPlayerNoCheat``
+  Prevents operator players from using ``/gamemode``, ``/tp``, ``/teleport``, ``/give``, ``/setblock`` and ``/summon``. The rule is off by default.
