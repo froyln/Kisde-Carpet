@@ -4,6 +4,7 @@ import carpet.helpers.StackTraceDeobfuscator;
 import carpet.network.PluginChannelManager;
 import carpet.network.ToggleableChannelHandler;
 import carpet.schematic.SchematicSaveHandler;
+import carpet.schematic.SchematicPasteHandler;
 import carpet.patches.EntityPlayerMPFake;
 import carpet.pubsub.*;
 import carpet.utils.*;
@@ -40,6 +41,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static ToggleableChannelHandler legacyRsmmChannel;
     public static ToggleableChannelHandler wecuiChannel;
     public static SchematicSaveHandler schematicSaveHandler;
+    public static SchematicPasteHandler schematicPasteHandler;
     public static boolean playerInventoryStacking = false;
     public static int limitITTCounter;
 
@@ -59,6 +61,8 @@ public class CarpetServer // static for now - easier to handle all around the co
         pluginChannels.register(PUBSUB_MESSENGER);
         schematicSaveHandler = new SchematicSaveHandler();
         pluginChannels.register(schematicSaveHandler);
+        schematicPasteHandler = new SchematicPasteHandler();
+        pluginChannels.register(schematicPasteHandler);
 
         CCServer = new CarpetClientServer(server);
         pluginChannels.register(CCServer);

@@ -1124,6 +1124,8 @@ public class CarpetSettings
     @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
     public static boolean schematicSave;
 
+    @Rule(desc = "Allows OPs in creative mode to paste blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
+    public static boolean schematicPaste;
 
 
     // ===== API ===== //
