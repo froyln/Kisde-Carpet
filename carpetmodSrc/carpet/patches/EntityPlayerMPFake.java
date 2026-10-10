@@ -2,6 +2,8 @@ package carpet.patches;
 
 import carpet.CarpetSettings;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.EnumPacketDirection;
@@ -165,6 +167,16 @@ public class EntityPlayerMPFake extends EntityPlayerMP
         super.onUpdate();
         this.onUpdateEntity();
         this.playerMoved();
+    }
+
+    @Override
+    protected void updateFallState(double y, boolean onGround, IBlockState state, BlockPos pos) {
+        handleFalling(y, onGround);
+    }
+
+    @Override
+    public void fall(float distance, float damageMultiplier) {
+        if (CarpetSettings.fakePlayerFallDamage) super.fall(distance, damageMultiplier);
     }
 
     @Override

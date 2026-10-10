@@ -1135,6 +1135,9 @@ public class CarpetSettings
     @Rule(desc = "Toggle for end gateway cooldown", category = {SURVIVAL, KISDE})
     public static boolean endGatewayCooldown = true;
 
+    @Rule(desc = "Toggle whether fake players take fall damage", category = {CREATIVE, KISDE})
+    public static boolean fakePlayerFallDamage = true;
+
     // ===== API ===== //
 
     /**
