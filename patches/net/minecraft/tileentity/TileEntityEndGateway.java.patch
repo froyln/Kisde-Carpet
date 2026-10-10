@@ -1,5 +1,10 @@
 --- ../src-base/minecraft/net/minecraft/tileentity/TileEntityEndGateway.java
 +++ ../src-work/minecraft/net/minecraft/tileentity/TileEntityEndGateway.java
+@@ -103,3 +103,3 @@
+     {
+-        return this.field_184316_g > 0;
++        return carpet.CarpetSettings.endGatewayCooldown && this.field_184316_g > 0;
+     }
 @@ -205,6 +205,8 @@
      {
          BlockPos blockpos = null;

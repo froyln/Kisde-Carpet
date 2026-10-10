@@ -82,6 +82,11 @@ task schematicPackingCheck(type: JavaExec) {
 	classpath = sourceSets.test.runtimeClasspath
 	main = 'carpet.schematic.SchematicPackingCheck'
 }
+task kisdeRuleCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.KisdeRuleCheck'
+}
 File runningDir = new File('server/')
 runningDir.mkdirs()
 tasks.run.workingDir = runningDir

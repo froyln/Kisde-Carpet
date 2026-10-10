@@ -17,6 +17,7 @@ for technical Minecraft.
    usage/install
    usage/logging
    usage/server-integrations
+   usage/kisde-rules
 
 .. _`Carpet Mod`: https://github.com/gnembon/carpetmod
 

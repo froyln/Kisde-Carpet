@@ -1132,6 +1132,9 @@ public class CarpetSettings
 
     @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, KISDE})
     public static boolean pcaProtocol;
+    @Rule(desc = "Toggle for end gateway cooldown", category = {SURVIVAL, KISDE})
+    public static boolean endGatewayCooldown = true;
+
     // ===== API ===== //
 
     /**
