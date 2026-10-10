@@ -5,6 +5,7 @@ import carpet.network.PluginChannelManager;
 import carpet.network.ToggleableChannelHandler;
 import carpet.schematic.SchematicSaveHandler;
 import carpet.schematic.SchematicPasteHandler;
+import carpet.schematic.PcaInventoryPreviewHandler;
 import carpet.patches.EntityPlayerMPFake;
 import carpet.pubsub.*;
 import carpet.utils.*;
@@ -42,6 +43,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static ToggleableChannelHandler wecuiChannel;
     public static SchematicSaveHandler schematicSaveHandler;
     public static SchematicPasteHandler schematicPasteHandler;
+    public static PcaInventoryPreviewHandler pcaInventoryPreviewHandler;
     public static boolean playerInventoryStacking = false;
     public static int limitITTCounter;
 
@@ -63,6 +65,8 @@ public class CarpetServer // static for now - easier to handle all around the co
         pluginChannels.register(schematicSaveHandler);
         schematicPasteHandler = new SchematicPasteHandler();
         pluginChannels.register(schematicPasteHandler);
+        pcaInventoryPreviewHandler = new PcaInventoryPreviewHandler();
+        pluginChannels.register(pcaInventoryPreviewHandler);
 
         CCServer = new CarpetClientServer(server);
         pluginChannels.register(CCServer);

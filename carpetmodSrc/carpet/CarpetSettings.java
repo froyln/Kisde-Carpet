@@ -1128,6 +1128,8 @@ public class CarpetSettings
     public static boolean schematicPaste;
 
 
+    @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, BULLET})
+    public static boolean pcaProtocol;
     // ===== API ===== //
 
     /**
