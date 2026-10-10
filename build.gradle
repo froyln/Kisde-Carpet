@@ -76,6 +76,12 @@ sourceSets {
 		}
 	}
 }
+
+task schematicPackingCheck(type: JavaExec) {
+	dependsOn testClasses
+	classpath = sourceSets.test.runtimeClasspath
+	main = 'carpet.schematic.SchematicPackingCheck'
+}
 File runningDir = new File('server/')
 runningDir.mkdirs()
 tasks.run.workingDir = runningDir
