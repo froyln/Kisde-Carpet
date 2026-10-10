@@ -1,6 +1,6 @@
 <div align="center">
 
-# Bullet Carpet
+# Kisde-Carpet
 
 **A Minecraft 1.12.2 Carpet server mod with optional server-authoritative schematic and inventory integrations.**
 
@@ -14,15 +14,17 @@
 ## Features
 
 - Carpet rules for server-controlled Litematica capture and paste, plus read-only Tweakeroo inventory previews.
-- Existing Bullet Carpet commands, rules, logging and Prometheus integration.
+- Existing Carpet commands, rules, logging and Prometheus integration.
 - A separate LiteLoader companion provides the client integrations; client classes and dependencies are not part of the server jar.
+
+Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preserving its Minecraft 1.12.2 server lineage. Companion source: [Kisde-Carpet-ClientSide](https://github.com/froyln/Kisde-Carpet-ClientSide).
 
 ## Getting started
 
 1. Use a Minecraft 1.12.2 server and Java 8.
 2. Build the patched server distribution with `./gradlew createRelease`.
-3. Install the generated `build/distributions/Carpetmod_dev.zip` contents alongside the matching Carpet server setup.
-4. In the companion client project root, run `./gradlew build` and install `build/libs/Bullet-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
+3. Install the generated `build/distributions/Kisde-Carpet_dev.zip` contents alongside the matching Carpet server setup.
+4. In the companion client project root, run `./gradlew build` and install `build/libs/Kisde-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
 5. Enable server-side access only for trusted operators. The integration rules below default to `false`:
 
    ```text

@@ -1,7 +1,7 @@
 Server-controlled client integrations
 ====================================
 
-Bullet Carpet adds four rules for optional integrations with the separate
+Kisde-Carpet adds four rules for optional integrations with the separate
 LiteLoader companion client mod. They are disabled by default. Enable only the
 features needed on a server whose operators and creative-mode users are
 trusted.
@@ -28,7 +28,7 @@ For example, an administrator can enable the rules with Carpet's rule command::
    /carpet schematicPasteNoUpdates true
    /carpet pcaProtocol true
 
-Capture and paste additionally require creative mode. With no Bullet Carpet server, the companion leaves Litematica’s ordinary native paste path available. A vanilla dedicated-server test placed block states but did not preserve container inventories or other tile-entity NBT; inventory-preserving paste requires the paired Bullet Carpet server with ``schematicPaste`` enabled and the required authorization. The server validates
+Capture and paste additionally require creative mode. With no Kisde-Carpet server, the companion leaves Litematica’s ordinary native paste path available. A vanilla dedicated-server test placed block states but did not preserve container inventories or other tile-entity NBT; inventory-preserving paste requires the paired Kisde-Carpet server with ``schematicPaste`` enabled and the required authorization. The server validates
 client data, checks access again while operations execute, and does not trust
 client-supplied positions, dimensions, NBT or capabilities. Requests are limited
 to loaded chunks and validated packet sizes. Capture
@@ -42,15 +42,15 @@ Client setup
 Use Minecraft 1.12.2, Java 8, LiteLoader and the pinned masa compatibility
 versions: Litematica 0.31.4, MiniHUD 0.41.1, Tweakeroo 0.31.0 and MaLiLib
 0.54.0. Build the companion project with ``./gradlew build`` and install its
-``Bullet-Carpet.litemod`` in the client's ``mods/1.12.2`` directory. The server
+``Kisde-Carpet.litemod`` in the client's ``mods/1.12.2`` directory. The server
 remains a separate Carpet jar mod; do not install client classes or dependencies
 on the server.
 
-The companion automatically detects a Bullet Carpet server; no hidden client
+The companion automatically detects a Kisde-Carpet server; no hidden client
 property is required for assisted paste. In Litematica's save screen, Auto and
 Server capture server data, including container contents and sign text. Client
 explicitly uses the ordinary local capture. In-memory capture also uses server
-data when connected to Bullet Carpet. The save screen shows the supported
+data when connected to Kisde-Carpet. The save screen shows the supported
 options and disables unsupported entity and tick capture.
 
 Inventory overlays refresh server contents about every 300 ms while rendered.
@@ -71,7 +71,7 @@ physics, observer pulses, fluid block-added scheduling or inventory comparator
 updates. Block and tile data are still sent to clients and saved. This does not
 freeze later normal ticks, existing scheduled ticks or player-generated
 updates. Moving pistons and other ticking block entities can continue their
-normal behavior after placement. The rule affects the Bullet Carpet assisted
+normal behavior after placement. The rule affects the Kisde-Carpet assisted
 paste path, not ordinary ``/setblock`` or other mods' placement paths.
 
 Capture uses Litematica's AllAtOnce server-save flow. The supported capture
