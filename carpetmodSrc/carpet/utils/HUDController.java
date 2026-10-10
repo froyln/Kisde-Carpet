@@ -3,6 +3,7 @@ package carpet.utils;
 import carpet.CarpetSettings;
 import carpet.helpers.GolemCounter;
 import carpet.helpers.HopperCounter;
+import carpet.helpers.SupplierCounter;
 import carpet.helpers.TickSpeed;
 import carpet.logging.LoggerRegistry;
 import carpet.logging.logHelpers.PacketCounter;
@@ -68,6 +69,9 @@ public class HUDController
 
         if(LoggerRegistry.__counter)
             log_counter(server);
+
+        if (LoggerRegistry.__scounter && CarpetSettings.hopperNoItemCost)
+            log_supplier_counter(server);
 
         if (LoggerRegistry.__packets)
             LoggerRegistry.getLogger("packets").log(()-> packetCounter(),
@@ -164,6 +168,14 @@ public class HUDController
         return new ITextComponent[]{Messenger.m(null, components.toArray(new Object[0]))};
     }
     
+    private static void log_supplier_counter(MinecraftServer server)
+    {
+        List<Object> params = new ArrayList<>();
+        for (HopperCounter counter : SupplierCounter.COUNTERS.values())
+            Collections.addAll(params, counter.color.name(), counter.getTotalItems());
+        LoggerRegistry.getLogger("scounter").log(option -> option.equals("all") ? SupplierCounter.formatAll(server, false, true).toArray(new ITextComponent[0]) : SupplierCounter.getCounter(option).format(server, false, true).toArray(new ITextComponent[0]), params);
+    }
+
     private static void log_counter(MinecraftServer server)
     {
         List<Object> commandParams = new ArrayList<>();

@@ -38,3 +38,8 @@ hopperCountersUnlimitedSpeed
 ----------------------------
 
 Default: ``false``. When ``hopperCounters`` is enabled and the hopper points into wool, it repeats normal output and extraction without the eight-tick cooldown, stopping when no progress is possible. Each tick performs at most 32,767 attempts so permanent sources yield to the server. Hoppers without output wool keep their normal speed, including ``hopperCounters all``.
+
+hopperNoItemCost
+----------------
+
+Default: ``false``. Wool above a hopper selects the supplier counter color. After each successful transfer, the hopper restores the exact stack it had before transfer, including item tags; blocked transfers do not count. This also enables ``/scounter`` and the ``scounter`` HUD logger.

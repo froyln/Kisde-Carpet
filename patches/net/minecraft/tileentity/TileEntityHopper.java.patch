@@ -80,7 +80,7 @@
 +                        }
 +                    }
 +                    this.func_145896_c(unlimited ? 0 : 8);
-@@ -193,0 +248,29 @@
+@@ -193,0 +248,31 @@
 +        String prevReason = CarpetClientChunkLogger.reason;
 +        CarpetClientChunkLogger.reason = "Hopper loading";
 +        /* carpet mod */
@@ -102,7 +102,9 @@
 +                    {
 +                        ItemStack itemstack = this.func_70301_a(i);//.copy();
 +                        HopperCounter.COUNTERS.get(counter).add(this.func_145831_w().func_73046_m(), itemstack);
-+                        this.func_70299_a(i, ItemStack.field_190927_a);
++                        EnumDyeColor supplierColor = CarpetSettings.hopperNoItemCost ? this.get_supplier_wool() : null;
++                        if (supplierColor != null) carpet.helpers.SupplierCounter.add(this.func_145831_w().func_73046_m(), supplierColor, itemstack.copy());
++                        else this.func_70299_a(i, ItemStack.field_190927_a);
 +                    }
 +                }
 +                return true;
@@ -110,22 +112,31 @@
 +        }
 +        /* end */
 +
-@@ -195,0 +279,2 @@
+@@ -195,0 +281,2 @@
 +        CarpetClientChunkLogger.reason = prevReason;
 +
-@@ -197,0 +283 @@
+@@ -197,0 +285 @@
 +            // Carpet-optimizedTileEntities: This code purposely does not put push to sleep to preserve chunk loading behavior
-@@ -205,0 +292,4 @@
+@@ -205,0 +294,4 @@
 +                // Carpet-optimizedTileEntities: Push falls asleep if the container it would push into is full and
 +                // is an actual tile entity (not a minecart). This is because minecarts do not cause comparator updates and would keep the
 +                // hopper in a sleeping push state when leaving or emptying
 +                this.pushSleeping = iinventory instanceof TileEntityLockable;
-@@ -299,0 +390,2 @@
+@@ -219,0 +312,8 @@
++                            EnumDyeColor supplierColor = CarpetSettings.hopperNoItemCost ? this.get_supplier_wool() : null;
++                            if (supplierColor != null)
++                            {
++                                ItemStack supplied = itemstack.copy();
++                                supplied.setCount(1);
++                                carpet.helpers.SupplierCounter.add(this.func_145831_w().func_73046_m(), supplierColor, supplied);
++                                this.func_70299_a(i, itemstack);
++                            }
+@@ -299,0 +400,2 @@
 +        String prevReason = CarpetClientChunkLogger.reason;
 +        CarpetClientChunkLogger.reason = "Hopper self-loading";
-@@ -300,0 +393 @@
+@@ -300,0 +403 @@
 +        CarpetClientChunkLogger.reason = prevReason;
-@@ -307,0 +401,8 @@
+@@ -307,0 +411,8 @@
 +                // Carpet-optimizedTileEntities: Pull falls asleep if the container it would pull from is empty and
 +                // is an actual tile entity (not a minecart). This is because minecarts do not cause comparator updates and would keep the
 +                // hopper in a sleeping pull state when leaving or filling up
@@ -134,7 +145,7 @@
 +                    ((TileEntityHopper)p_145891_0_).pullSleeping = true;
 +                }
 +
-@@ -335,0 +437,7 @@
+@@ -335,0 +447,7 @@
 +
 +            // Carpet-optimizedTileEntities: There is a non-empty inventory above the hopper, but for some reason the hopper cannot suck
 +            // items from it. Therefore the hopper pulling should sleep (if the inventory is not a minecart).
@@ -142,28 +153,33 @@
 +            {
 +                ((TileEntityHopper)p_145891_0_).pullSleeping = true;
 +            }
-@@ -353,0 +462,5 @@
+@@ -353,0 +472,5 @@
 +
 +        // Added method to fix auto crafting sucking out items to early CAPRET-XCOM
 +        if(CarpetSettings.autocrafter && TileEntityCraftingTable.checkIfCanCraft(p_174915_0_, p_174915_1_, itemstack)){
 +            return false;
 +        }
-@@ -376 +489 @@
+@@ -376 +499 @@
 -        if (p_145898_2_ == null)
 +        if (p_145898_2_ == null || CarpetSettings.hopperCountersUnlimitedSpeed && p_145898_2_.field_70128_L)
-@@ -499,0 +613,8 @@
+@@ -499,0 +623,13 @@
 +    }
 +
 +    /* carpet mod */
++    private EnumDyeColor get_supplier_wool()
++    {
++        return WoolTool.getWoolColorAtPosition(this.field_145850_b, this.field_174879_c.func_177984_a());
++    }
++
 +    private EnumDyeColor get_wool_pointing()
 +    {
 +        return WoolTool.getWoolColorAtPosition(
 +                func_145831_w(),
 +                new BlockPos(func_96107_aA(),func_96109_aB(),func_96108_aC() ).func_177972_a(BlockHopper.func_176428_b(this.func_145832_p())));
-@@ -549 +670 @@
+@@ -549 +685 @@
 -    private static boolean func_145894_a(ItemStack p_145894_0_, ItemStack p_145894_1_)
 +    public static boolean func_145894_a(ItemStack p_145894_0_, ItemStack p_145894_1_)
-@@ -614 +735,12 @@
+@@ -614 +750,12 @@
 -}
 +
 +    // CARPET-optimizedTileEntities: Whether the tile entity is asleep or not. Hoppers have 2 different actions that can sleep: pushing and pulling.

@@ -36,11 +36,17 @@ public class HopperCounter
     private long startMillis;
     private PubSubInfoProvider<Long> pubSubProvider;
     private String name;
+    private String command = "counter";
 
     private HopperCounter(EnumDyeColor color, String name) {
+        this(color, name, "counter");
+    }
+
+    public HopperCounter(EnumDyeColor color, String name, String command) {
         this.name = name;
         this.color = color;
-        pubSubProvider = new PubSubInfoProvider<>(CarpetServer.PUBSUB, "carpet.counter." + name, 0, this::getTotalItems);
+        this.command = command;
+        pubSubProvider = new PubSubInfoProvider<>(CarpetServer.PUBSUB, "carpet." + command + "." + name, 0, this::getTotalItems);
     }
 
     public void add(MinecraftServer server, ItemStack stack) {
@@ -100,7 +106,7 @@ public class HopperCounter
             return Collections.singletonList(Messenger.m(null,
                     String.format("w No items for %s yet (%.2f min.%s)",
                             name, ticks / (20.0 * 60.0), (realTime ? " - real time" : "")),
-                    "nb  [X]", "^g reset", "!/counter " + name +" reset"));
+                    "nb  [X]", "^g reset", "!/" + command + " " + name + " reset"));
         }
         if (brief) {
             return Collections.singletonList(Messenger.m(null,

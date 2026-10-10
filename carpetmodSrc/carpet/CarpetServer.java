@@ -80,6 +80,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     {
         CarpetSettings.applySettingsFromConf(server);
         LoggerRegistry.initLoggers(server);
+        carpet.helpers.SupplierCounter.resetAll(server);
         LoggerRegistry.readSaveFile(server);
         WorldEditBridge.onServerLoaded(server);
 

@@ -38,6 +38,7 @@ public class LoggerRegistry
     public static boolean __autosave;
     public static boolean __tps;
     public static boolean __counter;
+    public static boolean __scounter;
     public static boolean __mobcaps;
     public static boolean __damage;
     public static boolean __packets;
@@ -81,6 +82,7 @@ public class LoggerRegistry
         registerLogger("tps", new Logger(server, "tps", null, null, LogHandler.HUD));
         registerLogger("packets", new Logger(server, "packets", null, null, LogHandler.HUD));
         registerLogger("counter",new Logger(server, "counter","white", new String[]{"all","cactus","white","orange","magenta","light_blue","yellow","lime","pink","gray","silver","cyan","purple","blue","brown","green","red","black"}, LogHandler.HUD));
+        registerLogger("scounter", new Logger(server, "scounter", "white", new String[]{"all","white","orange","magenta","light_blue","yellow","lime","pink","gray","silver","cyan","purple","blue","brown","green","red","black"}, LogHandler.HUD));
         registerLogger("mobcaps", new Logger(server, "mobcaps", "dynamic",new String[]{"dynamic", "overworld", "nether","end"}, LogHandler.HUD));
         registerLogger("villages", new Logger(server, "villages", "dynamic", new String[]{"dynamic", "overworld", "nether","end"}, LogHandler.HUD));
         registerLogger("golems", new Logger(server, "golems", null, null, LogHandler.HUD));

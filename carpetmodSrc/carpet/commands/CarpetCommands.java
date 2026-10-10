@@ -41,6 +41,7 @@ public class CarpetCommands {
         handler.registerCommand(new CommandRemoveEntity());
         handler.registerCommand(new CommandRepopulate());
         handler.registerCommand(new CommandRNG());
+        handler.registerCommand(new CommandSupplierCounter());
         handler.registerCommand(new CommandScoreboardPublic());
         handler.registerCommand(new CommandScoreboardStats());//Bullet
         handler.registerCommand(new CommandSpawn());

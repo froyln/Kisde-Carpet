@@ -1141,6 +1141,9 @@ public class CarpetSettings
     @Rule(desc = "Wool counter hoppers transfer without normal cooldown.", category = {CREATIVE, KISDE})
     public static boolean hopperCountersUnlimitedSpeed = false;
 
+    @Rule(desc = "Wool above a hopper lets it supply items without consuming them.", category = {CREATIVE, SURVIVAL, KISDE})
+    public static boolean hopperNoItemCost = false;
+
     @Rule(desc = "Sit after three quick sneaks while on the ground.", category = {CREATIVE, KISDE})
     public static boolean playerSit = false;
 

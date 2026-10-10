@@ -17,6 +17,10 @@ public final class KisdeRuleLiveCheck {
     private static net.minecraft.tileentity.TileEntityHopper testHopper;
     private static net.minecraft.inventory.IInventory testSource;
     private static net.minecraft.util.math.BlockPos testHopperPos;
+    private static boolean sameStack(net.minecraft.item.ItemStack a, net.minecraft.item.ItemStack b) {
+        return a.getCount() == b.getCount() && a.isItemEqual(b) && net.minecraft.item.ItemStack.areItemStackTagsEqual(a, b);
+    }
+
     private static void check(boolean result, String message) {
         if (!result) throw new AssertionError(message);
     }
@@ -123,6 +127,11 @@ public final class KisdeRuleLiveCheck {
         return;
     }
 
+    private static void carpetmodResetCooldown(net.minecraft.tileentity.TileEntityHopper hopper) {
+        net.minecraft.nbt.NBTTagCompound data = hopper.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
+        data.setInteger("TransferCooldown", 0); hopper.readFromNBT(data);
+    }
+
     public static void finish(MinecraftServer server) {
         check(testSource.isEmpty() && testHopper.isEmpty() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() == 1728,
                 "Unlimited counter drain/count failed after world ticks: source=" + testSource.getStackInSlot(0) + ", counted=" + carpet.helpers.HopperCounter.getCounter("white").getTotalItems());
@@ -145,6 +154,41 @@ public final class KisdeRuleLiveCheck {
         hopperNbt = hopper.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
         hopperNbt.setInteger("TransferCooldown", 0); hopper.readFromNBT(hopperNbt); hopper.update();
         check(source.getStackInSlot(0).getCount() == 62, "Disabled counter accelerated");
+
+        world.setBlockToAir(hopperPos.up());
+        world.setBlockState(hopperPos.up(), net.minecraft.init.Blocks.WOOL.getDefaultState().withProperty(net.minecraft.block.BlockColored.COLOR, net.minecraft.item.EnumDyeColor.RED));
+        world.setBlockState(hopperPos.east(), net.minecraft.init.Blocks.CHEST.getDefaultState());
+        net.minecraft.inventory.IInventory output = (net.minecraft.inventory.IInventory) world.getTileEntity(hopperPos.east());
+        for (int i = 0; i < source.getSizeInventory(); i++) source.setInventorySlotContents(i, net.minecraft.item.ItemStack.EMPTY);
+        net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound(); tag.setString("Owner", "Kisde");
+        net.minecraft.item.ItemStack tagged = new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 2); tagged.setTagCompound(tag);
+        hopper.setInventorySlotContents(0, tagged.copy()); hopper.wakeUp();
+        CarpetSettings.hopperNoItemCost = false;
+        carpetmodResetCooldown(hopper); hopper.update();
+        check(hopper.getStackInSlot(0).getCount() == 1 && output.getStackInSlot(0).getCount() == 1, "Normal transfer control failed");
+        carpet.helpers.SupplierCounter.getCounter("red").reset(server);
+        hopper.setInventorySlotContents(0, tagged.copy()); hopper.wakeUp();
+        CarpetSettings.hopperNoItemCost = true;
+        carpetmodResetCooldown(hopper); hopper.update();
+        check(sameStack(hopper.getStackInSlot(0), tagged) && output.getStackInSlot(0).getCount() == 2, "Supplier did not restore exact NBT stack");
+        check(carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 1, "Supplier counted wrong amount");
+        for (int i = 0; i < output.getSizeInventory(); i++) output.setInventorySlotContents(i, new net.minecraft.item.ItemStack(net.minecraft.item.Item.getItemFromBlock(net.minecraft.init.Blocks.STONE), 64));
+        hopper.setInventorySlotContents(0, tagged.copy());
+        carpetmodResetCooldown(hopper); hopper.update();
+        check(sameStack(hopper.getStackInSlot(0), tagged) && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 1, "Blocked output changed supply or count");
+        CarpetSettings.hopperCounters = CarpetSettings.HopperCounters.wool;
+        world.setBlockState(hopperPos.east(), net.minecraft.init.Blocks.WOOL.getDefaultState());
+        for (int i = 0; i < output.getSizeInventory(); i++) output.setInventorySlotContents(i, net.minecraft.item.ItemStack.EMPTY);
+        hopper.setInventorySlotContents(0, new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 1)); hopper.wakeUp();
+        carpet.helpers.SupplierCounter.getCounter("red").reset(server);
+        carpet.helpers.HopperCounter.getCounter("white").reset(server);
+        CarpetSettings.hopperCountersUnlimitedSpeed = true;
+        hopper.wakeUp(); carpetmodResetCooldown(hopper); hopper.update();
+        check(hopper.getStackInSlot(0).getCount() == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() > 0 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == carpet.helpers.HopperCounter.getCounter("white").getTotalItems() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() <= (long) Short.MAX_VALUE * 320, "Combined counter/supplier guard failed");
+        CarpetSettings.hopperCountersUnlimitedSpeed = false;
+        check(server.getCommandManager().executeCommand(player, "scounter red reset") == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 0, "scounter reset failed");
+        CarpetSettings.hopperNoItemCost = false;
+        check(!new carpet.commands.CommandSupplierCounter().checkPermission(server, player), "scounter permission not gated by rule");
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         world.setBlockToAir(hopperPos.up()); world.setBlockToAir(hopperPos.east()); world.setBlockToAir(hopperPos);
         player.setSneaking(false);
