@@ -81,6 +81,7 @@ public class CarpetServer // static for now - easier to handle all around the co
         CarpetSettings.applySettingsFromConf(server);
         LoggerRegistry.initLoggers(server);
         carpet.helpers.SupplierCounter.resetAll(server);
+        carpet.helpers.LifeTimeTracker.stopServer();
         LoggerRegistry.readSaveFile(server);
         WorldEditBridge.onServerLoaded(server);
 
@@ -136,6 +137,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     {
         TickSpeed.tick(server);
         carpet.helpers.PlayerSitHelper.tick(server);
+        carpet.helpers.LifeTimeTracker.tick(server);
         if (CarpetSettings.redstoneMultimeterLegacy)
         {
             TickStartEventDispatcher.dispatchEvent(server.getTickCounter());

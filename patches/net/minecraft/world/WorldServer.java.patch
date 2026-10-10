@@ -699,3 +699,24 @@
 +        }
 +    }
  }
+@@ -998,4 +998,7 @@
+     public boolean func_72838_d(Entity p_72838_1_)
+     {
+-        return this.func_184165_i(p_72838_1_) ? super.func_72838_d(p_72838_1_) : false;
++        if (!this.func_184165_i(p_72838_1_)) return false;
++        boolean added = super.func_72838_d(p_72838_1_);
++        if (added) carpet.helpers.LifeTimeTracker.spawned(p_72838_1_, "other");
++        return added;
+     }
+@@ -1007,5 +1007,6 @@
+             if (this.func_184165_i(entity))
+             {
+                 this.field_72996_f.add(entity);
+                 this.func_72923_a(entity);
++                carpet.helpers.LifeTimeTracker.loaded(entity);
+             }
+@@ -1068,3 +1068,4 @@
+     protected void func_72847_b(Entity p_72847_1_)
+     {
++        carpet.helpers.LifeTimeTracker.unloaded(p_72847_1_);
+         super.func_72847_b(p_72847_1_);

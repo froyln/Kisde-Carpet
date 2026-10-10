@@ -220,3 +220,7 @@
  
      public void func_71001_a(Entity p_71001_1_, int p_71001_2_)
      {
+@@ -1144,2 +1144,3 @@
+     public void func_70645_a(DamageSource p_70645_1_)
+     {
++        carpet.helpers.LifeTimeTracker.removed(this, "death");

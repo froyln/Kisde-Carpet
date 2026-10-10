@@ -17,9 +17,12 @@ public final class KisdeRuleLiveCheck {
     private static net.minecraft.tileentity.TileEntityHopper testHopper;
     private static net.minecraft.inventory.IInventory testSource;
     private static net.minecraft.util.math.BlockPos testHopperPos;
+    private static EntityCow lifetimeCow;
     private static boolean sameStack(net.minecraft.item.ItemStack a, net.minecraft.item.ItemStack b) {
         return a.getCount() == b.getCount() && a.isItemEqual(b) && net.minecraft.item.ItemStack.areItemStackTagsEqual(a, b);
     }
+
+    private static String join(java.util.List<String> lines) { return String.join("\n", lines); }
 
     private static void check(boolean result, String message) {
         if (!result) throw new AssertionError(message);
@@ -132,7 +135,7 @@ public final class KisdeRuleLiveCheck {
         data.setInteger("TransferCooldown", 0); hopper.readFromNBT(data);
     }
 
-    public static void finish(MinecraftServer server) {
+    public static void finish(MinecraftServer server) throws Exception {
         check(testSource.isEmpty() && testHopper.isEmpty() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() == 1728,
                 "Unlimited counter drain/count failed after world ticks: source=" + testSource.getStackInSlot(0) + ", counted=" + carpet.helpers.HopperCounter.getCounter("white").getTotalItems());
         net.minecraft.tileentity.TileEntityHopper hopper = testHopper;
@@ -188,7 +191,19 @@ public final class KisdeRuleLiveCheck {
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         check(server.getCommandManager().executeCommand(player, "scounter red reset") == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 0, "scounter reset failed");
         CarpetSettings.hopperNoItemCost = false;
+        CarpetSettings.commandLifeTime = "true";
+        carpet.helpers.LifeTimeTracker.start(true);
+        carpet.helpers.LifeTimeTracker.setFilter("minecraft:cow", player, new String[] {"@e[type=minecraft:cow]"});
+        lifetimeCow = new EntityCow(world); lifetimeCow.setPosition(100, 6, 80);
+        check(world.spawnEntity(lifetimeCow), "Lifetime fixture spawn failed");
+        net.minecraft.nbt.NBTTagCompound lifetimeNbt = lifetimeCow.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
+        carpet.helpers.LifeTimeTracker.unloaded(lifetimeCow);
+        lifetimeCow = new EntityCow(world); lifetimeCow.readFromNBT(lifetimeNbt);
+        check(join(carpet.helpers.LifeTimeTracker.report("minecraft:cow", null, false, null)).contains("1 active entities"), "Lifetime save/load failed");
         KisdeOpPlayerNoCheatCheck.run(server, player);
+        lifetimeCow.setDead();
+        check(join(carpet.helpers.LifeTimeTracker.report("minecraft:cow", null, false, null)).contains("removed 1"), "Lifetime removal was not recorded");
+        carpet.helpers.LifeTimeTracker.stop();
         check(!new carpet.commands.CommandSupplierCounter().checkPermission(server, player), "scounter permission not gated by rule");
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         world.setBlockToAir(hopperPos.up()); world.setBlockToAir(hopperPos.east()); world.setBlockToAir(hopperPos);

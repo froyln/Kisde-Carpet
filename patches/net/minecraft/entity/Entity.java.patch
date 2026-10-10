@@ -178,3 +178,21 @@
 +    {
 +    }
 +}
+@@ -277,4 +277,5 @@
+     public void func_70106_y()
+     {
++        carpet.helpers.LifeTimeTracker.removed(this, "other");
+         this.field_70128_L = true;
+     }
+@@ -1645,1 +1645,2 @@
+-            return p_189511_1_;
++            carpet.helpers.LifeTimeTracker.write(this, p_189511_1_);
++            return p_189511_1_;
+@@ -1748,4 +1748,6 @@
+-        }
++            carpet.helpers.LifeTimeTracker.read(this, p_70020_1_);
++            carpet.helpers.LifeTimeTracker.loaded(this);
++        }
+         catch (Throwable throwable)
+         {
+             CrashReport crashreport = CrashReport.func_85055_a(throwable, "Loading entity NBT");

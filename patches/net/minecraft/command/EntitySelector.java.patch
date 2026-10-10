@@ -1,0 +1,28 @@
+--- ../src-base/minecraft/net/minecraft/command/EntitySelector.java
++++ ../src-work/minecraft/net/minecraft/command/EntitySelector.java
+@@ -82,0 +83,22 @@
++    public static List<Predicate<Entity>> lifetimePredicates(ICommandSender sender, String token) throws CommandException
++    {
++        Matcher matcher = field_82389_a.matcher(token);
++        if (!matcher.matches() || !"e".equals(matcher.group(1))) throw new CommandException("Lifetime filters require @e selectors");
++        Map<String, String> map = func_82381_h(matcher.group(2));
++        if (!func_82377_a(token)) throw new CommandException("Invalid entity selector: %s", token);
++        List<Predicate<Entity>> predicates = Lists.newArrayList();
++        predicates.addAll(func_179663_a(map, "e")); predicates.addAll(func_179648_b(map));
++        predicates.addAll(func_179649_c(map)); predicates.addAll(func_179659_d(map));
++        predicates.addAll(func_184952_c(sender, map)); predicates.addAll(func_179647_f(map));
++        predicates.addAll(func_184951_f(map));
++        Vec3d pos = func_189210_b(map, sender.func_174791_d());
++        predicates.addAll(func_180698_a(map, pos)); predicates.addAll(func_179662_g(map));
++        final World world = sender.func_130014_f_();
++        predicates.add(entity -> entity != null && entity.field_70170_p == world);
++        if (map.containsKey(field_190838_l) || map.containsKey(field_190839_m) || map.containsKey(field_190840_n)) {
++            final AxisAlignedBB box = func_179661_a(func_179664_b(map, sender.func_180425_c()), func_179653_a(map, field_190838_l, 0), func_179653_a(map, field_190839_m, 0), func_179653_a(map, field_190840_n, 0));
++            predicates.add(entity -> entity != null && box.func_72326_a(entity.func_174813_aQ()));
++        }
++        return predicates;
++    }
++
+@@ -835 +857 @@
+-}
++}

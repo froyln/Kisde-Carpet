@@ -46,3 +46,6 @@ Default: ``false``. Wool above a hopper selects the supplier counter color. Afte
 
 ``opPlayerNoCheat``
   Prevents operator players from using ``/gamemode``, ``/tp``, ``/teleport``, ``/give``, ``/setblock`` and ``/summon``. The rule is off by default.
+
+``commandLifeTime``
+  Enables ``/lifetime`` tracking and controls command permission. Values: ``true``, ``false``, ``ops`` or permission levels 0–4. Tracks newly spawned living entities, items, XP orbs, boats and minecarts for the current server session.

@@ -1159,6 +1159,14 @@ public class CarpetSettings
     @Rule(desc = "Blocks OP players from using gamemode, tp, teleport, give, setblock and summon", category = {COMMANDS, KISDE})
     public static boolean opPlayerNoCheat = false;
 
+    @Rule(desc = "Enables /lifetime entity lifetime tracking and filters", category = {COMMANDS, KISDE}, options = {"true", "false", "ops", "0", "1", "2", "3", "4"}, validator = "validateCommandLifeTime")
+    public static String commandLifeTime = "true";
+
+    private static boolean validateCommandLifeTime(String value)
+    {
+        return Arrays.asList("true", "false", "ops", "0", "1", "2", "3", "4").contains(value);
+    }
+
     // ===== API ===== //
 
     /**
