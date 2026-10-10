@@ -95,6 +95,7 @@ public class PluginChannelManager {
     }
 
     public void onPlayerDisconnected(EntityPlayerMP player) {
+        PacketSplitter.clear(player);
         for (Map.Entry<String, PluginChannelHandler> handler : channelHandlers.entrySet()) {
             handler.getValue().unregister(handler.getKey(), player);
         }
