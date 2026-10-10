@@ -1138,6 +1138,9 @@ public class CarpetSettings
     @Rule(desc = "Toggle whether fake players take fall damage", category = {CREATIVE, KISDE})
     public static boolean fakePlayerFallDamage = true;
 
+    @Rule(desc = "Creative players can place blocks inside entities.", category = {CREATIVE, KISDE})
+    public static boolean blockPlacementIgnoreEntity = false;
+
     @Rule(desc = "Creative players kill entities in one hit; sneaking also kills nearby entities.", category = {CREATIVE, KISDE})
     public static boolean creativeOneHitKill = false;
 

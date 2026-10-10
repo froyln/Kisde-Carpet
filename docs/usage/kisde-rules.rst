@@ -18,3 +18,8 @@ creativeOneHitKill
 ------------------
 
 Default: ``false``. Creative attacks kill the target immediately, including dragon parts. Sneaking also kills attackable entities within the target box expanded by 2 blocks horizontally and 0.5 vertically. Creative and spectator players are protected; nearby hanging entities and armor stands are excluded from the sweep.
+
+blockPlacementIgnoreEntity
+--------------------------
+
+Default: ``false``. Creative block placements bypass entity collision checks. Replaceability, block support and player editing permissions still apply. Survival placements retain vanilla collision checks.

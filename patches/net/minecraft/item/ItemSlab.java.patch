@@ -1,0 +1,8 @@
+--- ../src-base/minecraft/net/minecraft/item/ItemSlab.java
++++ ../src-work/minecraft/net/minecraft/item/ItemSlab.java
+@@ -63 +63 @@
+-                    if (axisalignedbb != Block.field_185506_k && p_180614_2_.func_72855_b(axisalignedbb.func_186670_a(p_180614_3_)) && p_180614_2_.func_180501_a(p_180614_3_, iblockstate1, 11))
++                    if (axisalignedbb != Block.field_185506_k && (carpet.CarpetSettings.blockPlacementIgnoreEntity && p_180614_1_.func_184812_l_() || p_180614_2_.func_72855_b(axisalignedbb.func_186670_a(p_180614_3_))) && p_180614_2_.func_180501_a(p_180614_3_, iblockstate1, 11))
+@@ -100 +100 @@
+-                if (axisalignedbb != Block.field_185506_k && p_180615_3_.func_72855_b(axisalignedbb.func_186670_a(p_180615_4_)) && p_180615_3_.func_180501_a(p_180615_4_, iblockstate1, 11))
++                if (axisalignedbb != Block.field_185506_k && (carpet.CarpetSettings.blockPlacementIgnoreEntity && p_180615_1_.func_184812_l_() || p_180615_3_.func_72855_b(axisalignedbb.func_186670_a(p_180615_4_))) && p_180615_3_.func_180501_a(p_180615_4_, iblockstate1, 11))
