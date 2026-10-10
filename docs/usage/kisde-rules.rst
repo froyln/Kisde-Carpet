@@ -13,3 +13,8 @@ fakePlayerFallDamage
 
 Default: ``true``. When ``false``, Carpet fake players ignore fall damage.
 Real player falls and fake-player damage from other sources are unchanged.
+
+creativeOneHitKill
+------------------
+
+Default: ``false``. Creative attacks kill the target immediately, including dragon parts. Sneaking also kills attackable entities within the target box expanded by 2 blocks horizontally and 0.5 vertically. Creative and spectator players are protected; nearby hanging entities and armor stands are excluded from the sweep.
