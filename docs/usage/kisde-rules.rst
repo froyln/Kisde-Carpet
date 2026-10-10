@@ -28,3 +28,8 @@ creativeOpenContainerForcibly
 -----------------------------
 
 Default: ``false``. Creative players can open chests, Ender Chests and shulker boxes despite physical lid obstructions. This includes both halves of a double chest. Locks and container permissions still apply; survival players and hopper inventory access keep their normal checks.
+
+playerSit
+---------
+
+Default: ``false``. Three start-sneak transitions, each less than 300 ms apart while on the ground, create an invisible seat. Release sneak between presses; another sneak dismounts. Seats disappear after dismount, death, disconnect, dimension change or disabling the rule. Seats are transient and never saved to the world; ordinary armor stands are unaffected.

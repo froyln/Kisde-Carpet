@@ -134,6 +134,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static void tick(MinecraftServer server)
     {
         TickSpeed.tick(server);
+        carpet.helpers.PlayerSitHelper.tick(server);
         if (CarpetSettings.redstoneMultimeterLegacy)
         {
             TickStartEventDispatcher.dispatchEvent(server.getTickCounter());
@@ -150,6 +151,7 @@ public class CarpetServer // static for now - easier to handle all around the co
 
     public static void playerDisconnected(EntityPlayerMP player)
     {
+        carpet.helpers.PlayerSitHelper.remove(player);
         pluginChannels.onPlayerDisconnected(player);
         LoggerRegistry.playerDisconnected(player);
     }

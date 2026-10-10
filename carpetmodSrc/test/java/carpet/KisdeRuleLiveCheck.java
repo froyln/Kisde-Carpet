@@ -16,7 +16,15 @@ public final class KisdeRuleLiveCheck {
         if (!result) throw new AssertionError(message);
     }
 
-    public static void run(MinecraftServer server) {
+    private static void input(EntityPlayerMPFake player, boolean sneak) throws Exception {
+        net.minecraft.network.play.client.CPacketInput packet = new net.minecraft.network.play.client.CPacketInput();
+        net.minecraft.network.PacketBuffer buffer = new net.minecraft.network.PacketBuffer(io.netty.buffer.Unpooled.buffer());
+        try { buffer.writeFloat(0); buffer.writeFloat(0); buffer.writeByte(sneak ? 2 : 0); packet.readPacketData(buffer); }
+        finally { buffer.release(); }
+        player.connection.processInput(packet);
+    }
+
+    public static void run(MinecraftServer server) throws Exception {
         check(Files.exists(Paths.get(".kisde-rule-check")), "Disposable fixture marker missing");
         WorldServer world = server.getWorld(0);
         EntityPlayerMPFake player = EntityPlayerMPFake.createFake("DropOff", server, 80, 6, 80, 0, 0, 0, 1);
@@ -77,6 +85,21 @@ public final class KisdeRuleLiveCheck {
             player.closeScreen(); world.setBlockToAir(containerPos.up()); world.setBlockToAir(containerPos);
         }
         CarpetSettings.creativeOpenContainerForcibly = false;
+        CarpetSettings.playerSit = true; player.onGround = true;
+        for (int i = 0; i < 3; i++) { carpet.helpers.PlayerSitHelper.setSneaking(player, false); carpet.helpers.PlayerSitHelper.setSneaking(player, true); }
+        check(player.isRiding() && !player.isSneaking(), "Triple sneak did not seat player");
+        net.minecraft.entity.Entity seat = player.getRidingEntity();
+        input(player, true);
+        check(!player.isSneaking() && player.isRiding(), "Held third sneak dismounted seat");
+        input(player, false);
+        input(player, true);
+        check(player.isSneaking(), "New sneak suppressed after release");
+        player.setSneaking(false);
+        EntityArmorStand unrelated = new EntityArmorStand(world); unrelated.addTag(carpet.helpers.PlayerSitHelper.SEAT_TAG);
+        check(unrelated.writeToNBTOptional(new net.minecraft.nbt.NBTTagCompound()), "Public tag suppressed unrelated save");
+        check(!seat.writeToNBTOptional(new net.minecraft.nbt.NBTTagCompound()), "Seat persisted");
+        CarpetSettings.playerSit = false; carpet.helpers.PlayerSitHelper.tick(server);
+        check(!player.isRiding() && seat.isDead, "Rule off did not clean seat");
         outside.setDead(); stand.setDead(); player.setSneaking(false); player.despawn();
         CarpetSettings.creativeOneHitKill = false;
         System.out.println("Kisde live checks passed");

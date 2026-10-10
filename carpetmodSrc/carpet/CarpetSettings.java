@@ -1138,6 +1138,9 @@ public class CarpetSettings
     @Rule(desc = "Toggle whether fake players take fall damage", category = {CREATIVE, KISDE})
     public static boolean fakePlayerFallDamage = true;
 
+    @Rule(desc = "Sit after three quick sneaks while on the ground.", category = {CREATIVE, KISDE})
+    public static boolean playerSit = false;
+
     @Rule(desc = "Creative players can open physically blocked containers.", category = {CREATIVE, KISDE})
     public static boolean creativeOpenContainerForcibly = false;
 
