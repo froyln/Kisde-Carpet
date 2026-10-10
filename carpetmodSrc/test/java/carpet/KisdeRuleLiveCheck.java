@@ -57,6 +57,26 @@ public final class KisdeRuleLiveCheck {
         check(item.onItemUse(player, world, pos, net.minecraft.util.EnumHand.MAIN_HAND, net.minecraft.util.EnumFacing.UP, .5F, .5F, .5F) == net.minecraft.util.EnumActionResult.SUCCESS, "Creative collision not skipped");
         check(world.getBlockState(pos).getBlock() == net.minecraft.init.Blocks.STONE, "Creative placement missing");
         world.setBlockToAir(pos); obstacle.setDead(); CarpetSettings.blockPlacementIgnoreEntity = false;
+        net.minecraft.block.Block[] containers = {net.minecraft.init.Blocks.CHEST, net.minecraft.init.Blocks.ENDER_CHEST, net.minecraft.init.Blocks.WHITE_SHULKER_BOX};
+        for (int i = 0; i < containers.length; i++) {
+            net.minecraft.util.math.BlockPos containerPos = new net.minecraft.util.math.BlockPos(88 + i * 2, 6, 80);
+            net.minecraft.block.Block block = containers[i];
+            world.setBlockState(containerPos, block.getDefaultState());
+            world.setBlockState(containerPos.up(), net.minecraft.init.Blocks.STONE.getDefaultState());
+            player.setPosition(containerPos.getX(), 6, 79);
+            player.closeScreen(); CarpetSettings.creativeOpenContainerForcibly = false;
+            block.onBlockActivated(world, containerPos, world.getBlockState(containerPos), player, net.minecraft.util.EnumHand.MAIN_HAND, net.minecraft.util.EnumFacing.UP, .5F, .5F, .5F);
+            check(player.openContainer == player.inventoryContainer, "Disabled blocked container opened " + i);
+            CarpetSettings.creativeOpenContainerForcibly = true;
+            player.interactionManager.setGameType(GameType.SURVIVAL);
+            block.onBlockActivated(world, containerPos, world.getBlockState(containerPos), player, net.minecraft.util.EnumHand.MAIN_HAND, net.minecraft.util.EnumFacing.UP, .5F, .5F, .5F);
+            check(player.openContainer == player.inventoryContainer, "Survival blocked container opened " + i);
+            player.interactionManager.setGameType(GameType.CREATIVE);
+            block.onBlockActivated(world, containerPos, world.getBlockState(containerPos), player, net.minecraft.util.EnumHand.MAIN_HAND, net.minecraft.util.EnumFacing.UP, .5F, .5F, .5F);
+            check(player.openContainer != player.inventoryContainer, "Creative blocked container failed " + i);
+            player.closeScreen(); world.setBlockToAir(containerPos.up()); world.setBlockToAir(containerPos);
+        }
+        CarpetSettings.creativeOpenContainerForcibly = false;
         outside.setDead(); stand.setDead(); player.setSneaking(false); player.despawn();
         CarpetSettings.creativeOneHitKill = false;
         System.out.println("Kisde live checks passed");

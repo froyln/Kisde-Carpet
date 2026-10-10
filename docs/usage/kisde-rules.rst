@@ -23,3 +23,8 @@ blockPlacementIgnoreEntity
 --------------------------
 
 Default: ``false``. Creative block placements bypass entity collision checks. Replaceability, block support and player editing permissions still apply. Survival placements retain vanilla collision checks.
+
+creativeOpenContainerForcibly
+-----------------------------
+
+Default: ``false``. Creative players can open chests, Ender Chests and shulker boxes despite physical lid obstructions. This includes both halves of a double chest. Locks and container permissions still apply; survival players and hopper inventory access keep their normal checks.

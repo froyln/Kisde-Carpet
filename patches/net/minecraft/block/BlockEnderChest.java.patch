@@ -1,0 +1,5 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockEnderChest.java
++++ ../src-work/minecraft/net/minecraft/block/BlockEnderChest.java
+@@ -94 +94 @@
+-            if (p_180639_1_.func_180495_p(p_180639_2_.func_177984_a()).func_185915_l())
++            if (!(carpet.CarpetSettings.creativeOpenContainerForcibly && p_180639_4_.func_184812_l_()) && p_180639_1_.func_180495_p(p_180639_2_.func_177984_a()).func_185915_l())
