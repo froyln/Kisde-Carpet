@@ -69,7 +69,7 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
                 if (lastOperation != null && operation <= lastOperation) return;
                 int applied = abort(player.getUniqueID(), operation);
                 sendAck(player, operation, "Rejected", applied, message);
-            } else player.sendMessage(new TextComponentString("[Bullet Carpet] " + message));
+            } else player.sendMessage(new TextComponentString("[Kisde-Carpet] " + message));
         } finally {
             if (data != null) data.release();
         }

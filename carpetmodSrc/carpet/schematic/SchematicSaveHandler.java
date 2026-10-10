@@ -58,7 +58,7 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
         } catch (Exception e) {
             String message = e.getMessage() == null ? "Capture failed" : e.getMessage();
             if (id != null) sendError(player, id, message);
-            else player.sendMessage(new TextComponentString("[Bullet Carpet] " + message));
+            else player.sendMessage(new TextComponentString("[Kisde-Carpet] " + message));
         } finally {
             if (requestData != null) requestData.release();
         }
@@ -241,7 +241,7 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
             packet.writeCompoundTag(error);
             PacketSplitter.send(player, CHANNEL, packet);
         } catch (RuntimeException e) {
-            player.sendMessage(new TextComponentString("[Bullet Carpet] " + message));
+            player.sendMessage(new TextComponentString("[Kisde-Carpet] " + message));
         }
     }
 

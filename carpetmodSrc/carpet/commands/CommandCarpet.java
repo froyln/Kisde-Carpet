@@ -97,7 +97,7 @@ public class CommandCarpet extends CommandCarpetBase
             if (args.length == 0)
             {
                 list_settings(sender, "Current CarpetMod Settings", CarpetSettings.findNonDefault());
-                notifyCommandListener(sender, this, "Carpet Mod version: "+CarpetSettings.carpetVersion);
+                notifyCommandListener(sender, this, "Kisde-Carpet version: "+CarpetSettings.carpetVersion);
                 if (sender instanceof EntityPlayer)
                 {
                     List<Object> tags = new ArrayList<>();
@@ -118,13 +118,13 @@ public class CommandCarpet extends CommandCarpetBase
             if (args.length == 1 && "list".equalsIgnoreCase(args[0]))
             {
                 list_settings(sender, "All CarpetMod Settings", CarpetSettings.findAll(null));
-                notifyCommandListener(sender, this, "Carpet Mod version: "+CarpetSettings.carpetVersion);
+                notifyCommandListener(sender, this, "Kisde-Carpet version: "+CarpetSettings.carpetVersion);
                 return;
             }
             if ("defaults".equalsIgnoreCase(args[0])) // empty tag
             {
                 list_settings(sender, "Current CarpetMod Startup Settings from carpet.conf", CarpetSettings.findStartupOverrides(server));
-                notifyCommandListener(sender, this, "Carpet Mod version: "+CarpetSettings.carpetVersion);
+                notifyCommandListener(sender, this, "Kisde-Carpet version: "+CarpetSettings.carpetVersion);
                 return;
             }
             if ("use".equalsIgnoreCase(args[0])) // empty tag

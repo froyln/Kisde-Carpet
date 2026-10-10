@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.server.MinecraftServer;
 
 import static carpet.CarpetSettings.RuleCategory.*;
-import static carpet.CarpetSettings.RuleCategory.BULLET;
+import static carpet.CarpetSettings.RuleCategory.KISDE;
 
 public class CarpetSettings
 {
@@ -1082,23 +1082,23 @@ public class CarpetSettings
     @Rule(desc = "Disables random entity AI wandering", category = CREATIVE)
     public static boolean disableWandering;
 
-    // ===== Bullet ===== //
-    @Rule(desc = "Tab info updates every gametick", category = {EXPERIMENTAL, BULLET})
+    // ===== Kisde-Carpet ===== //
+    @Rule(desc = "Tab info updates every gametick", category = {EXPERIMENTAL, KISDE})
     public static boolean updateTabEveryGametick;
 
-    @Rule(desc = "Always sets player gamemode into survival when using /s command", category = {EXPERIMENTAL, BULLET})
+    @Rule(desc = "Always sets player gamemode into survival when using /s command", category = {EXPERIMENTAL, KISDE})
     public static boolean alwaysSetPlayerIntoSurvival;
 
-    @Rule(desc = "Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs)", category = {EXPERIMENTAL, COMMANDS, BULLET})
+    @Rule(desc = "Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs)", category = {EXPERIMENTAL, COMMANDS, KISDE})
     public static boolean commandEnderchest;
 
-    @Rule(desc = "Enables /view (inv|echest) <playername> to view objective and manipulate enderchest/invenory", category = {EXPERIMENTAL, COMMANDS, BULLET})
+    @Rule(desc = "Enables /view (inv|echest) <playername> to view objective and manipulate enderchest/invenory", category = {EXPERIMENTAL, COMMANDS, KISDE})
     public static boolean commandInventory;
 
-    @Rule(desc = "Enables /sb to display player's stats as scoreboard with a total entry", category = {EXPERIMENTAL, SURVIVAL, BULLET})
+    @Rule(desc = "Enables /sb to display player's stats as scoreboard with a total entry", category = {EXPERIMENTAL, SURVIVAL, KISDE})
     public static boolean scoreboardStats;
 
-    @Rule(desc = "Fixes block states in F3 debug mode not updating for hoppers, droppers and dispensers.", category = {FIX, EXPERIMENTAL, BULLET})
+    @Rule(desc = "Fixes block states in F3 debug mode not updating for hoppers, droppers and dispensers.", category = {FIX, EXPERIMENTAL, KISDE})
     public static boolean blockStateSyncing;
 
     @Rule(
@@ -1110,27 +1110,27 @@ public class CarpetSettings
                     "Blaze aggro sensitivity",
                     "Mobs spawned follow range"
             },
-            category = {CREATIVE, EXPERIMENTAL, BULLET}
+            category = {CREATIVE, EXPERIMENTAL, KISDE}
     )
     public static boolean extremeBehaviours;
 
     @Rule(
             desc = "Prometheus integration",
             extra = "Integration with prometheus java library for metrics collection and monitoring. Default port is 1234",
-            category = {EXPERIMENTAL, BULLET,}
+            category = {EXPERIMENTAL, KISDE,}
     )
     public static boolean prometheusIntegration;
 
-    @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
+    @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicSave;
 
-    @Rule(desc = "Allows OPs in creative mode to paste blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
+    @Rule(desc = "Allows OPs in creative mode to paste blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicPaste;
 
-    @Rule(desc = "Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste", category = {CREATIVE, BULLET})
+    @Rule(desc = "Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste", category = {CREATIVE, KISDE})
     public static boolean schematicPasteNoUpdates;
 
-    @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, BULLET})
+    @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, KISDE})
     public static boolean pcaProtocol;
     // ===== API ===== //
 
@@ -1204,7 +1204,7 @@ public class CarpetSettings
     }
 
     public static enum RuleCategory {
-        TNT, FIX, SURVIVAL, CREATIVE, EXPERIMENTAL, OPTIMIZATIONS, FEATURE, COMMANDS, BULLET
+        TNT, FIX, SURVIVAL, CREATIVE, EXPERIMENTAL, OPTIMIZATIONS, FEATURE, COMMANDS, KISDE
     }
 
     private static boolean validatePositive(int value) {
