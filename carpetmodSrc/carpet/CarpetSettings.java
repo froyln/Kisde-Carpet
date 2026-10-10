@@ -1127,6 +1127,8 @@ public class CarpetSettings
     @Rule(desc = "Allows OPs in creative mode to paste blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
     public static boolean schematicPaste;
 
+    @Rule(desc = "Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste", category = {CREATIVE, BULLET})
+    public static boolean schematicPasteNoUpdates;
 
     @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, BULLET})
     public static boolean pcaProtocol;

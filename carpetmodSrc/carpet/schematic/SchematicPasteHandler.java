@@ -142,20 +142,29 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
         }
 
         IBlockState oldState = world.getBlockState(pos);
-        int flags = 2;
+        boolean noUpdates = CarpetSettings.schematicPasteNoUpdates;
+        int flags = noUpdates ? 2 | 16 | 128 : 2;
         if (oldState != state) world.setBlockState(pos, state, flags);
         if (tileData != null) {
             NBTTagCompound atTarget = tileData.copy();
             atTarget.setInteger("x", pos.getX());
             atTarget.setInteger("y", pos.getY());
             atTarget.setInteger("z", pos.getZ());
-            TileEntity placed = world.getTileEntity(pos);
-            if (placed == null || placed.getClass() != replacement.getClass()) {
+            TileEntity placed;
+            if (noUpdates) {
+                world.removeTileEntity(pos);
                 placed = replacement;
                 world.setTileEntity(pos, placed);
+                world.markChunkDirty(pos, placed);
+            } else {
+                placed = world.getTileEntity(pos);
+                if (placed == null || placed.getClass() != replacement.getClass()) {
+                    placed = replacement;
+                    world.setTileEntity(pos, placed);
+                }
+                placed.readFromNBT(atTarget);
+                placed.markDirty();
             }
-            placed.readFromNBT(atTarget);
-            placed.markDirty();
             world.notifyBlockUpdate(pos, state, state, flags);
         }
         quota.recordAccepted(tick);
