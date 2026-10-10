@@ -1120,6 +1120,12 @@ public class CarpetSettings
             category = {EXPERIMENTAL, BULLET,}
     )
     public static boolean prometheusIntegration;
+
+    @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, BULLET})
+    public static boolean schematicSave;
+
+
+
     // ===== API ===== //
 
     /**
