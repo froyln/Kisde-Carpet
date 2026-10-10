@@ -182,12 +182,13 @@ public final class KisdeRuleLiveCheck {
         CarpetSettings.hopperCounters = CarpetSettings.HopperCounters.wool;
         world.setBlockState(hopperPos.east(), net.minecraft.init.Blocks.WOOL.getDefaultState());
         for (int i = 0; i < output.getSizeInventory(); i++) output.setInventorySlotContents(i, net.minecraft.item.ItemStack.EMPTY);
+        for (int i = 0; i < source.getSizeInventory(); i++) source.setInventorySlotContents(i, net.minecraft.item.ItemStack.EMPTY);
         hopper.setInventorySlotContents(0, new net.minecraft.item.ItemStack(net.minecraft.init.Items.DIAMOND, 1)); hopper.wakeUp();
         carpet.helpers.SupplierCounter.getCounter("red").reset(server);
         carpet.helpers.HopperCounter.getCounter("white").reset(server);
         CarpetSettings.hopperCountersUnlimitedSpeed = true;
         hopper.wakeUp(); carpetmodResetCooldown(hopper); hopper.update();
-        check(hopper.getStackInSlot(0).getCount() == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() > 0 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == carpet.helpers.HopperCounter.getCounter("white").getTotalItems() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() <= (long) Short.MAX_VALUE * 320, "Combined counter/supplier guard failed");
+        check(hopper.getStackInSlot(0).getCount() == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() > 0 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == carpet.helpers.HopperCounter.getCounter("white").getTotalItems() && carpet.helpers.HopperCounter.getCounter("white").getTotalItems() <= (long) Short.MAX_VALUE * 320, "Combined counter/supplier guard failed: source=" + hopper.getStackInSlot(0) + ", supplier=" + carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() + ", counter=" + carpet.helpers.HopperCounter.getCounter("white").getTotalItems());
         CarpetSettings.hopperCountersUnlimitedSpeed = false;
         check(server.getCommandManager().executeCommand(player, "scounter red reset") == 1 && carpet.helpers.SupplierCounter.getCounter("red").getTotalItems() == 0, "scounter reset failed");
         CarpetSettings.hopperNoItemCost = false;
