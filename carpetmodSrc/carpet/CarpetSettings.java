@@ -1082,23 +1082,23 @@ public class CarpetSettings
     @Rule(desc = "Disables random entity AI wandering", category = CREATIVE)
     public static boolean disableWandering;
 
-    // ===== Kisde-Carpet ===== //
-    @Rule(desc = "Tab info updates every gametick", category = {EXPERIMENTAL, KISDE})
+    // ===== Bullet Carpet ===== //
+    @Rule(desc = "Tab info updates every gametick", category = {EXPERIMENTAL, BULLET})
     public static boolean updateTabEveryGametick;
 
-    @Rule(desc = "Always sets player gamemode into survival when using /s command", category = {EXPERIMENTAL, KISDE})
+    @Rule(desc = "Always sets player gamemode into survival when using /s command", category = {EXPERIMENTAL, BULLET})
     public static boolean alwaysSetPlayerIntoSurvival;
 
-    @Rule(desc = "Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs)", category = {EXPERIMENTAL, COMMANDS, KISDE})
+    @Rule(desc = "Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs)", category = {EXPERIMENTAL, COMMANDS, BULLET})
     public static boolean commandEnderchest;
 
-    @Rule(desc = "Enables /view (inv|echest) <playername> to view objective and manipulate enderchest/invenory", category = {EXPERIMENTAL, COMMANDS, KISDE})
+    @Rule(desc = "Enables /view (inv|echest) <playername> to view objective and manipulate enderchest/invenory", category = {EXPERIMENTAL, COMMANDS, BULLET})
     public static boolean commandInventory;
 
-    @Rule(desc = "Enables /sb to display player's stats as scoreboard with a total entry", category = {EXPERIMENTAL, SURVIVAL, KISDE})
+    @Rule(desc = "Enables /sb to display player's stats as scoreboard with a total entry", category = {EXPERIMENTAL, SURVIVAL, BULLET})
     public static boolean scoreboardStats;
 
-    @Rule(desc = "Fixes block states in F3 debug mode not updating for hoppers, droppers and dispensers.", category = {FIX, EXPERIMENTAL, KISDE})
+    @Rule(desc = "Fixes block states in F3 debug mode not updating for hoppers, droppers and dispensers.", category = {FIX, EXPERIMENTAL, BULLET})
     public static boolean blockStateSyncing;
 
     @Rule(
@@ -1110,17 +1110,18 @@ public class CarpetSettings
                     "Blaze aggro sensitivity",
                     "Mobs spawned follow range"
             },
-            category = {CREATIVE, EXPERIMENTAL, KISDE}
+            category = {CREATIVE, EXPERIMENTAL, BULLET}
     )
     public static boolean extremeBehaviours;
 
     @Rule(
             desc = "Prometheus integration",
             extra = "Integration with prometheus java library for metrics collection and monitoring. Default port is 1234",
-            category = {EXPERIMENTAL, KISDE,}
+            category = {EXPERIMENTAL, BULLET,}
     )
     public static boolean prometheusIntegration;
 
+    // ===== Kisde-Carpet ===== //
     @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicSave;
 
@@ -1166,6 +1167,42 @@ public class CarpetSettings
     {
         return Arrays.asList("true", "false", "ops", "0", "1", "2", "3", "4").contains(value);
     }
+
+    @Rule(desc = "Enables OP cluster calculation, loading and creative loader construction", category = {COMMANDS, CREATIVE, VASTECH})
+    public static boolean commandCluster = false;
+
+    @Rule(desc = "Enables village and village siege ticking", category = {CREATIVE, VASTECH})
+    public static boolean tickVillages = true;
+
+    @Rule(desc = "Freezes queued block events during tick freeze", category = {CREATIVE, VASTECH})
+    public static boolean freezeBlockEventsOnTickFreeze = true;
+
+    @Rule(desc = "Skips light propagation checks for technical testing", category = {CREATIVE, VASTECH})
+    public static boolean disableLightUpdates = false;
+
+    @Rule(desc = "Prevents existing TNT from priming on redstone neighbor updates", category = {CREATIVE, TNT, VASTECH})
+    public static boolean TNTdoesNotPrime = false;
+
+    @Rule(desc = "Preserves the powered metadata bit when placing observers with commands", category = {FIX, CREATIVE, VASTECH})
+    public static boolean setBlockCanPlaceLitObservers = false;
+
+    @Rule(desc = "Logs update suppression tasks as one line instead of a stack trace", category = {FIX, VASTECH})
+    public static boolean disableUpdateSuppressionLogging = false;
+
+    @Rule(desc = "Suppresses block neighbor, observer and comparator notifications", category = {EXPERIMENTAL, CREATIVE, VASTECH})
+    public static boolean totallyNoBlockUpdates = false;
+
+    @Rule(desc = "Suppresses block added and break callbacks during block replacement", category = {EXPERIMENTAL, CREATIVE, VASTECH})
+    public static boolean disableBlockSelfChecks = false;
+
+    @Rule(desc = "Converts class cast errors in suppression guarded block updates into suppression exceptions", category = {FIX, VASTECH})
+    public static boolean castSuppressorCrashFix = false;
+
+    @Rule(desc = "Signs attached to diamond blocks output the first line as a comparator signal", category = {CREATIVE, VASTECH})
+    public static boolean signComparatorOutput = false;
+
+    @Rule(desc = "Standing signs on emerald blocks display received redstone power", category = {CREATIVE, VASTECH})
+    public static boolean signComparatorDisplay = false;
 
     // ===== API ===== //
 
@@ -1239,7 +1276,7 @@ public class CarpetSettings
     }
 
     public static enum RuleCategory {
-        TNT, FIX, SURVIVAL, CREATIVE, EXPERIMENTAL, OPTIMIZATIONS, FEATURE, COMMANDS, KISDE
+        TNT, FIX, SURVIVAL, CREATIVE, EXPERIMENTAL, OPTIMIZATIONS, FEATURE, COMMANDS, BULLET, KISDE, VASTECH
     }
 
     private static boolean validatePositive(int value) {

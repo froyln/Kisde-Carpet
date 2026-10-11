@@ -56,10 +56,11 @@
      }
  
      public int func_176201_c(IBlockState p_176201_1_)
-@@ -145,4 +167,16 @@
-     {
-         return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));
-     }
+@@ -146,1 +168,2 @@
+-        return this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));
++        IBlockState state = this.func_176223_P().func_177226_a(field_176387_N, EnumFacing.func_82600_a(p_176203_1_ & 7));
++        return CarpetSettings.setBlockCanPlaceLitObservers ? state.func_177226_a(field_190963_a, (p_176203_1_ & 8) != 0) : state;
+@@ -147,0 +171,12 @@
 +
 +    // RSMM
 +    @Override
@@ -72,4 +73,3 @@
 +    public int getPowerLevel(World world, BlockPos pos, IBlockState state) {
 +        return state.func_177229_b(field_190963_a) ? MAX_POWER : MIN_POWER;
 +    }
- }

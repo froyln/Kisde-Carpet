@@ -47,3 +47,5 @@ Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preservin
 Run `./gradlew setupCarpetmod` to generate the source tree, then make source changes and run `./gradlew createRelease`. This task creates an obfuscated patch archive under `build/distributions/`. The generated `src/` tree can be overwritten by setup tasks; preserve local edits before syncing.
 
 The separate companion client project targets LiteLoader and Java 8. Its build is `./gradlew build --offline` when pinned dependencies are already cached.
+
+See [Vastech technical tools](docs/usage/vastech-tools.rst) for source categories, cluster commands and imported testing rules.

@@ -1,0 +1,27 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockStandingSign.java
++++ ../src-work/minecraft/net/minecraft/block/BlockStandingSign.java
+@@ -2,0 +3,7 @@
++import carpet.CarpetSettings;
++import net.minecraft.init.Blocks;
++import net.minecraft.tileentity.TileEntity;
++import net.minecraft.tileentity.TileEntitySign;
++import net.minecraft.util.EnumFacing;
++import net.minecraft.util.text.TextComponentString;
++
+@@ -26,0 +34,16 @@
++        } else if (!p_189540_2_.field_72995_K && CarpetSettings.signComparatorDisplay
++                && p_189540_2_.func_180495_p(p_189540_3_.func_177977_b()).func_177230_c() == Blocks.field_150475_bE) {
++            TileEntity tile = p_189540_2_.func_175625_s(p_189540_3_);
++            if (tile instanceof TileEntitySign) {
++                TileEntitySign sign = (TileEntitySign) tile;
++                int signal = 0;
++                for (EnumFacing facing : EnumFacing.values())
++                    signal = Math.max(signal, p_189540_2_.func_175651_c(p_189540_3_.func_177972_a(facing), facing));
++                String text = Integer.toString(signal);
++                if (!text.equals(sign.field_145915_a[0].func_150260_c())) {
++                    sign.field_145915_a[0] = new TextComponentString(text);
++                    sign.field_145915_a[1] = new TextComponentString("0x" + Integer.toHexString(signal));
++                    sign.func_70296_d();
++                    p_189540_2_.func_184138_a(p_189540_3_, p_189540_1_, p_189540_1_, 3);
++                }
++            }

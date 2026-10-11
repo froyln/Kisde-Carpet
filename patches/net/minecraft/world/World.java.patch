@@ -120,10 +120,9 @@
                  {
                      this.func_190522_c(p_180501_1_, block);
                  }
-@@ -430,8 +460,36 @@
-         this.func_190529_b(p_190522_1_.func_177968_d(), p_190522_2_, p_190522_1_);
-     }
- 
+@@ -383,0 +414,1 @@
++        if (CarpetSettings.totallyNoBlockUpdates) return;
+@@ -432,0 +464,11 @@
 +    /* carpet mod */
 +    public void updateObservingBlocksAt_other(BlockPos pos, Block blockType)
 +    {
@@ -135,8 +134,8 @@
 +        this.func_190529_b(pos.func_177968_d(), blockType, pos);
 +    }
 +
-     public void func_175685_c(BlockPos p_175685_1_, Block p_175685_2_, boolean p_175685_3_)
-     {
+@@ -434,0 +477,18 @@
++        if (CarpetSettings.totallyNoBlockUpdates) return;
 +        /* carpet mod */
 +        if (CarpetSettings.extendedConnectivity)
 +        {
@@ -154,10 +153,7 @@
 +            }
 +        }
 +        /* end */
-         this.func_190524_a(p_175685_1_.func_177976_e(), p_175685_2_, p_175685_1_);
-         this.func_190524_a(p_175685_1_.func_177974_f(), p_175685_2_, p_175685_1_);
-         this.func_190524_a(p_175685_1_.func_177977_b(), p_175685_2_, p_175685_1_);
-@@ -447,6 +505,44 @@
+@@ -447,6 +507,44 @@
  
      public void func_175695_a(BlockPos p_175695_1_, Block p_175695_2_, EnumFacing p_175695_3_)
      {
@@ -202,7 +198,7 @@
          if (p_175695_3_ != EnumFacing.WEST)
          {
              this.func_190524_a(p_175695_1_.func_177976_e(), p_175695_2_, p_175695_1_);
-@@ -480,12 +576,18 @@
+@@ -480,12 +578,18 @@
  
      public void func_190524_a(BlockPos p_190524_1_, final Block p_190524_2_, BlockPos p_190524_3_)
      {
@@ -221,7 +217,7 @@
                  iblockstate.func_189546_a(this, p_190524_1_, p_190524_2_, p_190524_3_);
              }
              catch (Throwable throwable)
-@@ -509,11 +611,21 @@
+@@ -509,11 +613,21 @@
                  CrashReportCategory.func_175750_a(crashreportcategory, p_190524_1_, iblockstate);
                  throw new ReportedException(crashreport);
              }
@@ -243,7 +239,7 @@
          if (!this.field_72995_K)
          {
              IBlockState iblockstate = this.func_180495_p(p_190529_1_);
-@@ -522,6 +634,7 @@
+@@ -522,6 +636,7 @@
              {
                  try
                  {
@@ -251,7 +247,7 @@
                      ((BlockObserver)iblockstate.func_177230_c()).func_190962_b(iblockstate, this, p_190529_1_, p_190529_2_, p_190529_3_);
                  }
                  catch (Throwable throwable)
-@@ -546,6 +659,11 @@
+@@ -546,6 +661,11 @@
                      throw new ReportedException(crashreport);
                  }
              }
@@ -263,7 +259,7 @@
          }
      }
  
-@@ -1076,6 +1194,18 @@
+@@ -1076,6 +1196,18 @@
  
      public void func_72900_e(Entity p_72900_1_)
      {
@@ -282,7 +278,7 @@
          if (p_72900_1_.func_184207_aI())
          {
              p_72900_1_.func_184226_ay();
-@@ -1098,6 +1228,18 @@
+@@ -1098,6 +1230,18 @@
  
      public void func_72973_f(Entity p_72973_1_)
      {
@@ -301,7 +297,7 @@
          p_72973_1_.func_184174_b(false);
          p_72973_1_.func_70106_y();
  
-@@ -1126,6 +1268,9 @@
+@@ -1126,6 +1270,9 @@
  
      private boolean func_191504_a(@Nullable Entity p_191504_1_, AxisAlignedBB p_191504_2_, boolean p_191504_3_, @Nullable List<AxisAlignedBB> p_191504_4_)
      {
@@ -311,7 +307,7 @@
          int i = MathHelper.func_76128_c(p_191504_2_.field_72340_a) - 1;
          int j = MathHelper.func_76143_f(p_191504_2_.field_72336_d) + 1;
          int k = MathHelper.func_76128_c(p_191504_2_.field_72338_b) - 1;
-@@ -1338,7 +1483,9 @@
+@@ -1338,7 +1485,9 @@
      {
          this.field_72984_F.func_76320_a("entities");
          this.field_72984_F.func_76320_a("global");
@@ -321,7 +317,7 @@
          for (int i = 0; i < this.field_73007_j.size(); ++i)
          {
              Entity entity = this.field_73007_j.get(i);
-@@ -1346,6 +1493,7 @@
+@@ -1346,6 +1495,7 @@
              try
              {
                  ++entity.field_70173_aa;
@@ -329,7 +325,7 @@
                  entity.func_70071_h_();
              }
              catch (Throwable throwable2)
-@@ -1370,6 +1518,9 @@
+@@ -1370,6 +1520,9 @@
                  this.field_73007_j.remove(i--);
              }
          }
@@ -339,7 +335,7 @@
  
          this.field_72984_F.func_76318_c("remove");
          this.field_72996_f.removeAll(this.field_72997_g);
-@@ -1393,11 +1544,14 @@
+@@ -1393,11 +1546,14 @@
  
          this.field_72997_g.clear();
          this.func_184147_l();
@@ -354,7 +350,7 @@
              Entity entity3 = entity2.func_184187_bx();
  
              if (entity3 != null)
-@@ -1416,7 +1570,10 @@
+@@ -1416,7 +1572,10 @@
              {
                  try
                  {
@@ -366,7 +362,7 @@
                  }
                  catch (Throwable throwable1)
                  {
-@@ -1437,31 +1594,51 @@
+@@ -1437,31 +1596,51 @@
  
                  if (entity2.field_70175_ag && this.func_175680_a(l1, i2, true))
                  {
@@ -420,7 +416,7 @@
  
              if (!tileentity.func_145837_r() && tileentity.func_145830_o())
              {
-@@ -1471,12 +1648,15 @@
+@@ -1471,12 +1650,15 @@
                  {
                      try
                      {
@@ -442,7 +438,7 @@
                      }
                      catch (Throwable throwable)
                      {
-@@ -1490,16 +1670,26 @@
+@@ -1490,16 +1672,26 @@
  
              if (tileentity.func_145837_r())
              {
@@ -469,7 +465,7 @@
          this.field_147481_N = false;
          this.field_72984_F.func_76318_c("pendingBlockEntities");
  
-@@ -1528,9 +1718,12 @@
+@@ -1528,9 +1720,12 @@
  
              this.field_147484_a.clear();
          }
@@ -482,7 +478,7 @@
      }
  
      protected void func_184147_l()
-@@ -1602,11 +1795,16 @@
+@@ -1602,11 +1797,16 @@
  
              if (p_72866_1_.func_184218_aH())
              {
@@ -501,7 +497,7 @@
              }
          }
  
-@@ -1648,7 +1846,8 @@
+@@ -1648,7 +1848,8 @@
                  this.func_72964_e(p_72866_1_.field_70176_ah, p_72866_1_.field_70164_aj).func_76608_a(p_72866_1_, p_72866_1_.field_70162_ai);
              }
  
@@ -511,7 +507,7 @@
              {
                  p_72866_1_.field_70175_ag = false;
              }
-@@ -1670,7 +1869,11 @@
+@@ -1670,7 +1871,11 @@
                  }
                  else
                  {
@@ -524,7 +520,7 @@
                  }
              }
          }
-@@ -1689,7 +1892,7 @@
+@@ -1689,7 +1894,7 @@
          {
              Entity entity4 = list.get(j2);
  
@@ -533,7 +529,7 @@
              {
                  return false;
              }
-@@ -2153,6 +2356,16 @@
+@@ -2153,6 +2358,16 @@
                          {
                              this.field_72986_A.func_76090_f(this.field_73012_v.nextInt(168000) + 12000);
                          }
@@ -550,7 +546,7 @@
                      }
                      else
                      {
-@@ -2177,6 +2390,16 @@
+@@ -2177,6 +2392,16 @@
                          {
                              this.field_72986_A.func_76080_g(this.field_73012_v.nextInt(168000) + 12000);
                          }
@@ -567,19 +563,16 @@
                      }
                      else
                      {
-@@ -2387,6 +2610,11 @@
- 
-     public boolean func_180500_c(EnumSkyBlock p_180500_1_, BlockPos p_180500_2_)
-     {
+@@ -2313,0 +2539,1 @@
++        if (CarpetSettings.disableLightUpdates) return false;
+@@ -2389,0 +2616,6 @@
++        if (CarpetSettings.disableLightUpdates) return false;
 +        // NewLight PHIPRO-CARPET
 +        if (CarpetSettings.newLight){
 +            this.lightingEngine.scheduleLightUpdate(p_180500_1_, p_180500_2_);
 +            return true;
 +        }
-         if (!this.func_175648_a(p_180500_2_, 17, false))
-         {
-             return false;
-@@ -2699,7 +2927,8 @@
+@@ -2699,7 +2931,8 @@
          IBlockState iblockstate1 = this.func_180495_p(p_190527_2_);
          AxisAlignedBB axisalignedbb = p_190527_3_ ? null : p_190527_1_.func_176223_P().func_185890_d(this, p_190527_2_);
  
@@ -589,15 +582,13 @@
          {
              return false;
          }
-@@ -3267,30 +3496,43 @@
- 
-     public void func_175666_e(BlockPos p_175666_1_, Block p_175666_2_)
-     {
+@@ -3270,1 +3503,4 @@
 -        for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
++        if (CarpetSettings.totallyNoBlockUpdates) return;
 +        if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
 +            carpet.carpetclient.CarpetClientChunkLogger.setReason("Comperator updates for inventory changes");
 +        if (CarpetSettings.optimizedTileEntities)
-         {
+@@ -3272,3 +3508,6 @@
 -            BlockPos blockpos1 = p_175666_1_.func_177972_a(enumfacing);
 -
 -            if (this.func_175667_e(blockpos1))
@@ -607,10 +598,10 @@
 +        else
 +        {
 +            for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
-             {
+@@ -3276,1 +3515,1 @@
 -                IBlockState iblockstate1 = this.func_180495_p(blockpos1);
 +                BlockPos blockpos1 = p_175666_1_.func_177972_a(enumfacing);
- 
+@@ -3278,8 +3517,2 @@
 -                if (Blocks.field_150441_bU.func_185547_C(iblockstate1))
 -                {
 -                    iblockstate1.func_189546_a(this, blockpos1, p_175666_2_, p_175666_1_);
@@ -621,12 +612,12 @@
 -                    iblockstate1 = this.func_180495_p(blockpos1);
 +                if (this.func_175667_e(blockpos1)) {
 +                    IBlockState iblockstate1 = this.func_180495_p(blockpos1);
- 
+@@ -3287,2 +3520,2 @@
 -                    if (Blocks.field_150441_bU.func_185547_C(iblockstate1))
 -                    {
 +                    if (Blocks.field_150441_bU.func_185547_C(iblockstate1)) {
 +                        WorldHelper.onComparatorUpdate(this, blockpos1); // RSMM
-                         iblockstate1.func_189546_a(this, blockpos1, p_175666_2_, p_175666_1_);
+@@ -3289,0 +3523,8 @@
 +                    } else if (iblockstate1.func_185915_l()) {
 +                        blockpos1 = blockpos1.func_177972_a(enumfacing);
 +                        iblockstate1 = this.func_180495_p(blockpos1);
@@ -635,23 +626,14 @@
 +                            WorldHelper.onComparatorUpdate(this, blockpos1); // RSMM
 +                            iblockstate1.func_189546_a(this, blockpos1, p_175666_2_, p_175666_1_);
 +                        }
-                     }
-                 }
-             }
-         }
+@@ -3293,0 +3535,6 @@
 +        carpet.carpetclient.CarpetClientChunkLogger.resetReason();
 +        // ----- RSMM Start ----- //
 +        if (CarpetSettings.redstoneMultimeterLegacy) {
 +            StateChangeEventDispatcher.dispatchEvent(this, p_175666_1_);
 +        }
 +        // ----- RSMM End ----- //
-     }
- 
-     public DifficultyInstance func_175649_E(BlockPos p_175649_1_)
-@@ -3361,4 +3603,120 @@
-     {
-         return null;
-     }
+@@ -3363,0 +3611,120 @@
 +
 +    private static final carpet.utils.JavaVersionUtil.FieldAccessor<AtomicLong> SEED_ACCESSOR =
 +        carpet.utils.JavaVersionUtil.objectFieldAccessor(Random.class, "seed", AtomicLong.class);
@@ -681,6 +663,8 @@
 +            }
 +            catch (Throwable throwable)
 +            {
++                if (CarpetSettings.castSuppressorCrashFix && throwable instanceof ClassCastException)
++                    throw new ThrowableSuppression("Cast suppression");
 +                CrashReport crashreport = CrashReport.func_85055_a(throwable, "Exception while updating neighbours");
 +                CrashReportCategory crashreportcategory = crashreport.func_85058_a("Block being updated");
 +                crashreportcategory.func_189529_a("Source block type", new ICrashReportDetail<String>()
@@ -728,6 +712,8 @@
 +                }
 +                catch (Throwable throwable)
 +                {
++                    if (CarpetSettings.castSuppressorCrashFix && throwable instanceof ClassCastException)
++                        throw new ThrowableSuppression("Cast suppression");
 +                    CrashReport crashreport = CrashReport.func_85055_a(throwable, "Exception while updating neighbours");
 +                    CrashReportCategory crashreportcategory = crashreport.func_85058_a("Block being updated");
 +                    crashreportcategory.func_189529_a("Source block type", new ICrashReportDetail<String>()
@@ -768,4 +754,3 @@
 +
 +        return true;
 +    }
- }
