@@ -51,7 +51,6 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
             if (request == null || requestData.isReadable()) throw new IllegalArgumentException("Malformed save request");
             id = readUuid(request);
             if (id == null) throw new IllegalArgumentException("Missing request id");
-            if (!CarpetSettings.schematicSave) throw new IllegalArgumentException("Server rule schematicSave is disabled");
             if (!player.canUseCommand(2, "") || !player.isCreative()) throw new IllegalArgumentException("Capture requires OP permission and creative mode");
             NBTTagCompound result = capture(request, player);
             send(player, result);
@@ -71,8 +70,8 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
         if (!request.hasKey("RequestedData", 10)) throw new IllegalArgumentException("Missing requested data");
         NBTTagCompound flags = request.getCompoundTag("RequestedData");
         if (!flags.hasKey("Blocks", 1) || !flags.getBoolean("Blocks") ||
-                !flags.hasKey("BlockEntities", 1) || !flags.getBoolean("BlockEntities")) {
-            throw new IllegalArgumentException("Enable Blocks and Block Entities in Litematica save settings");
+                !flags.hasKey("BlockEntities", 1)) {
+            throw new IllegalArgumentException("Enable Blocks in Litematica save settings");
         }
         if (flags.getBoolean("BlockTicks") || flags.getBoolean("Entities") || flags.getBoolean("ExposedBlocksOnly")) {
             throw new IllegalArgumentException("Disable block ticks, entities, and exposed-block-only mode");
@@ -102,13 +101,13 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
         NBTTagCompound outputRegions = new NBTTagCompound();
         long[] tileNbtBytes = {0};
         for (Map.Entry<String, Bounds> entry : bounds.entrySet()) {
-            outputRegions.setTag(entry.getKey(), captureRegion(world, entry.getValue(), tileNbtBytes));
+            outputRegions.setTag(entry.getKey(), captureRegion(world, entry.getValue(), tileNbtBytes, CarpetSettings.schematicSave && flags.getBoolean("BlockEntities")));
         }
         response.setTag("Regions", outputRegions);
         return response;
     }
 
-    private static NBTTagCompound captureRegion(WorldServer world, Bounds bounds, long[] tileNbtBytes) {
+    private static NBTTagCompound captureRegion(WorldServer world, Bounds bounds, long[] tileNbtBytes, boolean inventories) {
         int volume = (int) bounds.volume;
         IBlockState[] states = new IBlockState[volume];
         List<IBlockState> palette = new ArrayList<>();
@@ -129,6 +128,7 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
                     TileEntity tile = world.getTileEntity(pos);
                     if (tile != null) {
                         NBTTagCompound tag = tile.writeToNBT(new NBTTagCompound());
+                        if (!inventories) SchematicInventoryRules.removeInventory(tag);
                         tag.setInteger("x", x - bounds.minX);
                         tag.setInteger("y", y - bounds.minY);
                         tag.setInteger("z", z - bounds.minZ);

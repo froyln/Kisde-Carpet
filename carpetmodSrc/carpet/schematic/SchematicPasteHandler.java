@@ -52,7 +52,6 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
             if (data == null) return;
             request = data.readCompoundTag();
             if (request == null || data.isReadable()) throw new IllegalArgumentException("Malformed paste request");
-            if (!CarpetSettings.schematicPaste) throw new IllegalArgumentException("Server rule schematicPaste is disabled");
             if (!player.canUseCommand(2, "") || !player.isCreative()) throw new IllegalArgumentException("Paste requires OP permission and creative mode");
             if (request.hasKey("Action", 8)) {
                 finish(request, player);
@@ -114,6 +113,13 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
 
         IBlockState state = readState(request.getCompoundTag("BlockState"));
         NBTTagCompound tileData = request.hasKey("BlockEntity", 10) ? request.getCompoundTag("BlockEntity") : null;
+        if (tileData != null && !CarpetSettings.schematicPaste) {
+            tileData = tileData.copy();
+            TileEntity existing = world.getTileEntity(pos);
+            NBTTagCompound existingData = existing != null && world.getBlockState(pos).getBlock() == state.getBlock()
+                    ? existing.writeToNBT(new NBTTagCompound()) : null;
+            SchematicInventoryRules.retainInventory(existingData, tileData);
+        }
         if (tileData != null && !state.getBlock().hasTileEntity()) throw new IllegalArgumentException("Block entity does not match block state");
         if (tileData == null && state.getBlock().hasTileEntity()) throw new IllegalArgumentException("Missing block entity data");
 

@@ -26,7 +26,7 @@ Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preservin
 2. Build the patched server distribution with `./gradlew createRelease`.
 3. Install the generated `build/distributions/Kisde-Carpet_dev.zip` contents alongside the matching Carpet server setup.
 4. In the companion client project root, run `./gradlew build` and install `build/libs/Kisde-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
-5. Enable server-side access only for trusted operators. The integration rules below default to `false`:
+5. The rules below default to `false`. Enable inventory capture/paste and inventory previews only for trusted operators:
 
    ```text
    /carpet schematicSave true
@@ -34,6 +34,8 @@ Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preservin
    /carpet schematicPasteNoUpdates true
    /carpet pcaProtocol true
    ```
+
+`schematicSave` and `schematicPaste` control container contents only. With either rule off, blocks, sign text and other block-entity metadata still save or paste. An off paste leaves new containers empty and preserves existing same-block container contents.
 
 `schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. See [integration documentation](docs/usage/server-integrations.rst) for pinned versions, limits, supported data and current verification status.
 
@@ -248,9 +250,9 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `ridingPlayerUpdateFix` | `false` | fix | Fixes chunk updates for players riding minecarts or llamas |
 | `rotatorBlock` | `false` | experimental | Cactus in dispensers rotates blocks. |
 | `saveSavestates` | `false` | fix | Enables best-effort saving of savestated chunks |
-| `schematicPaste` | `false` | creative, experimental, kisde | Allows OPs in creative mode to paste blocks and block entities with Litematica |
+| `schematicPaste` | `false` | creative, experimental, kisde | Restores container inventories in Litematica server pastes; blocks and other block-entity data remain available |
 | `schematicPasteNoUpdates` | `false` | creative, kisde | Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste |
-| `schematicSave` | `false` | creative, experimental, kisde | Allows OPs in creative mode to capture loaded blocks and block entities with Litematica |
+| `schematicSave` | `false` | creative, experimental, kisde | Includes container inventories in Litematica server captures; blocks and other block-entity data remain available |
 | `scoreboardDelta` | `0` | experimental | Scoreboard displays changes over time, specified in seconds. |
 | `scoreboardStats` | `false` | experimental, survival, bullet | Enables /sb to display player's stats as scoreboard with a total entry |
 | `sendDuplicateEntitiesToClients` | `false` | fix | Sends invisible duplicate UUID entities to clients |

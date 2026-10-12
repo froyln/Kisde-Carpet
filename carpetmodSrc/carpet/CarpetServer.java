@@ -41,6 +41,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static MultimeterServer rsmmServer;
     public static ToggleableChannelHandler legacyRsmmChannel;
     public static ToggleableChannelHandler wecuiChannel;
+    public static carpet.schematic.SchematicInventoryRules schematicInventoryRules;
     public static SchematicSaveHandler schematicSaveHandler;
     public static SchematicPasteHandler schematicPasteHandler;
     public static PcaInventoryPreviewHandler pcaInventoryPreviewHandler;
@@ -61,6 +62,8 @@ public class CarpetServer // static for now - easier to handle all around the co
         minecraft_server = server;
         pluginChannels = new PluginChannelManager(server);
         pluginChannels.register(PUBSUB_MESSENGER);
+        schematicInventoryRules = new carpet.schematic.SchematicInventoryRules();
+        pluginChannels.register(schematicInventoryRules);
         schematicSaveHandler = new SchematicSaveHandler();
         pluginChannels.register(schematicSaveHandler);
         schematicPasteHandler = new SchematicPasteHandler();

@@ -1122,10 +1122,10 @@ public class CarpetSettings
     public static boolean prometheusIntegration;
 
     // ===== Kisde-Carpet ===== //
-    @Rule(desc = "Allows OPs in creative mode to capture loaded blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, KISDE})
+    @Rule(desc = "Includes container inventories in Litematica server captures; blocks and other block-entity data remain available", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicSave;
 
-    @Rule(desc = "Allows OPs in creative mode to paste blocks and block entities with Litematica", category = {CREATIVE, EXPERIMENTAL, KISDE})
+    @Rule(desc = "Restores container inventories in Litematica server pastes; blocks and other block-entity data remain available", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicPaste;
 
     @Rule(desc = "Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste", category = {CREATIVE, KISDE})
@@ -1492,6 +1492,9 @@ public class CarpetSettings
         }
 
         CarpetClientRuleChanger.updateCarpetClientsRule(ruleName, value);
+        if (("schematicSave".equals(ruleName) || "schematicPaste".equals(ruleName)) && CarpetServer.schematicInventoryRules != null) {
+            CarpetServer.schematicInventoryRules.sync();
+        }
 
         return true;
     }

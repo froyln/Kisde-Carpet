@@ -485,3 +485,9 @@ task runServer {
 	dependsOn run
 }
 
+
+task schematicInventoryRuleCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.SchematicInventoryRuleCheck'
+}

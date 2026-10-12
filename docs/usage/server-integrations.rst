@@ -2,21 +2,23 @@ Server-controlled client integrations
 ====================================
 
 Kisde-Carpet adds four rules for optional integrations with the separate
-LiteLoader companion client mod. They are disabled by default. Enable only the
-features needed on a server whose operators and creative-mode users are
+LiteLoader companion client mod. The inventory and no-update options are disabled by default. Enable only the
+options needed on a server whose operators and creative-mode users are
 trusted.
 
 Rules and access
 ----------------
 
-* ``schematicSave`` permits an operator in creative mode to capture loaded
-  blocks and block entities through Litematica's server-save flow.
-* ``schematicPaste`` permits an operator in creative mode to apply typed block
-  state and block-entity data from Litematica. A paste can be partial on failure
-  or cancellation; it has no rollback or undo guarantee.
+* ``schematicSave`` includes container inventories in server captures. When
+  false, capture remains available without inventory contents or loot tables.
+  Blocks, sign text and other block-entity metadata are still captured.
+* ``schematicPaste`` restores schematic container inventories. When false,
+  paste remains available: new containers are empty and existing same-block
+  containers retain their contents. Other block-entity metadata is still
+  pasted. A paste can be partial on failure or cancellation and has no undo.
 * ``schematicPasteNoUpdates`` suppresses paste-generated block-added, neighbor,
-  observer and inventory comparator updates. It defaults to false and still
-  requires ``schematicPaste`` and its authorization.
+  observer and inventory comparator updates independently of inventory paste.
+  It defaults to false and retains the same operator/creative authorization.
 * ``pcaProtocol`` permits an operator to preview nearby server container
   inventories in Tweakeroo and Litematica. It is read-only and does not include
   player inventories or Ender Chest account data.
@@ -48,8 +50,10 @@ on the server.
 
 The companion automatically detects a Kisde-Carpet server; no hidden client
 property is required for assisted paste. In Litematica's save screen, Auto and
-Server capture server data, including container contents and sign text. Client
-explicitly uses the ordinary local capture. In-memory capture also uses server
+Server capture server data. The Save inventories option is off and disabled
+when ``schematicSave`` is false; when true it can be toggled. Sign text and
+other metadata remain available independently. Rule changes update an open
+save screen. Client explicitly uses the ordinary local capture. In-memory capture also uses server
 data when connected to Kisde-Carpet. The save screen shows the supported
 options and disables unsupported entity and tick capture.
 
