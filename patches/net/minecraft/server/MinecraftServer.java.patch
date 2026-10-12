@@ -121,6 +121,10 @@
      }
  
      protected void func_71260_j()
+@@ -381,2 +411,3 @@
+     {
+         field_147145_h.info("Stopping server");
++        if (CarpetServer.schematicSharingHandler != null) CarpetServer.schematicSharingHandler.close();
 @@ -389,6 +419,8 @@
          if (this.field_71318_t != null)
          {

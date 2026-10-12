@@ -272,7 +272,7 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static IBlockState readState(NBTTagCompound tag) {
+    static IBlockState readState(NBTTagCompound tag) {
         if (!tag.hasKey("Name", 8)) throw new IllegalArgumentException("Block state has no registry name");
         ResourceLocation name = new ResourceLocation(tag.getString("Name"));
         Block block = Block.REGISTRY.getObject(name);

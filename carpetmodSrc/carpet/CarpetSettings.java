@@ -1125,6 +1125,9 @@ public class CarpetSettings
     @Rule(desc = "Includes container inventories in Litematica server captures; blocks and other block-entity data remain available", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicSave;
 
+    @Rule(desc = "Shares schematic files and placements among all players; authors and operators manage uploads", category = {FEATURE, KISDE})
+    public static boolean schematicShare;
+
     @Rule(desc = "Restores container inventories in Litematica server pastes; blocks and other block-entity data remain available", category = {CREATIVE, EXPERIMENTAL, KISDE})
     public static boolean schematicPaste;
 
@@ -1492,6 +1495,7 @@ public class CarpetSettings
         }
 
         CarpetClientRuleChanger.updateCarpetClientsRule(ruleName, value);
+        if ("schematicShare".equalsIgnoreCase(ruleName) && CarpetServer.schematicSharingHandler != null) CarpetServer.schematicSharingHandler.sync();
         if (("schematicSave".equalsIgnoreCase(ruleName) || "schematicPaste".equalsIgnoreCase(ruleName)) && CarpetServer.schematicInventoryRules != null) {
             CarpetServer.schematicInventoryRules.sync();
         }

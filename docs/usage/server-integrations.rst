@@ -1,7 +1,7 @@
 Server-controlled client integrations
 ====================================
 
-Kisde-Carpet adds four rules for optional integrations with the separate
+Kisde-Carpet adds rules for optional integrations with the separate
 LiteLoader companion client mod. The inventory and no-update options are disabled by default. Enable only the
 options needed on a server whose operators and creative-mode users are
 trusted.
@@ -97,6 +97,10 @@ MaLiLib. On the final tested artifact, End City and Nether Fortress outlines
 were visible in matched enabled/disabled framebuffer captures. The Overworld Witch Hut box also rendered and disappeared when disabled; the
 disposable world terrain at its reported bounds did not resemble the structure,
 so that test establishes rendering/toggle behavior but not terrain integrity.
+
+Shared schematic storage is controlled separately by ``schematicShare`` and
+does not require operator permission to upload. Authors and operators manage
+shares. See :doc:`shared-schematics` for setup, placement behavior and limits.
 
 Verification status
 -------------------

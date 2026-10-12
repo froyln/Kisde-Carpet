@@ -42,6 +42,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static ToggleableChannelHandler legacyRsmmChannel;
     public static ToggleableChannelHandler wecuiChannel;
     public static carpet.schematic.SchematicInventoryRules schematicInventoryRules;
+    public static carpet.schematic.SchematicSharingHandler schematicSharingHandler;
     public static SchematicSaveHandler schematicSaveHandler;
     public static SchematicPasteHandler schematicPasteHandler;
     public static PcaInventoryPreviewHandler pcaInventoryPreviewHandler;
@@ -64,6 +65,8 @@ public class CarpetServer // static for now - easier to handle all around the co
         pluginChannels.register(PUBSUB_MESSENGER);
         schematicInventoryRules = new carpet.schematic.SchematicInventoryRules();
         pluginChannels.register(schematicInventoryRules);
+        schematicSharingHandler = new carpet.schematic.SchematicSharingHandler(server);
+        pluginChannels.register(schematicSharingHandler);
         schematicSaveHandler = new SchematicSaveHandler();
         pluginChannels.register(schematicSaveHandler);
         schematicPasteHandler = new SchematicPasteHandler();
@@ -139,6 +142,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static void tick(MinecraftServer server)
     {
         TickSpeed.tick(server);
+        if (schematicSharingHandler != null) schematicSharingHandler.tick();
         carpet.helpers.PlayerSitHelper.tick(server);
         carpet.helpers.LifeTimeTracker.tick(server);
         if (CarpetSettings.redstoneMultimeterLegacy)

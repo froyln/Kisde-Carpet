@@ -491,3 +491,9 @@ task schematicInventoryRuleCheck(type: JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     main = 'carpet.SchematicInventoryRuleCheck'
 }
+
+task sharedSchematicStoreCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.SharedSchematicStoreCheck'
+}

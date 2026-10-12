@@ -14,6 +14,7 @@
 ## Features
 
 - Carpet rules for server-controlled Litematica capture and paste, plus read-only Tweakeroo inventory previews.
+- Optional server-hosted sharing of schematic files and Litematica placements across connected players.
 - Existing Carpet commands, rules, logging and Prometheus integration.
 - Imported Vastech rules and cluster tools for technical builds and server experiments.
 - A separate LiteLoader companion provides the client integrations; client classes and dependencies are not part of the server jar.
@@ -26,22 +27,23 @@ Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preservin
 2. Build the patched server distribution with `./gradlew createRelease`.
 3. Install the generated `build/distributions/Kisde-Carpet_dev.zip` contents alongside the matching Carpet server setup.
 4. In the companion client project root, run `./gradlew build` and install `build/libs/Kisde-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
-5. The rules below default to `false`. Enable inventory capture/paste and inventory previews only for trusted operators:
+5. These rules default to `false`. Enable inventory tools only for trusted operators; `schematicShare` permits every connected player to upload:
 
    ```text
    /carpet schematicSave true
    /carpet schematicPaste true
    /carpet schematicPasteNoUpdates true
    /carpet pcaProtocol true
+   /carpet schematicShare true
    ```
 
 `schematicSave` and `schematicPaste` control container contents only. With either rule off, blocks, sign text and other block-entity metadata still save or paste. An off paste leaves new containers empty and preserves existing same-block container contents.
 
-`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. See [integration documentation](docs/usage/server-integrations.rst) for pinned versions, limits, supported data and current verification status.
+`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. When `schematicShare` is enabled, each author and operators can update or remove shared files. Shares include placement transforms and subregion settings and load as Litematica overlays without changing world blocks. See [integration documentation](docs/usage/server-integrations.rst) and the [shared schematics guide](docs/usage/shared-schematics.rst) for limits and setup.
 
 ## Available rules
 
-All 249 registered server rules are listed below. Defaults are the initial values before `carpet.conf` overrides. Use `/carpet <rule>` for details and accepted values, `/carpet <rule> <value>` to change a rule, and `/carpet setDefault <rule> <value>` to persist it.
+All 250 registered server rules are listed below. Defaults are the initial values before `carpet.conf` overrides. Use `/carpet <rule>` for details and accepted values, `/carpet <rule> <value>` to change a rule, and `/carpet setDefault <rule> <value>` to persist it.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -253,6 +255,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `schematicPaste` | `false` | creative, experimental, kisde | Restores container inventories in Litematica server pastes; blocks and other block-entity data remain available |
 | `schematicPasteNoUpdates` | `false` | creative, kisde | Suppresses block-added, neighbor, observer and inventory comparator updates caused by schematic paste |
 | `schematicSave` | `false` | creative, experimental, kisde | Includes container inventories in Litematica server captures; blocks and other block-entity data remain available |
+| `schematicShare` | `false` | feature, kisde | Shares schematic files and placements among all players; authors and operators manage uploads |
 | `scoreboardDelta` | `0` | experimental | Scoreboard displays changes over time, specified in seconds. |
 | `scoreboardStats` | `false` | experimental, survival, bullet | Enables /sb to display player's stats as scoreboard with a total entry |
 | `sendDuplicateEntitiesToClients` | `false` | fix | Sends invisible duplicate UUID entities to clients |
