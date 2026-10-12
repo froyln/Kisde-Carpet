@@ -1492,7 +1492,7 @@ public class CarpetSettings
         }
 
         CarpetClientRuleChanger.updateCarpetClientsRule(ruleName, value);
-        if (("schematicSave".equals(ruleName) || "schematicPaste".equals(ruleName)) && CarpetServer.schematicInventoryRules != null) {
+        if (("schematicSave".equalsIgnoreCase(ruleName) || "schematicPaste".equalsIgnoreCase(ruleName)) && CarpetServer.schematicInventoryRules != null) {
             CarpetServer.schematicInventoryRules.sync();
         }
 
