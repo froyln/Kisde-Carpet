@@ -103,6 +103,19 @@ public final class SharedSchematicStore {
         NBTTagCompound old = entries.get(id);
         Files.delete(root.resolve(id + ".nbt")); entries.remove(id); cleanBlob(old.getString("Hash"));
     }
+    public NBTTagCompound rename(UUID id, UUID actor, boolean operator, long revision, String label) throws IOException {
+        authorize(id, actor, operator, revision);
+        NBTTagCompound entry = entries.get(id).copy();
+        entry.setString("Name", name(label));
+        entry.setLong("Revision", revision + 1);
+        Path manifest = Files.createTempFile(root, "manifest-", ".tmp");
+        try {
+            try (OutputStream stream = Files.newOutputStream(manifest)) { CompressedStreamTools.writeCompressed(entry, stream); }
+            Files.move(manifest, root.resolve(id + ".nbt"), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } finally { Files.deleteIfExists(manifest); }
+        entries.put(id, entry);
+        return entry.copy();
+    }
     private void cleanBlob(String hash) throws IOException {
         if (entries.values().stream().noneMatch(e -> hash.equals(e.getString("Hash")))) {
             try { Files.deleteIfExists(blob(hash)); }

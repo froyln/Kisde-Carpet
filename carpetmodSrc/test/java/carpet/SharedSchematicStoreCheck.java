@@ -50,7 +50,18 @@ public final class SharedSchematicStoreCheck {
         Files.delete(root.resolve(blockedId + ".nbt"));
         Path replacement = file(root, false); restored.commit(replacement, id, author, "Author", false, 1, "Updated", 0, clean, hash);
         check(restored.get(id).getLong("Revision") == 2, "Revision not advanced");
-        rejected(() -> restored.authorize(id, author, false, 1)); restored.delete(id, stranger, true, 2); check(restored.list().isEmpty(), "Operator delete failed");
+        rejected(() -> restored.authorize(id, author, false, 1));
+        NBTTagCompound beforeRename = restored.get(id);
+        rejected(() -> { try { restored.rename(id, stranger, false, 2, "Forbidden"); } catch (IOException e) { throw new RuntimeException(e); } });
+        rejected(() -> { try { restored.rename(id, author, false, 1, "Stale"); } catch (IOException e) { throw new RuntimeException(e); } });
+        rejected(() -> { try { restored.rename(id, author, false, 2, "bad\nname"); } catch (IOException e) { throw new RuntimeException(e); } });
+        NBTTagCompound renamed = restored.rename(id, author, false, 2, "Renamed");
+        check(renamed.getLong("Revision") == 3 && renamed.getString("Name").equals("Renamed"), "Rename failed");
+        for (String key : Arrays.asList("Hash", "Owner", "Author", "Placement", "Dimension", "Bytes")) check(beforeRename.getTag(key).equals(renamed.getTag(key)), "Rename changed " + key);
+        check(new SharedSchematicStore(root).get(id).equals(renamed), "Rename did not survive restart");
+        NBTTagCompound operatorRename = restored.rename(id, stranger, true, 3, "Operator rename");
+        check(operatorRename.getLong("Revision") == 4 && operatorRename.getString("Owner").equals(author.toString()), "Operator rename changed ownership");
+        restored.delete(id, stranger, true, 4); check(restored.list().isEmpty(), "Operator delete failed");
         check(!Files.exists(root.resolve(hash + ".litematic")), "Unused blob retained");
         System.out.println("Shared store persistence, ownership, revision, transforms, sanitization and bounds checks passed");
     }

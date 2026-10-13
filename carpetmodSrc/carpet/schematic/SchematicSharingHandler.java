@@ -59,6 +59,7 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
                 case "EndUpload": finish(player, data); break;
                 case "Download": download(player, data); break;
                 case "Delete": delete(player, data); break;
+                case "Rename": rename(player, data); break;
                 case "Cancel": cancel(player.getUniqueID()); break;
                 default: throw new IllegalArgumentException("Unknown sharing action");
             }
@@ -79,10 +80,16 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
         NBTTagCompound copy = entry.copy(); copy.setBoolean("CanManage", entry.getString("Owner").equals(player.getUniqueID().toString()) || player.canUseCommand(2, "")); return copy;
     }
     private void list(EntityPlayerMP player, NBTTagCompound request) throws IOException {
-        List<NBTTagCompound> entries = store().list(); int size = Math.max(1, Math.min(12, request.getInteger("PageSize")));
+        String query = request.getString("Search");
+        if (query.length() > 96) throw new IllegalArgumentException("Search exceeds 96 characters");
+        String search = query.toLowerCase(java.util.Locale.ROOT);
+        List<NBTTagCompound> entries = store().list();
+        if (!search.isEmpty()) entries.removeIf(entry -> !entry.getString("Name").toLowerCase(java.util.Locale.ROOT).contains(search) && !entry.getString("Author").toLowerCase(java.util.Locale.ROOT).contains(search));
+        int size = Math.max(1, Math.min(64, request.getInteger("PageSize")));
         int page = Math.max(0, Math.min(Math.max(0, (entries.size() - 1) / size), request.getInteger("Page")));
-        NBTTagList result = new NBTTagList(); for (int i = page * size; i < Math.min(entries.size(), (page + 1) * size); i++) result.appendTag(metadata(entries.get(i), player));
-        NBTTagCompound response = message("List"); response.setInteger("Page", page); response.setInteger("Total", entries.size()); response.setTag("Entries", result); send(player, response);
+        int offset = request.hasKey("Offset", 3) ? Math.max(0, Math.min(Math.max(0, entries.size() - size), request.getInteger("Offset"))) : page * size;
+        NBTTagList result = new NBTTagList(); for (int i = offset; i < Math.min(entries.size(), offset + size); i++) result.appendTag(metadata(entries.get(i), player));
+        NBTTagCompound response = message("List"); response.setInteger("Page", offset / size); response.setInteger("Offset", offset); response.setInteger("Request", request.getInteger("Request")); response.setInteger("Total", entries.size()); response.setTag("Entries", result); send(player, response);
     }
     private void available(EntityPlayerMP player) {
         if (uploads.containsKey(player.getUniqueID()) || downloads.containsKey(player.getUniqueID())) throw new IllegalArgumentException("A file transfer is already active");
@@ -155,6 +162,12 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
     private void delete(EntityPlayerMP player, NBTTagCompound data) throws IOException {
         UUID id = UUID.fromString(data.getString("Id")); store().delete(id, player.getUniqueID(), player.canUseCommand(2, ""), data.getLong("Revision"));
         for (EntityPlayerMP viewer : players) { NBTTagCompound removed = message("Deleted"); removed.setString("Id", id.toString()); send(viewer, removed); }
+    }
+    private void rename(EntityPlayerMP player, NBTTagCompound data) throws IOException {
+        NBTTagCompound entry = store().rename(UUID.fromString(data.getString("Id")), player.getUniqueID(), player.canUseCommand(2, ""), data.getLong("Revision"), data.getString("Name"));
+        for (EntityPlayerMP viewer : players) {
+            NBTTagCompound update = message("Changed"); update.setTag("Entry", metadata(entry, viewer)); send(viewer, update);
+        }
     }
     public void tick() {
         if (closed) return;

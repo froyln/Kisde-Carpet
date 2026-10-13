@@ -39,7 +39,7 @@ Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preservin
 
 `schematicSave` and `schematicPaste` control container contents only. With either rule off, blocks, sign text and other block-entity metadata still save or paste. An off paste leaves new containers empty and preserves existing same-block container contents.
 
-`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. When `schematicShare` is enabled, each author and operators can update or remove shared files. Shares include placement transforms and subregion settings and load as Litematica overlays without changing world blocks. See [integration documentation](docs/usage/server-integrations.rst) and the [shared schematics guide](docs/usage/shared-schematics.rst) for limits and setup.
+`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. When `schematicShare` is enabled, each author and operators can update, rename or remove shared files. Shares include placement transforms and subregion settings and load as Litematica overlays without changing world blocks. See [integration documentation](docs/usage/server-integrations.rst) and the [shared schematics guide](docs/usage/shared-schematics.rst) for limits and setup.
 
 ## Available rules
 

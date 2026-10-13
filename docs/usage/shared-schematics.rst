@@ -16,20 +16,29 @@ An operator enables the ``schematicShare`` Carpet rule (disabled by default)::
    /carpet schematicShare true
 
 Any connected player can upload a new share while the rule is enabled. The
-author and operators can update or remove a share. A player must be in the
+author and operators can update, rename or remove a share. A player must be in the
 placement's dimension to load it. Updates are explicit: select a Litematica
-placement and use **Update share** in the browser. Clients that already loaded
+placement and use the row’s **Update** button in the browser. Clients that already loaded
 that share refresh its overlay when the update arrives.
 
 For players
 -----------
 
 Install the companion client mod and connect to a server with sharing enabled.
-Open Litematica's main menu and choose **Shared schematics**. Select an
-existing placement to load its file and overlay. To upload, first select a
-placement in Litematica, then choose **Upload selected**. Its schematic data
-and placement settings are sent to the server. Use **Refresh** to reload the
-catalog. Authors and operators also see update and remove controls.
+Open Litematica's main menu and choose **Shared schematics**, beside
+**Configuration Menu**. Each shared schematic has **Load**, **Update**,
+**Rename** and **Remove** buttons in its row. Management buttons are enabled
+for its author and operators; **Update** replaces the share with the currently
+selected Litematica placement. **Rename** changes only the shared catalog name
+and keeps the file, placement and author intact.
+
+To upload, use **Share** on a placement’s row in **Schematic Placements List**.
+Its schematic data and placement settings are sent to the server.
+The search field filters the full catalog locally by schematic name or author.
+Search and scrolling also work with earlier sharing servers.
+Use the mouse wheel or drag the scrollbar to browse larger catalogs. The list
+shows only rows that fit above the bottom controls. Use **Refresh** to reload
+the catalog.
 
 Storage and limits
 ------------------
