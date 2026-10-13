@@ -2,10 +2,12 @@
 
 # Kisde-Carpet
 
-**A Minecraft 1.12.2 Carpet server with multiple technical tools and rules.**
+**Technical Minecraft tools for building, testing and running a 1.12.2 server.**
 
-[![Minecraft 1.12.2](https://img.shields.io/badge/Minecraft-1.12.2-green)](docs/usage/server-integrations.rst)
-[![Java 8](https://img.shields.io/badge/Java-8-blue)](docs/usage/server-integrations.rst)
+[![Minecraft 1.12.2](https://img.shields.io/badge/Minecraft-1.12.2-green)](docs/usage/install.rst)
+[![Java 8](https://img.shields.io/badge/Java-8-blue)](docs/usage/install.rst)
+
+[Documentation](docs/index.rst) · [Client companion](https://github.com/froyln/Kisde-Carpet-ClientSide)
 
 </div>
 
@@ -13,37 +15,34 @@
 
 ## Features
 
-- Carpet rules for server-controlled Litematica capture and paste, plus read-only Tweakeroo inventory previews.
-- Optional server-hosted sharing of schematic files and Litematica placements across connected players.
-- Existing Carpet commands, rules, logging and Prometheus integration.
-- Imported Vastech rules and cluster tools for technical builds and server experiments.
-- A separate LiteLoader companion provides the client integrations; client classes and dependencies are not part of the server jar.
+- **Save and paste with Litematica.** Capture blocks and block-entity data directly from the server, including sign text. Optionally save and restore container contents, and paste without triggering block updates.
+- **Share schematics with your server.** Upload builds to a shared library, browse them in Litematica, and load placements with their position, rotation, mirror and subregion settings.
+- **Inspect inventories and structures.** View live server container contents through Tweakeroo and Litematica, and display structure bounding boxes in MiniHUD.
+- **Measure farms and debug lag.** Track item throughput, mob spawns and entity lifetimes; use Carpet logging, profiling and tick controls to inspect your builds. Export server metrics with the optional Prometheus integration.
+- **Build and test technical contraptions.** Use fake players, configurable fill limits, creative tools, cluster calculations and rules for redstone, TNT, chunk behavior and update suppression.
+- **Choose your server's behavior.** Configure fixes, optimizations and gameplay changes individually with Carpet rules. See the [full rule list](#available-rules) below.
 
-Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), preserving its Minecraft 1.12.2 server lineage. Includes selected rules and tools from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition), credited with the `vastech` category. Bullet and Kisde additions use the `bullet` and `kisde` categories. Companion source: [Kisde-Carpet-ClientSide](https://github.com/froyln/Kisde-Carpet-ClientSide).
+Litematica, Tweakeroo and MiniHUD integrations require the separate [LiteLoader client companion](https://github.com/froyln/Kisde-Carpet-ClientSide). Server commands and rules work without it.
 
 ## Getting started
 
-1. Use a Minecraft 1.12.2 server and Java 8.
-2. Build the patched server distribution with `./gradlew createRelease`.
-3. Install the generated `build/distributions/Kisde-Carpet_dev.zip` contents alongside the matching Carpet server setup.
-4. In the companion client project root, run `./gradlew build` and install `build/libs/Kisde-Carpet.litemod` in a LiteLoader 1.12.2 client with the pinned masa mods. The companion source is maintained separately from this server repository.
-5. These rules default to `false`. Enable inventory tools only for trusted operators; `schematicShare` permits every connected player to upload:
+1. Install the Kisde-Carpet patches on a **Minecraft 1.12.2 server running Java 8** using the [installation guide](docs/usage/install.rst). Use this project's patch archive in place of the upstream Carpet archive.
+2. For client integrations, install the [companion mod](https://github.com/froyln/Kisde-Carpet-ClientSide) with LiteLoader and the [supported masa mod versions](docs/usage/server-integrations.rst#client-setup).
+3. Use `/carpet <rule>` to inspect a rule and `/carpet <rule> <value>` to change it. Save a setting across restarts with `/carpet setDefault <rule> <value>`.
 
-   ```text
-   /carpet schematicSave true
-   /carpet schematicPaste true
-   /carpet schematicPasteNoUpdates true
-   /carpet pcaProtocol true
-   /carpet schematicShare true
-   ```
+For example, enable saving container contents in schematics:
 
-`schematicSave` and `schematicPaste` control container contents only. With either rule off, blocks, sign text and other block-entity metadata still save or paste. An off paste leaves new containers empty and preserves existing same-block container contents.
+```text
+/carpet setDefault schematicSave true
+```
 
-`schematicPasteNoUpdates` suppresses paste-generated physics and redstone updates; later normal world ticking continues. Capture and paste also require operator permission and creative mode. Inventory preview requires operator permission and is read-only. When `schematicShare` is enabled, each author and operators can update, rename or remove shared files. Shares include placement transforms and subregion settings and load as Litematica overlays without changing world blocks. See [integration documentation](docs/usage/server-integrations.rst) and the [shared schematics guide](docs/usage/shared-schematics.rst) for limits and setup.
+Capture and paste require operator permission and creative mode. `schematicSave` and `schematicPaste` control inventory contents; blocks, sign text and other block-entity data remain available when they are off. Paste has no undo, so back up worlds before large edits.
+
+See [server integrations](docs/usage/server-integrations.rst) for inventory previews and paste options, or [shared schematics](docs/usage/shared-schematics.rst) to enable the shared library.
 
 ## Available rules
 
-All 250 registered server rules are listed below. Defaults are the initial values before `carpet.conf` overrides. Use `/carpet <rule>` for details and accepted values, `/carpet <rule> <value>` to change a rule, and `/carpet setDefault <rule> <value>` to persist it.
+Browse all 250 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -308,7 +307,9 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 ## Documentation
 
 - [Server integrations](docs/usage/server-integrations.rst)
-- [Carpet installation](docs/usage/install.rst)
+- [Shared schematics](docs/usage/shared-schematics.rst)
+- [Technical tools and cluster commands](docs/usage/vastech-tools.rst)
+- [Server installation](docs/usage/install.rst)
 - [Carpet manual](docs/index.rst)
 
 ## Building from source
@@ -317,4 +318,6 @@ Run `./gradlew setupCarpetmod` to generate the source tree, then make source cha
 
 The separate companion client project targets LiteLoader and Java 8. Its build is `./gradlew build --offline` when pinned dependencies are already cached.
 
-See [Vastech technical tools](docs/usage/vastech-tools.rst) for source categories, cluster commands and imported testing rules.
+## Credits
+
+Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), with selected additions from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition).
