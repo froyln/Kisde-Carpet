@@ -24,8 +24,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.ArrayList;
 
 public class CommandInventory extends CommandCarpetBase {
+    private static final Map<UUID, InventoryCustom> offlineEdits = new HashMap<>();
+    private static final Map<UUID, Set<InventoryCustom>> onlineEdits = new HashMap<>();
 
     @Override
     public String getName() {
@@ -100,9 +108,9 @@ public class CommandInventory extends CommandCarpetBase {
                             if (this.isPlayerOnline(server, args[1])) {
 
                                 EntityPlayerMP otherPlayer = getPlayer(server, sender, args[1]);
-                                InventoryCustom inventoryCustom = new InventoryCustom(otherPlayer.getName(), true, 45, onLoadInventory, onChangeInventory, null, otherPlayer, entityPlayer);
+                                InventoryCustom inventoryCustom = new InventoryCustom(otherPlayer.getName(), true, 45, onLoadInventory, onChangeInventory, inventory -> removeOnlineEdit((InventoryCustom) inventory), otherPlayer, entityPlayer);
                                 inventoryCustom.loadInventory(otherPlayer.inventory.writeToNBT(new NBTTagList()));
-                                entityPlayer.displayGUIChest(inventoryCustom);
+                                openOnlineEdit(entityPlayer, inventoryCustom, false);
 
                             }
                             else {
@@ -116,12 +124,12 @@ public class CommandInventory extends CommandCarpetBase {
 
                                     InventoryClosedListener onCloseInventory = (inventory) -> {
                                         InventoryCustom inventoryCustom = (InventoryCustom) inventory;
-                                        server.getWorld(0).getSaveHandler().getPlayerNBTManager().writePlayerData(inventoryCustom.entityPlayerOwner);
+                                        finishOfflineEdit(server, inventoryCustom, false);
                                     };
 
                                     InventoryCustom inventoryCustom = new InventoryCustom(gameProfile.getName(), true, 45, onLoadInventory, onChangeInventory, onCloseInventory, otherPlayer, entityPlayer);
                                     inventoryCustom.loadInventory(otherPlayer.inventory.writeToNBT(new NBTTagList()));
-                                    entityPlayer.displayGUIChest(inventoryCustom);
+                                    openOfflineEdit(entityPlayer, inventoryCustom);
                                 }
                                 else {
                                     entityPlayer.sendMessage(new TextComponentString(TextFormatting.RED + "Player doesn't exist"));
@@ -156,9 +164,9 @@ public class CommandInventory extends CommandCarpetBase {
                             if (this.isPlayerOnline(server, args[1])) {
 
                                 EntityPlayerMP otherPlayer = getPlayer(server, sender, args[1]);
-                                InventoryCustom inventoryCustom = new InventoryCustom(otherPlayer.getName(), true, 27, onLoadInventory, onChangeInventory, null, otherPlayer, entityPlayer);
+                                InventoryCustom inventoryCustom = new InventoryCustom(otherPlayer.getName(), true, 27, onLoadInventory, onChangeInventory, inventory -> removeOnlineEdit((InventoryCustom) inventory), otherPlayer, entityPlayer);
                                 inventoryCustom.loadInventory(otherPlayer.getInventoryEnderChest().saveInventoryToNBT());
-                                entityPlayer.displayGUIChest(inventoryCustom);
+                                openOnlineEdit(entityPlayer, inventoryCustom, true);
 
                             }
                             else {
@@ -169,17 +177,15 @@ public class CommandInventory extends CommandCarpetBase {
                                 if (nbttagcompound != null) {
                                     EntityPlayerMP otherPlayer = new EntityPlayerMP(server, server.getWorld(0), gameProfile, new PlayerInteractionManager(server.getWorld(0)));
                                     otherPlayer.readFromNBT(nbttagcompound);
-                                    System.out.println(otherPlayer.getPosition());
 
                                     InventoryClosedListener onCloseInventory = (inventory) -> {
                                         InventoryCustom inventoryCustom = (InventoryCustom) inventory;
-                                        server.getWorld(0).getSaveHandler().getPlayerNBTManager().writePlayerData(inventoryCustom.entityPlayerOwner);
-                                        System.out.println(inventoryCustom.entityPlayerOwner.getName());
+                                        finishOfflineEdit(server, inventoryCustom, true);
                                     };
 
                                     InventoryCustom inventoryCustom = new InventoryCustom(gameProfile.getName(), true, 27, onLoadInventory, onChangeInventory, onCloseInventory, otherPlayer, entityPlayer);
                                     inventoryCustom.loadInventory(otherPlayer.getInventoryEnderChest().saveInventoryToNBT());
-                                    entityPlayer.displayGUIChest(inventoryCustom);
+                                    openOfflineEdit(entityPlayer, inventoryCustom);
                                 }
                                 else {
                                     entityPlayer.sendMessage(new TextComponentString(TextFormatting.RED + "Player doesn't exist"));
@@ -207,6 +213,69 @@ public class CommandInventory extends CommandCarpetBase {
                     throw new WrongUsageException(getUsage(sender), new Object[0]);
                 }
             }
+        }
+    }
+
+    private static void openOnlineEdit(EntityPlayerMP editor, InventoryCustom inventory, boolean enderChest) {
+        EntityPlayerMP owner = inventory.entityPlayerOwner;
+        inventory.setRefreshSource(() -> enderChest ? owner.getInventoryEnderChest().saveInventoryToNBT()
+                : owner.inventory.writeToNBT(new NBTTagList()));
+        onlineEdits.computeIfAbsent(owner.getUniqueID(), key -> new LinkedHashSet<>()).add(inventory);
+        try { editor.displayGUIChest(inventory); }
+        catch (RuntimeException e) { removeOnlineEdit(inventory); throw e; }
+    }
+
+    private static void removeOnlineEdit(InventoryCustom inventory) {
+        UUID owner = inventory.entityPlayerOwner.getUniqueID();
+        Set<InventoryCustom> edits = onlineEdits.get(owner);
+        if (edits != null) {
+            edits.remove(inventory);
+            if (edits.isEmpty()) onlineEdits.remove(owner);
+        }
+    }
+
+    private static void openOfflineEdit(EntityPlayerMP editor, InventoryCustom inventory) throws CommandException {
+        UUID owner = inventory.entityPlayerOwner.getUniqueID();
+        if (offlineEdits.containsKey(owner)) throw new CommandException("This offline player is already being edited");
+        offlineEdits.put(owner, inventory);
+        try {
+            editor.displayGUIChest(inventory);
+        } catch (RuntimeException e) {
+            offlineEdits.remove(owner, inventory);
+            throw e;
+        }
+    }
+
+    private static void finishOfflineEdit(MinecraftServer server, InventoryCustom inventory, boolean enderChest) {
+        EntityPlayerMP detached = inventory.entityPlayerOwner;
+        if (!offlineEdits.remove(detached.getUniqueID(), inventory)) return;
+        NBTTagList edited = enderChest ? detached.getInventoryEnderChest().saveInventoryToNBT()
+                : detached.inventory.writeToNBT(new NBTTagList());
+        EntityPlayerMP owner = server.getPlayerList().getPlayerByUUID(detached.getUniqueID());
+        if (owner == null) {
+            owner = detached;
+            if (server.getPlayerList().readPlayerDataFromFile(owner) == null) {
+                inventory.entityPlayer.sendMessage(new TextComponentString("Unable to reload offline player data; inventory changes were not saved"));
+                return;
+            }
+        }
+        if (enderChest) owner.getInventoryEnderChest().loadInventoryFromNBT(edited);
+        else owner.inventory.readFromNBT(edited);
+        server.getWorld(0).getSaveHandler().getPlayerNBTManager().writePlayerData(owner);
+        if (owner != detached) owner.inventoryContainer.detectAndSendChanges();
+    }
+
+    public static void playerConnected(EntityPlayerMP player) {
+        InventoryCustom inventory = offlineEdits.get(player.getUniqueID());
+        if (inventory != null) inventory.entityPlayer.closeScreen();
+    }
+
+    public static void playerDisconnected(EntityPlayerMP player) {
+        Set<InventoryCustom> edits = onlineEdits.get(player.getUniqueID());
+        if (edits != null) for (InventoryCustom inventory : new ArrayList<>(edits)) inventory.entityPlayer.closeScreen();
+        if (player.openContainer instanceof net.minecraft.inventory.ContainerChest) {
+            net.minecraft.inventory.IInventory inventory = ((net.minecraft.inventory.ContainerChest) player.openContainer).getLowerChestInventory();
+            if (inventory instanceof InventoryCustom) player.closeContainer();
         }
     }
 

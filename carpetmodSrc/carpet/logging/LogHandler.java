@@ -62,7 +62,9 @@ public abstract class LogHandler
     
     public static LogHandler createHandler(String name, String... extraArgs)
     {
-        LogHandler handler = CREATORS.get(name).create(extraArgs);
+        LogHandlerCreator creator = CREATORS.get(name);
+        if (creator == null) return null;
+        LogHandler handler = creator.create(extraArgs);
         handler.name = name;
         handler.extraArgs = extraArgs;
         return handler;

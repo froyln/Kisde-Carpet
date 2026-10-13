@@ -275,6 +275,7 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
     static IBlockState readState(NBTTagCompound tag) {
         if (!tag.hasKey("Name", 8)) throw new IllegalArgumentException("Block state has no registry name");
         ResourceLocation name = new ResourceLocation(tag.getString("Name"));
+        if (!Block.REGISTRY.containsKey(name)) throw new IllegalArgumentException("Unknown block " + name);
         Block block = Block.REGISTRY.getObject(name);
         if (block == null) throw new IllegalArgumentException("Unknown block " + name);
         IBlockState state = block.getDefaultState();

@@ -2,6 +2,8 @@ package carpet.carpetclient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,7 +30,7 @@ public class CarpetClientMarkers {
     public static List<Village> annihilatedVillages = new ArrayList<>();
     public static boolean changesOnly;
 
-    private static final List<EntityPlayerMP> playersVillageMarkers = new ArrayList<>();
+    private static final Set<EntityPlayerMP> playersVillageMarkers = new LinkedHashSet<>();
 
     public static void updateClientVillageMarkers(World world) {
         if (playersVillageMarkers.size() == 0) return;
@@ -76,9 +78,10 @@ public class CarpetClientMarkers {
     }
 
     public static void registerVillagerMarkers(EntityPlayerMP sender, PacketBuffer data) {
+        if (data.readableBytes() != 1) throw new IllegalArgumentException("Invalid village marker request");
         boolean addPlayer = data.readBoolean();
         if (addPlayer) {
-            playersVillageMarkers.add(sender);
+            if (!playersVillageMarkers.add(sender)) return;
             changesOnly = false;
             updateClientVillageMarkers(sender.world);
         } else {

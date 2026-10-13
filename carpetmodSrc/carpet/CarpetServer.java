@@ -155,12 +155,14 @@ public class CarpetServer // static for now - easier to handle all around the co
     }
     public static void playerConnected(EntityPlayerMP player)
     {
+        carpet.commands.CommandInventory.playerConnected(player);
         pluginChannels.onPlayerConnected(player);
         LoggerRegistry.playerConnected(player);
     }
 
     public static void playerDisconnected(EntityPlayerMP player)
     {
+        carpet.commands.CommandInventory.playerDisconnected(player);
         carpet.helpers.PlayerSitHelper.remove(player);
         pluginChannels.onPlayerDisconnected(player);
         LoggerRegistry.playerDisconnected(player);

@@ -17,8 +17,6 @@ import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class CommandScoreboardStats extends CommandCarpetBase {
 
@@ -40,8 +38,6 @@ public class CommandScoreboardStats extends CommandCarpetBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (command_enabled("scoreboardStats", sender)) {
             if (args.length > 0 && args.length < 3) {
-                final ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-
                 String[] arguments = args[0].split("\\.");
                 Scoreboard scoreboard = server.getWorld(0).getScoreboard();
                 String criteria;
@@ -219,18 +215,10 @@ public class CommandScoreboardStats extends CommandCarpetBase {
                         objective.setDisplayName(displayName);
 
                         if (statType.equals("Minutes played")) {
-                            singleThreadExecutor.submit(() -> {
-                                StatHelper.initializeWithDividerWithDifferentCriteria(scoreboard, server, objective, 1200, IScoreCriteria.INSTANCES.get("stat.playOneMinute"));
-                            });
+                            StatHelper.initializeWithDividerWithDifferentCriteria(scoreboard, server, objective, 1200, IScoreCriteria.INSTANCES.get("stat.playOneMinute"));
+                        } else {
+                            StatHelper.initialize(scoreboard, server, objective);
                         }
-
-                        else {
-                            singleThreadExecutor.submit(() -> {
-                                StatHelper.initialize(scoreboard, server, objective);
-                            });
-//                            StatHelper.initialize(scoreboard, server, objective);
-                        }
-                        singleThreadExecutor.shutdown();
                     }
                     else {
                         objective = scoreboard.getObjective(objectiveName);

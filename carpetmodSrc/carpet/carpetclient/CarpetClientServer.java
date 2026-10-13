@@ -31,9 +31,14 @@ public class CarpetClientServer implements PluginChannelHandler {
     }
 
     public void onCustomPayload(CPacketCustomPayload packet, EntityPlayerMP player) {
-        PacketBuffer buffer = PacketSplitter.receive(player, packet);
-        if(buffer != null) {
-            CarpetClientMessageHandler.handler(player, buffer);
+        PacketBuffer buffer = null;
+        try {
+            buffer = PacketSplitter.receive(player, packet);
+            if (buffer != null) CarpetClientMessageHandler.handler(player, buffer);
+        } catch (RuntimeException e) {
+            player.connection.disconnect(new net.minecraft.util.text.TextComponentString("Invalid Carpet client payload"));
+        } finally {
+            if (buffer != null) buffer.release();
         }
     }
 

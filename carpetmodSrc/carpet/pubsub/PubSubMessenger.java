@@ -46,7 +46,7 @@ public class PubSubMessenger implements PluginChannelHandler {
         Set<PubSubNode> addedNodes = new HashSet<>();
         for (String nodeName : nodes) {
             PubSubNode node = pubSub.getNode(nodeName);
-            if (node == null) continue;
+            if (node == null || playerSubscriptions.containsKey(node)) continue;
             addedNodes.add(node);
         }
         Set<PubSubNode> deduplicatedNodes = new HashSet<>();
@@ -77,10 +77,11 @@ public class PubSubMessenger implements PluginChannelHandler {
         for (String nodeName : nodes) {
             PubSubNode node = pubSub.getNode(nodeName);
             if (node == null) continue;
-            PubSubSubscriber subscriber = playerSubscriptions.get(node);
+            PubSubSubscriber subscriber = playerSubscriptions.remove(node);
             if (subscriber == null) continue;
             pubSub.unsubscribe(node, subscriber);
         }
+        if (playerSubscriptions.isEmpty()) subscriptions.remove(player);
     }
 
     /*
@@ -138,6 +139,7 @@ public class PubSubMessenger implements PluginChannelHandler {
 
     private static List<String> readNames(PacketBuffer buf) {
         int count = buf.readVarInt();
+        if (count < 0 || count > buf.readableBytes()) throw new IllegalArgumentException("Invalid subscription count");
         List<String> names = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             names.add(buf.readString(32767));
@@ -147,20 +149,23 @@ public class PubSubMessenger implements PluginChannelHandler {
 
     @Override
     public void onCustomPayload(CPacketCustomPayload packet, EntityPlayerMP player) {
-        PacketBuffer payload = PacketSplitter.receive(player, packet);
-        if (payload == null) return;
-        int id = payload.readVarInt();
-        switch (id) {
-            case PACKET_C2S_SUBSCRIBE: {
-                subscribe(player, readNames(payload));
-                return;
+        PacketBuffer payload = null;
+        try {
+            payload = PacketSplitter.receive(player, packet);
+            if (payload == null) return;
+            int id = payload.readVarInt();
+            if (id != PACKET_C2S_SUBSCRIBE && id != PACKET_C2S_UNSUBSCRIBE) {
+                throw new IllegalArgumentException("Unknown pub/sub packet id");
             }
-            case PACKET_C2S_UNSUBSCRIBE: {
-                unsubscribe(player, readNames(payload));
-                return;
-            }
+            List<String> names = readNames(payload);
+            if (payload.isReadable()) throw new IllegalArgumentException("Trailing subscription data");
+            if (id == PACKET_C2S_SUBSCRIBE) subscribe(player, names);
+            else unsubscribe(player, names);
+        } catch (RuntimeException e) {
+            player.connection.disconnect(new net.minecraft.util.text.TextComponentString("Invalid Carpet pub/sub payload"));
+        } finally {
+            if (payload != null) payload.release();
         }
-        throw new IllegalArgumentException("Unknown packet id " + id + " for channel " + CHANNEL_NAME);
     }
 
     @Override

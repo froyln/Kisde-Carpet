@@ -1,0 +1,12 @@
+--- ../src-base/minecraft/net/minecraft/nbt/NBTTagLongArray.java
++++ ../src-work/minecraft/net/minecraft/nbt/NBTTagLongArray.java
+@@ -51,7 +51,8 @@
+     {
+         p_152446_3_.func_152450_a(192L);
+         int i = p_152446_1_.readInt();
+-        p_152446_3_.func_152450_a((long)(64 * i));
++        if (i < 0) throw new IOException("Negative NBT array length");
++        p_152446_3_.func_152450_a(64L * i);
+         this.field_193587_b = new long[i];
+ 
+         for (int j = 0; j < i; ++j)

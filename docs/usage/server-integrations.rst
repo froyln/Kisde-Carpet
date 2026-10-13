@@ -125,3 +125,16 @@ near-cap workloads passed, as did final revision-78 Carpet Client channel
 coexistence. Maximum-player scaling and the exact 2 MiB capture boundary remain
 untested. The vanilla native paste path was tested for block-state placement;
 it does not preserve tile-entity inventory NBT.
+
+Administrative player inventory editing
+---------------------------------------
+
+``/view inv <player>`` and ``/view echest <player>`` require command permission
+level 2 and the ``commandInventory`` rule. Online views refresh from the owner
+before each inventory click, and close when the owner disconnects.
+
+Only one offline edit session can be open for a player at a time. Closing it
+merges the edited inventory with current player data. If the player joins during
+the edit, the editor closes and its inventory changes transfer to the joining
+player. If current offline player data cannot be reloaded, the command reports
+that the changes were not saved and avoids writing a stale player snapshot.

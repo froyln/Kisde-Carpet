@@ -1,0 +1,12 @@
+--- ../src-base/minecraft/net/minecraft/nbt/NBTTagByteArray.java
++++ ../src-work/minecraft/net/minecraft/nbt/NBTTagByteArray.java
+@@ -47,7 +47,8 @@
+     {
+         p_152446_3_.func_152450_a(192L);
+         int i = p_152446_1_.readInt();
+-        p_152446_3_.func_152450_a((long)(8 * i));
++        if (i < 0) throw new IOException("Negative NBT array length");
++        p_152446_3_.func_152450_a(8L * i);
+         this.field_74754_a = new byte[i];
+         p_152446_1_.readFully(this.field_74754_a);
+     }

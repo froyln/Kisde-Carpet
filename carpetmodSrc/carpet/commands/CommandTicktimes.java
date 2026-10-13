@@ -37,10 +37,21 @@ public class CommandTicktimes extends CommandCarpetBase {
         return "ticktimes";
     }
 
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 2;
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return sender.canUseCommand(getRequiredPermissionLevel(), getName());
+    }
+
     /**
      * Callback for when the command is executed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (!checkPermission(server, sender)) throw new CommandException("commands.generic.permission");
         if (!command_enabled("commandTicktimes", sender)) return;
 
         if (args.length == 0) throw new WrongUsageException(getUsage(sender));

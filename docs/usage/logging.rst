@@ -26,3 +26,14 @@ mode if subscribing.
 
 To unsubscribe from all loggers, use the ``/log clear`` command.
 
+Players can manage their own logger subscriptions. Changing another player's
+subscriptions, including resetting them, requires command permission level 2.
+Changing global default subscriptions with ``setDefault`` or ``removeDefault``
+also requires level 2. Command handlers execute with the subscribed player's
+current command permissions.
+
+The ``/ticktimes start [filename]`` and ``/ticktimes stop`` commands require
+permission level 2 because they create or append to files on the server host.
+The ``commandTicktimes`` rule must also be enabled. Existing operator filenames
+and the default ``ticktimes.txt`` are preserved.
+

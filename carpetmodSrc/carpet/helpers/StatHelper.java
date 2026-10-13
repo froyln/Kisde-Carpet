@@ -27,11 +27,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class StatHelper {
     private static final Logger LOGGER = LogManager.getLogger();
     private static Map<UUID, StatisticsManager> cache;
     private static long cacheTime;
+    private static MinecraftServer cacheServer;
     private static final StatBase[] BLOCK_STATE_STATS = new StatBase[256 * 16];
     private static final Int2ObjectMap<StatBase> CRAFT_META_STATS = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<StatBase> OBJECT_USE_META_STATS = new Int2ObjectOpenHashMap<>();
@@ -40,11 +42,12 @@ public class StatHelper {
 
     public static File[] getStatFiles(MinecraftServer server) {
         File statsDir = new File(server.getWorld(0).getSaveHandler().getWorldDirectory(), "stats");
-        return statsDir.listFiles((dir, name) -> name.endsWith(".json"));
+        File[] files = statsDir.listFiles((dir, name) -> name.endsWith(".json"));
+        return files == null ? new File[0] : files;
     }
 
     public static Map<UUID, StatisticsManager> getAllStatistics(MinecraftServer server) {
-        if (cache != null && server.getTickCounter() - cacheTime < 100) return cache;
+        if (cache != null && cacheServer == server && server.getTickCounter() >= cacheTime && server.getTickCounter() - cacheTime < 100) return cache;
         File[] files = getStatFiles(server);
         HashMap<UUID, StatisticsManager> stats = new HashMap<>();
         PlayerList players = server.getPlayerList();
@@ -64,6 +67,7 @@ public class StatHelper {
             } catch (IllegalArgumentException ignored) {}
         }
         cache = stats;
+        cacheServer = server;
         cacheTime = server.getTickCounter();
         return stats;
     }
@@ -81,50 +85,68 @@ public class StatHelper {
     }
 
     public static void initialize(Scoreboard scoreboard, MinecraftServer server, ScoreObjective objective) {
-        LOGGER.info("Initializing " + objective);
-        int totalScorePoints = 0;
-        IScoreCriteria criteria = objective.getCriteria();
-        if (!(criteria instanceof ScoreCriteriaStat)) return;
-        StatBase stat = ((ScoreCriteriaStat) criteria).stat;
-        for (Map.Entry<UUID, StatisticsManager> statEntry : getAllStatistics(server).entrySet()) {
-            StatisticsManager stats = statEntry.getValue();
-            int value = stats.readStat(stat);
-            if (value == 0) continue;
-            String username = getUsername(server, statEntry.getKey());
-            if (username == null) continue;
-            Score score = scoreboard.getOrCreateScore(username, objective);
-            score.setScorePoints(value);
-            totalScorePoints += value;
-            LOGGER.info("Initialized score " + objective.getName() + " of " + username + " to " + value);
-        }
-        Score totalScore = scoreboard.getOrCreateScore("Total", objective);
-        totalScore.setScorePoints(totalScorePoints);
+        initializeWithDividerWithDifferentCriteria(scoreboard, server, objective, 1, objective.getCriteria());
     }
 
-    public static void initializeWithDividerWithDifferentCriteria(Scoreboard scoreboard, MinecraftServer server, ScoreObjective objective, int divider,IScoreCriteria criteria) {
-        LOGGER.info("Initializing " + objective);
-        int totalScorePoints = 0;
-        if (!(criteria instanceof ScoreCriteriaStat)) {
+    public static void initializeWithDividerWithDifferentCriteria(Scoreboard scoreboard, MinecraftServer server,
+            ScoreObjective objective, int divider, IScoreCriteria criteria) {
+        if (!server.isCallingFromMinecraftThread()) {
+            server.addScheduledTask(() -> initializeWithDividerWithDifferentCriteria(scoreboard, server, objective, divider, criteria));
             return;
         }
+        if (!(criteria instanceof ScoreCriteriaStat) || scoreboard.getObjective(objective.getName()) != objective) return;
+        if (divider <= 0) throw new IllegalArgumentException("Score divider must be positive");
         StatBase stat = ((ScoreCriteriaStat) criteria).stat;
-        for (Map.Entry<UUID, StatisticsManager> statEntry : getAllStatistics(server).entrySet()) {
-            StatisticsManager stats = statEntry.getValue();
-            int value = stats.readStat(stat) / divider;
-            if (value == 0) {
-                continue;
-            }
-            String username = getUsername(server, statEntry.getKey());
-            if (username == null) {
-                continue;
-            }
-            Score score = scoreboard.getOrCreateScore(username, objective);
-            score.setScorePoints(value);
-            totalScorePoints += value;
-            LOGGER.info("Initialized score " + objective.getName() + " of " + username + " to " + value);
+        Map<UUID, File> files = new HashMap<>();
+        Map<UUID, Integer> values = new HashMap<>();
+        Map<UUID, String> names = new HashMap<>();
+        for (File file : getStatFiles(server)) {
+            try {
+                String filename = file.getName();
+                UUID uuid = UUID.fromString(filename.substring(0, filename.length() - 5));
+                files.put(uuid, file);
+                EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(uuid);
+                if (player != null) values.put(uuid, server.getPlayerList().getPlayerStatsFile(player).readStat(stat));
+                GameProfile profile = server.getPlayerProfileCache().getProfileByUUID(uuid);
+                if (profile != null) names.put(uuid, profile.getName());
+            } catch (IllegalArgumentException ignored) {}
         }
-        Score totalScore = scoreboard.getOrCreateScore("Total", objective);
-        totalScore.setScorePoints(totalScorePoints);
+        MinecraftSessionService sessionService = server.getMinecraftSessionService();
+        CompletableFuture.runAsync(() -> {
+            try {
+                for (Map.Entry<UUID, File> entry : files.entrySet()) {
+                    UUID uuid = entry.getKey();
+                    if (!values.containsKey(uuid)) {
+                        StatisticsManagerServer statistics = new StatisticsManagerServer(server, entry.getValue());
+                        statistics.readStatFile();
+                        values.put(uuid, statistics.readStat(stat));
+                    }
+                    if (values.get(uuid) / divider != 0 && !names.containsKey(uuid)) {
+                        GameProfile profile = sessionService.fillProfileProperties(new GameProfile(uuid, null), false);
+                        if (profile.isComplete()) names.put(uuid, profile.getName());
+                        else LOGGER.warn("Could not find name of user " + uuid);
+                    }
+                }
+                server.addScheduledTask(() -> applyInitialScores(scoreboard, server, objective, stat, divider, values, names));
+            } catch (Exception e) {
+                LOGGER.warn("Unable to initialize scoreboard " + objective.getName(), e);
+            }
+        });
+    }
+
+    private static void applyInitialScores(Scoreboard scoreboard, MinecraftServer server, ScoreObjective objective,
+            StatBase stat, int divider, Map<UUID, Integer> values, Map<UUID, String> names) {
+        if (!server.isServerRunning() || scoreboard.getObjective(objective.getName()) != objective) return;
+        int total = 0;
+        for (Map.Entry<UUID, Integer> entry : values.entrySet()) {
+            EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(entry.getKey());
+            int value = (player == null ? entry.getValue() : server.getPlayerList().getPlayerStatsFile(player).readStat(stat)) / divider;
+            String name = player == null ? names.get(entry.getKey()) : player.getName();
+            if (value == 0 || name == null) continue;
+            scoreboard.getOrCreateScore(name, objective).setScorePoints(value);
+            total += value;
+        }
+        scoreboard.getOrCreateScore("Total", objective).setScorePoints(total);
     }
 
     public static StatBase getBlockStateStats(IBlockState state) {

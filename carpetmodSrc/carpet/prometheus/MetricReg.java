@@ -10,6 +10,7 @@ public class MetricReg {
 	
 	private final PrometheusExtension extension;
     private Timer timer;
+    private MetricUpdater updater;
     private final List<AbstractMetric> metrics = new ArrayList<>();
     
     public MetricReg(PrometheusExtension prometheusExtension) {
@@ -47,6 +48,7 @@ public class MetricReg {
         metrics.add(onlinePlayersMetrics);
 	}
     public void emptyMetrics(){
+        stopUpdater();
         for(AbstractMetric metric : metrics){
             metric.getGauge().unregister();
             metric.getGauge().clear();
@@ -55,16 +57,22 @@ public class MetricReg {
     }
 
 	public void runUpdater() {
-		if (this.timer != null) {
-            this.timer.cancel();
-        }
+        stopUpdater();
         this.timer = new Timer();
         MetricUpdater metricUpdater = new MetricUpdater(this.extension);
+        this.updater = metricUpdater;
         for (AbstractMetric m : metrics) {
             metricUpdater.addMetric(m);
         }
         this.timer.schedule(metricUpdater, 1000, 1000);
 	}
+
+    public void stopUpdater() {
+        if (this.updater != null) this.updater.cancel();
+        if (this.timer != null) this.timer.cancel();
+        this.updater = null;
+        this.timer = null;
+    }
 
 	public Timer getTimer() {
 		return this.timer;

@@ -42,6 +42,15 @@ public class CommandLog extends CommandCarpetBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (!command_enabled("commandLog", sender)) return;
+        if (args.length > 0) {
+            if ("setDefault".equalsIgnoreCase(args[0]) || "removeDefault".equalsIgnoreCase(args[0])) {
+                requireManagePermission(sender, null);
+            } else if ("reset".equalsIgnoreCase(args[0])) {
+                if (args.length > 1) requireManagePermission(sender, args[1]);
+            } else if (!"defaults".equalsIgnoreCase(args[0]) && args.length >= 3) {
+                requireManagePermission(sender, args[2]);
+            }
+        }
         EntityPlayer player = null;
         if (sender instanceof EntityPlayer)
         {
@@ -280,6 +289,13 @@ public class CommandLog extends CommandCarpetBase {
         else
         {
             throw new WrongUsageException("No logger named " + args[0] + ".");
+        }
+    }
+
+    private void requireManagePermission(ICommandSender sender, String target) throws CommandException {
+        if (!sender.canUseCommand(2, getName()) && (target == null ||
+                !(sender instanceof EntityPlayer) || !sender.getName().equalsIgnoreCase(target))) {
+            throw new CommandException("commands.generic.permission");
         }
     }
 

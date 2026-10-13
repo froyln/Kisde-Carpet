@@ -18,7 +18,7 @@ public class PrometheusExtension {
     private static final Logger LOGGER = LogManager.getLogger();
     private HTTPServer httpServer;
     private int port;
-    public static MinecraftServer server;
+    public static volatile MinecraftServer server;
     private MetricReg metricReg = new MetricReg(this);
     Path path = Paths.get("Prometheus config.json");
 
@@ -33,9 +33,7 @@ public class PrometheusExtension {
                 e.printStackTrace();
             }
         }
-        BufferedReader reader = null;
-        try {
-            reader = Files.newBufferedReader(this.path);
+        try (BufferedReader reader = Files.newBufferedReader(this.path)) {
             String text = reader.readLine();
             port = Integer.parseInt(text.split(":")[1]);
         } catch (IOException e) {
@@ -70,9 +68,7 @@ public class PrometheusExtension {
         if (this.httpServer != null) {
             this.httpServer.close();
         }
-        if (this.metricReg.getTimer() != null) {
-            this.metricReg.getTimer().cancel();
-        }
+        this.metricReg.stopUpdater();
         LOGGER.info("Prometheus stopped");
     }
 

@@ -29,10 +29,11 @@ public class EntitiesMetrics extends AbstractMetric {
             world.loadedEntityList.forEach(entity -> {
             	if (entity instanceof EntityPlayerMP) {
             		players.put("player", players.getOrDefault("player", 0) + 1);
-            	} else if (entity.getClass().isAssignableFrom(EntityItem.class)) {
+                } else if (entity instanceof EntityItem) {
             		items.put(((EntityItem)entity).getItem().getDisplayName(), items.getOrDefault(((EntityItem)entity).getItem().getDisplayName(), 0) + 1);
             	} else {
-            		livingEntities.put(EntityList.getKey(entity).getPath(), livingEntities.getOrDefault(EntityList.getKey(entity).getPath(), 0) + 1);
+                    ResourceLocation key = EntityList.getKey(entity);
+                    if (key != null) livingEntities.put(key.getPath(), livingEntities.getOrDefault(key.getPath(), 0) + 1);
             	}
             });
             

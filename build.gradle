@@ -497,3 +497,15 @@ task sharedSchematicStoreCheck(type: JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     main = 'carpet.SharedSchematicStoreCheck'
 }
+
+task securityCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.SecurityCheck'
+}
+
+task reliabilityCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.ReliabilityCheck'
+}

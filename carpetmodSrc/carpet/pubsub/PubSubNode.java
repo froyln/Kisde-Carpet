@@ -66,7 +66,7 @@ public final class PubSubNode {
      * @param subscriber The subscriber being added
      */
     void subscribe(PubSubSubscriber subscriber) {
-        this.subscribers.add(subscriber);
+        if (!this.subscribers.add(subscriber)) return;
         for (PubSubNode n = this.parent; n != null; n = n.parent) {
             n.totalSubscriberCount++;
         }
@@ -94,7 +94,7 @@ public final class PubSubNode {
      * @param subscriber The subscriber being removed
      */
     void unsubscribe(PubSubSubscriber subscriber) {
-        this.subscribers.remove(subscriber);
+        if (!this.subscribers.remove(subscriber)) return;
         for (PubSubNode n = this.parent; n != null; n = n.parent) {
             n.totalSubscriberCount--;
         }
