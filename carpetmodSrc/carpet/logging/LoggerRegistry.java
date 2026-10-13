@@ -53,6 +53,7 @@ public class LoggerRegistry
     public static boolean __damageDebug;
     public static boolean __invisDebug;
     public static boolean __carefulBreak;
+    public static boolean __carefulDrop;
     public static boolean __normalCameraVision;
     public static boolean __villages;
     public static boolean __golems;
@@ -92,6 +93,7 @@ public class LoggerRegistry
         registerDebugger("invisDebug", new Logger(server, "invisDebug", null, null, LogHandler.CHAT));
 
         registerGeneric("carefulBreak", new Logger(server, "carefulBreak", null, null, LogHandler.CHAT));
+        registerGeneric("carefulDrop", new Logger(server, "carefulDrop", null, null, LogHandler.CHAT));
         registerGeneric("normalCameraVision", new Logger(server, "normalCameraVision", null, null, LogHandler.CHAT));
     }
 

@@ -24,10 +24,80 @@
 +        //CM conditions
 +        boolean parrots_will_drop = !CarpetSettings.persistentParrots || this.field_71075_bZ.field_75102_a;
 +        if (!this.field_70170_p.field_72995_K && ((parrots_will_drop && this.field_70143_R > 0.5F) || this.func_70090_H() || (parrots_will_drop && this.func_184218_aH()) ) || this.field_71075_bZ.field_75100_b )
-@@ -695 +714 @@
+@@ -575,31 +594,36 @@
+-        super.func_70645_a(p_70645_1_);
+-        this.func_70105_a(0.2F, 0.2F);
+-        this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
+-        this.field_70181_x = 0.10000000149011612D;
+-
+-        if ("Notch".equals(this.func_70005_c_()))
+-        {
+-            this.func_146097_a(new ItemStack(Items.field_151034_e, 1), true, false);
+-        }
+-
+-        if (!this.field_70170_p.func_82736_K().func_82766_b("keepInventory") && !this.func_175149_v())
+-        {
+-            this.func_190776_cN();
+-            this.field_71071_by.func_70436_m();
+-        }
+-
+-        if (p_70645_1_ != null)
+-        {
+-            this.field_70159_w = (double)(-MathHelper.func_76134_b((this.field_70739_aP + this.field_70177_z) * 0.017453292F) * 0.1F);
+-            this.field_70179_y = (double)(-MathHelper.func_76126_a((this.field_70739_aP + this.field_70177_z) * 0.017453292F) * 0.1F);
+-        }
+-        else
+-        {
+-            this.field_70159_w = 0.0D;
+-            this.field_70179_y = 0.0D;
+-        }
+-
+-        this.func_71029_a(StatList.field_188069_A);
+-        this.func_175145_a(StatList.field_188098_h);
+-        this.func_70066_B();
+-        this.func_70052_a(0, false);
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70645_1_ == null ? null : p_70645_1_.func_76346_g());
++        try {
++            super.func_70645_a(p_70645_1_);
++            this.func_70105_a(0.2F, 0.2F);
++            this.func_70107_b(this.field_70165_t, this.field_70163_u, this.field_70161_v);
++            this.field_70181_x = 0.10000000149011612D;
++
++            if ("Notch".equals(this.func_70005_c_()))
++            {
++                this.func_146097_a(new ItemStack(Items.field_151034_e, 1), true, false);
++            }
++
++            if (!this.field_70170_p.func_82736_K().func_82766_b("keepInventory") && !this.func_175149_v())
++            {
++                this.func_190776_cN();
++                this.field_71071_by.func_70436_m();
++            }
++
++            if (p_70645_1_ != null)
++            {
++                this.field_70159_w = (double)(-MathHelper.func_76134_b((this.field_70739_aP + this.field_70177_z) * 0.017453292F) * 0.1F);
++                this.field_70179_y = (double)(-MathHelper.func_76126_a((this.field_70739_aP + this.field_70177_z) * 0.017453292F) * 0.1F);
++            }
++            else
++            {
++                this.field_70159_w = 0.0D;
++                this.field_70179_y = 0.0D;
++            }
++
++            this.func_71029_a(StatList.field_188069_A);
++            this.func_175145_a(StatList.field_188098_h);
++            this.func_70066_B();
++            this.func_70052_a(0, false);
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);
++        }
+@@ -652,0 +677 @@
++        carpet.helpers.CarefulDrop.collect(this.field_70170_p, p_146097_1_);
+@@ -695 +720 @@
 -                    this.func_71064_a(StatList.func_188058_e(itemstack.func_77973_b()), p_146097_1_.func_190916_E());
 +                    this.func_71064_a(StatHelper.getDroppedObjectStats(itemstack.func_77973_b(), itemstack.func_77960_j()), p_146097_1_.func_190916_E());
-@@ -911 +930,13 @@
+@@ -911 +936,13 @@
 -                this.func_192030_dh();
 +                //this.spawnShoulderEntities();
 +                //CM optionally dismount parrots
@@ -42,48 +112,48 @@
 +                        this.dismount_right();
 +                    }
 +                }
-@@ -914,0 +946 @@
+@@ -914,0 +952 @@
 +                    float prevamount = p_70097_2_; //CM
-@@ -928,0 +961 @@
+@@ -928,0 +967 @@
 +                    DamageReporter.modify_damage(this, p_70097_1_, prevamount, p_70097_2_, "difficulty"); //CM
-@@ -1010,0 +1044 @@
+@@ -1010,0 +1050 @@
 +            float previous_amount = p_70665_2_; //CM
-@@ -1011,0 +1046,3 @@
+@@ -1011,0 +1052,3 @@
 +            DamageReporter.modify_damage(this, p_70665_1_, previous_amount, p_70665_2_, //CM
 +                    String.format("armour %.1f and toughness %.1f", (float)this.func_70658_aO(), (float)this.func_110148_a(SharedMonsterAttributes.field_189429_h).func_111126_e())); //CM
 +
-@@ -1015,0 +1053 @@
+@@ -1015,0 +1059 @@
 +            DamageReporter.modify_damage(this, p_70665_1_, p_70665_2_, f, "Absorbtion"); //CM
-@@ -1020,0 +1059 @@
+@@ -1020,0 +1065 @@
 +                DamageReporter.register_final_damage(this, p_70665_1_, p_70665_2_); //CM
-@@ -1029,0 +1069,6 @@
+@@ -1029,0 +1075,6 @@
 +        //CM 
 +        else
 +        {
 +            DamageReporter.modify_damage(this, p_70665_1_, p_70665_2_, 0.0f, "invulnerability to the damage source");
 +        }
 +        //CM end
-@@ -1130,0 +1176 @@
+@@ -1130,0 +1182 @@
 +        if (carpet.helpers.CreativeOneHitKillHelper.attack(this, p_71059_1_)) return;
-@@ -1229,0 +1276,3 @@
+@@ -1229,0 +1282,3 @@
 +                            //CM
 +                            int mobs_smashed = 1;
 +
-@@ -1235,0 +1285,2 @@
+@@ -1235,0 +1291,2 @@
 +                                    //CM
 +                                    mobs_smashed ++;
-@@ -1237,0 +1289,3 @@
+@@ -1237,0 +1295,3 @@
 +
 +                            if (LoggerRegistry.__kills)
 +                                KillLogHelper.onSweep(this, mobs_smashed);
-@@ -1241,0 +1296,6 @@
+@@ -1241,0 +1302,6 @@
 +                        else
 +                        {
 +                            if (LoggerRegistry.__kills)
 +                                KillLogHelper.onNonSweepAttack(this);
 +                        }
 +
-@@ -1335,0 +1396,7 @@
+@@ -1335,0 +1402,7 @@
 +            //CM
 +            else
 +            {
@@ -91,12 +161,12 @@
 +                    KillLogHelper.onDudHit(this);
 +            }
 +            //CM END
-@@ -1913,0 +1981,4 @@
+@@ -1913,0 +1987,4 @@
 +        else if (CarpetSettings.disableBedrockPlacement && p_175151_3_.func_77973_b() == Item.func_150898_a(Blocks.field_150357_h) && !this.field_71075_bZ.field_75098_d)
 +        {
 +            return false;
 +        }
-@@ -2042,0 +2114,14 @@
+@@ -2042,0 +2120,14 @@
 +        this.func_192026_k(this.func_192025_dl());
 +        this.func_192031_i(new NBTTagCompound());
 +    }
@@ -111,7 +181,7 @@
 +    //dismount right parrot
 +    protected void dismount_right()
 +    {
-@@ -2309,0 +2395,7 @@
+@@ -2309,0 +2401,7 @@
 +    
 +    // CM: player collision
 +    @Override
@@ -119,12 +189,9 @@
 +    {
 +        return !CarpetSettings.disablePlayerCollision;
 +    }
-@@ -2336 +2428 @@
+@@ -2336 +2434 @@
 -    static class SleepEnemyPredicate implements Predicate<EntityMob>
 +    public static class SleepEnemyPredicate implements Predicate<EntityMob>
-@@ -2340 +2432 @@
+@@ -2340 +2438 @@
 -            private SleepEnemyPredicate(EntityPlayer p_i47461_1_)
 +            public SleepEnemyPredicate(EntityPlayer p_i47461_1_)
-@@ -2360 +2452 @@
--}
-+}

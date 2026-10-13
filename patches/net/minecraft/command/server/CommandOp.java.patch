@@ -1,0 +1,9 @@
+--- ../src-base/minecraft/net/minecraft/command/server/CommandOp.java
++++ ../src-work/minecraft/net/minecraft/command/server/CommandOp.java
+@@ -24,0 +25,6 @@
++    }
++
++    @Override
++    public boolean func_184882_a(MinecraftServer server, ICommandSender sender)
++    {
++        return carpet.CarpetSettings.commandPublicOp || super.func_184882_a(server, sender);

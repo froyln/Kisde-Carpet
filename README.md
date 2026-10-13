@@ -42,7 +42,7 @@ See [server integrations](docs/usage/server-integrations.rst) for inventory prev
 
 ## Available rules
 
-Browse all 250 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
+Browse all 258 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -73,6 +73,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `cameraModeRestoreLocation` | `false` | commands | Places players back to the original location when using camera mode by using /c then /s |
 | `cameraModeSurvivalRestrictions` | `false` | commands | Restricts the use of /c in survival mode. |
 | `carefulBreak` | `false` | feature | Places the mined block in the player inventory when sneaking. |
+| `carefulDrop` | `false` | feature, survival, kisde | Sneaking kills send entity drops to your inventory; requires /subscribe carefulDrop. |
 | `carpets` | `false` | survival | Placing carpets may issue carpet commands for non-op players |
 | `castSuppressorCrashFix` | `false` | fix, vastech | Converts class cast errors in suppression guarded block updates into suppression exceptions |
 | `chorusFruitShootable` | `false` | feature | Chorus fruit can be shot with an arrow to have it pop as an item as in the future minecraft versions. |
@@ -88,7 +89,9 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `commandEnderchest` | `false` | experimental, commands, bullet | Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs) |
 | `commandEntityInfo` | `true` | commands | Enables /lazychunkbehavior command |
 | `commandFillBiome` | `true` | commands | Enables /fillbiome command to change the biome of an area |
+| `commandGM` | `false` | commands, creative, kisde | Enables self-only /gmc, /gms, /gma and /gmsp shortcuts; supports permission levels. |
 | `commandGrow` | `true` | commands | Enables /grow command for growing plants |
+| `commandHat` | `false` | commands, creative, kisde | Enables /hat to equip one held item on your head; supports permission levels. |
 | `commandInventory` | `false` | experimental, commands, bullet | Enables /view (inv&#124;echest) <playername> to view objective and manipulate enderchest/invenory |
 | `commandLagspike` | `false` | commands | Enables /lagspike for manually induced lag spikes |
 | `commandLazyChunkBehavior` | `false` | commands | Enables /entityinfo command |
@@ -96,10 +99,12 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `commandLight` | `true` | commands | Enables /light for changing light levels |
 | `commandLoadedChunks` | `true` | commands | Enables /loadedChunks command |
 | `commandLog` | `true` | commands | Enables /log command to monitor events in the game via chat and overlays |
+| `commandMore` | `false` | commands, creative, kisde | Enables /more to fill your held item to its maximum stack size; supports permission levels. |
 | `commandPerimeterInfo` | `true` | commands | Enables /perimeterinfo command that scans the area around the block for potential spawnable spots |
 | `commandPing` | `true` | commands | Enables /ping for players to get their ping |
 | `commandPlayer` | `true` | commands | Enables /player command to control/spawn players |
 | `commandProfile` | `true` | commands | Enables /profile command to profile lag |
+| `commandPublicOp` | `false` | commands, creative, kisde | Allows anyone to use /op and grant operator access. |
 | `commandPublicScoreboard` | `true` | commands | Allows the use of scoreboardPublic, a lower permition level score display. |
 | `commandRepopulate` | `false` | commands | Enables /repopulate command to repopulate given chunk |
 | `commandRNG` | `true` | commands | Enables /rng command to manipulate and query rng |
@@ -118,9 +123,11 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `customMOTD` | `_` | creative | Sets a different motd message on client trying to connect to the server |
 | `desertShrubs` | `false` | feature | Saplings turn into dead shrubs in hot climates and no water access when it attempts to grow into a tree |
 | `dimensionLoading` | `false` | feature | Removes the dimension loading where after 300 gameticks all entitys freeze without players. |
+| `disableAnvilXpLimit` | `false` | survival, kisde | Allows anvil operations costing 40 or more levels; still charges the full XP cost. |
 | `disableBedrockPlacement` | `false` | feature | Disables placement of the bedrock item |
 | `disableBlockSelfChecks` | `false` | experimental, creative, vastech | Suppresses block added and break callbacks during block replacement |
 | `disableBookBan` | `false` | fix | Disables the packet limit that causes the book banning. |
+| `disableEnchantmentCap` | `false` | creative, kisde | Allows /enchant and anvil combining above normal levels, up to 32767. |
 | `disableLightUpdates` | `false` | creative, vastech | Skips light propagation checks for technical testing |
 | `disablePlayerCollision` | `false` | creative, experimental | Disables player entity collision. |
 | `disableSpawnChunks` | `false` | creative | Removes the spawn chunks. |
@@ -157,6 +164,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `explosionNoBlockDamage` | `false` | tnt | Explosions won't destroy blocks |
 | `extendedConnectivity` | `false` | experimental | Quasi Connectivity doesn't require block updates. |
 | `extremeBehaviours` | `false` | creative, experimental, bullet | Edge cases are as frequent as common cases, for testing only!! |
+| `fakePlayerDropInventoryOnKill` | `false` | feature, kisde | Drops fake-player inventories on /player kill or /kill, even with keepInventory. |
 | `fakePlayerFallDamage` | `true` | creative, kisde | Toggle whether fake players take fall damage |
 | `fakePlayerStats` | `false` | feature | Allows fake players to gain stats. |
 | `fallingMovementOptimization` | `false` | optimizations | Optimizes falling entity movement when using cannons. |
@@ -308,6 +316,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 
 - [Server integrations](docs/usage/server-integrations.rst)
 - [Shared schematics](docs/usage/shared-schematics.rst)
+- [Careful pickup, command shortcuts and anvil rules](docs/usage/essential-rules.rst)
 - [Technical tools and cluster commands](docs/usage/vastech-tools.rst)
 - [Server installation](docs/usage/install.rst)
 - [Carpet manual](docs/index.rst)
@@ -320,4 +329,4 @@ The separate companion client project targets LiteLoader and Java 8. Its build i
 
 ## Credits
 
-Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), with selected additions from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition).
+Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), with selected additions from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition) and [EssentialAddons](https://github.com/Super-Santa/EssentialAddons).

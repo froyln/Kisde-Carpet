@@ -1,35 +1,83 @@
 --- ../src-base/minecraft/net/minecraft/entity/item/EntityMinecart.java
 +++ ../src-work/minecraft/net/minecraft/entity/item/EntityMinecart.java
-@@ -34,6 +34,10 @@
- import net.minecraft.world.World;
- import net.minecraft.world.WorldServer;
- 
+@@ -36,0 +37,4 @@
 +import carpet.CarpetSettings;
 +
 + import carpet.CarpetSettings;
 +
- public abstract class EntityMinecart extends Entity implements IWorldNameable
- {
-     private static final DataParameter<Integer> field_184265_a = EntityDataManager.<Integer>func_187226_a(EntityMinecart.class, DataSerializers.field_187192_b);
-@@ -51,6 +55,9 @@
-     private double field_70512_ao;
-     private double field_70513_ap;
- 
+@@ -53,0 +58,3 @@
 +    //CM
 +    public String cm_name() { return "Minecart"; }
 +
-     public EntityMinecart(World p_i1712_1_)
-     {
-         super(p_i1712_1_);
-@@ -474,7 +481,10 @@
-         this.field_70179_y = d5 * d2 / d3;
-         Entity entity = this.func_184188_bt().isEmpty() ? null : (Entity)this.func_184188_bt().get(0);
- 
+@@ -133,5 +140,32 @@
+-        if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
+-        {
+-            if (this.func_180431_b(p_70097_1_))
+-            {
+-                return false;
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70097_1_.func_76346_g());
++        try {
++            if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
++            {
++                if (this.func_180431_b(p_70097_1_))
++                {
++                    return false;
++                }
++                else
++                {
++                    this.func_70494_i(-this.func_70493_k());
++                    this.func_70497_h(10);
++                    this.func_70018_K();
++                    this.func_70492_c(this.func_70491_i() + p_70097_2_ * 10.0F);
++                    boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
++
++                    if (flag || this.func_70491_i() > 40.0F)
++                    {
++                        this.func_184226_ay();
++
++                        if (flag && !this.func_145818_k_())
++                        {
++                            this.func_70106_y();
++                        }
++                        else
++                        {
++                            this.func_94095_a(p_70097_1_);
++                        }
++                    }
++
++                    return true;
++                }
+@@ -141,20 +174,0 @@
+-                this.func_70494_i(-this.func_70493_k());
+-                this.func_70497_h(10);
+-                this.func_70018_K();
+-                this.func_70492_c(this.func_70491_i() + p_70097_2_ * 10.0F);
+-                boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
+-
+-                if (flag || this.func_70491_i() > 40.0F)
+-                {
+-                    this.func_184226_ay();
+-
+-                    if (flag && !this.func_145818_k_())
+-                    {
+-                        this.func_70106_y();
+-                    }
+-                    else
+-                    {
+-                        this.func_94095_a(p_70097_1_);
+-                    }
+-                }
+-
+@@ -163,4 +177,2 @@
+-        }
+-        else
+-        {
+-            return true;
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);
+@@ -477 +489,4 @@
 -        if (entity instanceof EntityLivingBase)
 +        /*
 +         * Carpet settings to make only players be able to control minecarts. CARPET-XCOM
 +         */
 +        if (entity instanceof EntityLivingBase && (!CarpetSettings.mobsDontControlMinecarts || entity instanceof EntityPlayer))
-         {
-             double d6 = (double)((EntityLivingBase)entity).field_191988_bg;
- 

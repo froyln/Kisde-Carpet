@@ -1,10 +1,140 @@
 --- ../src-base/minecraft/net/minecraft/entity/item/EntityArmorStand.java
 +++ ../src-work/minecraft/net/minecraft/entity/item/EntityArmorStand.java
-@@ -93,6 +93,7 @@
-         this.func_70107_b(p_i45855_2_, p_i45855_4_, p_i45855_6_);
-     }
- 
+@@ -95,0 +96 @@
 +    public String cm_name() { return "Armor Stand"; }
-     protected final void func_70105_a(float p_70105_1_, float p_70105_2_)
-     {
-         double d0 = this.field_70165_t;
+@@ -485,10 +486,5 @@
+-        if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
+-        {
+-            if (DamageSource.field_76380_i.equals(p_70097_1_))
+-            {
+-                this.func_70106_y();
+-                return false;
+-            }
+-            else if (!this.func_180431_b(p_70097_1_) && !this.field_175436_h && !this.func_181026_s())
+-            {
+-                if (p_70097_1_.func_94541_c())
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70097_1_.func_76346_g());
++        try {
++            if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
++            {
++                if (DamageSource.field_76380_i.equals(p_70097_1_))
+@@ -496 +491,0 @@
+-                    this.func_175409_C();
+@@ -500 +495 @@
+-                else if (DamageSource.field_76372_a.equals(p_70097_1_))
++                else if (!this.func_180431_b(p_70097_1_) && !this.field_175436_h && !this.func_181026_s())
+@@ -502 +497 @@
+-                    if (this.func_70027_ad())
++                    if (p_70097_1_.func_94541_c())
+@@ -504 +499,3 @@
+-                        this.func_175406_a(0.15F);
++                        this.func_175409_C();
++                        this.func_70106_y();
++                        return false;
+@@ -506 +503 @@
+-                    else
++                    else if (DamageSource.field_76372_a.equals(p_70097_1_))
+@@ -508 +505,10 @@
+-                        this.func_70015_d(5);
++                        if (this.func_70027_ad())
++                        {
++                            this.func_175406_a(0.15F);
++                        }
++                        else
++                        {
++                            this.func_70015_d(5);
++                        }
++
++                        return false;
+@@ -510,14 +516 @@
+-
+-                    return false;
+-                }
+-                else if (DamageSource.field_76370_b.equals(p_70097_1_) && this.func_110143_aJ() > 0.5F)
+-                {
+-                    this.func_175406_a(4.0F);
+-                    return false;
+-                }
+-                else
+-                {
+-                    boolean flag = "arrow".equals(p_70097_1_.func_76355_l());
+-                    boolean flag1 = "player".equals(p_70097_1_.func_76355_l());
+-
+-                    if (!flag1 && !flag)
++                    else if (DamageSource.field_76370_b.equals(p_70097_1_) && this.func_110143_aJ() > 0.5F)
+@@ -524,0 +518 @@
++                        this.func_175406_a(4.0F);
+@@ -529 +523,4 @@
+-                        if (p_70097_1_.func_76364_f() instanceof EntityArrow)
++                        boolean flag = "arrow".equals(p_70097_1_.func_76355_l());
++                        boolean flag1 = "player".equals(p_70097_1_.func_76355_l());
++
++                        if (!flag1 && !flag)
+@@ -531,12 +527,0 @@
+-                            p_70097_1_.func_76364_f().func_70106_y();
+-                        }
+-
+-                        if (p_70097_1_.func_76346_g() instanceof EntityPlayer && !((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75099_e)
+-                        {
+-                            return false;
+-                        }
+-                        else if (p_70097_1_.func_180136_u())
+-                        {
+-                            this.func_190773_I();
+-                            this.func_175412_z();
+-                            this.func_70106_y();
+@@ -547,3 +532 @@
+-                            long i = this.field_70170_p.func_82737_E();
+-
+-                            if (i - this.field_175437_i > 5L && !flag)
++                            if (p_70097_1_.func_76364_f() instanceof EntityArrow)
+@@ -551,2 +534,13 @@
+-                                this.field_70170_p.func_72960_a(this, (byte)32);
+-                                this.field_175437_i = i;
++                                p_70097_1_.func_76364_f().func_70106_y();
++                            }
++
++                            if (p_70097_1_.func_76346_g() instanceof EntityPlayer && !((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75099_e)
++                            {
++                                return false;
++                            }
++                            else if (p_70097_1_.func_180136_u())
++                            {
++                                this.func_190773_I();
++                                this.func_175412_z();
++                                this.func_70106_y();
++                                return false;
+@@ -556,3 +550,15 @@
+-                                this.func_175421_A();
+-                                this.func_175412_z();
+-                                this.func_70106_y();
++                                long i = this.field_70170_p.func_82737_E();
++
++                                if (i - this.field_175437_i > 5L && !flag)
++                                {
++                                    this.field_70170_p.func_72960_a(this, (byte)32);
++                                    this.field_175437_i = i;
++                                }
++                                else
++                                {
++                                    this.func_175421_A();
++                                    this.func_175412_z();
++                                    this.func_70106_y();
++                                }
++
++                                return false;
+@@ -560,2 +565,0 @@
+-
+-                            return false;
+@@ -564,0 +569,4 @@
++                else
++                {
++                    return false;
++                }
+@@ -570,4 +578,2 @@
+-        }
+-        else
+-        {
+-            return false;
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);

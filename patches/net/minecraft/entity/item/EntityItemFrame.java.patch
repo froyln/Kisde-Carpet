@@ -1,31 +1,67 @@
 --- ../src-base/minecraft/net/minecraft/entity/item/EntityItemFrame.java
 +++ ../src-work/minecraft/net/minecraft/entity/item/EntityItemFrame.java
-@@ -23,6 +23,8 @@
- import net.minecraft.world.World;
- import net.minecraft.world.storage.MapData;
- 
+@@ -25,0 +26,2 @@
 +import carpet.CarpetSettings;
 +
- public class EntityItemFrame extends EntityHanging
- {
-     private static final DataParameter<ItemStack> field_184525_c = EntityDataManager.<ItemStack>func_187226_a(EntityItemFrame.class, DataSerializers.field_187196_f);
-@@ -40,6 +42,9 @@
-         this.func_174859_a(p_i45852_3_);
-     }
- 
+@@ -42,0 +45,3 @@
 +    //CM
 +    public String cm_name() { return "Item Frame"; }
 +
-     protected void func_70088_a()
-     {
-         this.func_184212_Q().func_187214_a(field_184525_c, ItemStack.field_190927_a);
-@@ -97,7 +102,8 @@
- 
-     public void func_146065_b(@Nullable Entity p_146065_1_, boolean p_146065_2_)
-     {
+@@ -100,10 +105,26 @@
 -        if (this.field_70170_p.func_82736_K().func_82766_b("doEntityDrops"))
-+        // Added a fix for duplication of items when breaking item frames CARPET-XCOM
-+        if (this.field_70170_p.func_82736_K().func_82766_b("doEntityDrops") && (!CarpetSettings.duplicationFixItemFrame || !field_70128_L))
-         {
-             ItemStack itemstack = this.func_82335_i();
- 
+-        {
+-            ItemStack itemstack = this.func_82335_i();
+-
+-            if (p_146065_1_ instanceof EntityPlayer)
+-            {
+-                EntityPlayer entityplayer = (EntityPlayer)p_146065_1_;
+-
+-                if (entityplayer.field_71075_bZ.field_75098_d)
+-                {
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_146065_1_);
++        try {
++            // Added a fix for duplication of items when breaking item frames CARPET-XCOM
++            if (this.field_70170_p.func_82736_K().func_82766_b("doEntityDrops") && (!CarpetSettings.duplicationFixItemFrame || !field_70128_L))
++            {
++                ItemStack itemstack = this.func_82335_i();
++
++                if (p_146065_1_ instanceof EntityPlayer)
++                {
++                    EntityPlayer entityplayer = (EntityPlayer)p_146065_1_;
++
++                    if (entityplayer.field_71075_bZ.field_75098_d)
++                    {
++                        this.func_110131_b(itemstack);
++                        return;
++                    }
++                }
++
++                if (p_146065_2_)
++                {
++                    this.func_70099_a(new ItemStack(Items.field_151160_bD), 0.0F);
++                }
++
++                if (!itemstack.func_190926_b() && this.field_70146_Z.nextFloat() < this.field_82337_e)
++                {
++                    itemstack = itemstack.func_77946_l();
+@@ -111,15 +132,5 @@
+-                    return;
+-                }
+-            }
+-
+-            if (p_146065_2_)
+-            {
+-                this.func_70099_a(new ItemStack(Items.field_151160_bD), 0.0F);
+-            }
+-
+-            if (!itemstack.func_190926_b() && this.field_70146_Z.nextFloat() < this.field_82337_e)
+-            {
+-                itemstack = itemstack.func_77946_l();
+-                this.func_110131_b(itemstack);
+-                this.func_70099_a(itemstack, 0.0F);
+-            }
++                    this.func_70099_a(itemstack, 0.0F);
++                }
++            }
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);

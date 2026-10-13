@@ -12,6 +12,11 @@ public class CommandSubscribe extends CommandLog {
     }
 
     @Override
+    public java.util.List<String> getAliases() {
+        return java.util.Collections.singletonList("suscribe");
+    }
+
+    @Override
     public String getUsage(ICommandSender sender) {
         return USAGE;
     }

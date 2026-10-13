@@ -509,3 +509,10 @@ task reliabilityCheck(type: JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     main = 'carpet.ReliabilityCheck'
 }
+
+
+task essentialRuleCheck(type: JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'carpet.EssentialRuleCheck'
+}

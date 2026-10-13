@@ -19,6 +19,7 @@ for technical Minecraft.
    usage/server-integrations
    usage/shared-schematics
    usage/kisde-rules
+   usage/essential-rules
 
 .. _`Carpet Mod`: https://github.com/gnembon/carpetmod
 

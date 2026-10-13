@@ -66,6 +66,9 @@
          this.func_77973_b().func_77622_d(this, p_77980_1_, p_77980_2_);
      }
  
+@@ -657 +667 @@
+-        nbttagcompound.func_74777_a("lvl", (short)((byte)p_77966_2_));
++        nbttagcompound.func_74777_a("lvl", (short)(carpet.CarpetSettings.disableEnchantmentCap ? Math.min(Short.MAX_VALUE, Math.max(0, p_77966_2_)) : (byte)p_77966_2_));
 @@ -881,4 +891,10 @@
      {
          this.func_190917_f(-p_190918_1_);

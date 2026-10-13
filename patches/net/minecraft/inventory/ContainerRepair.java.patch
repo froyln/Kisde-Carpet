@@ -1,0 +1,21 @@
+--- ../src-base/minecraft/net/minecraft/inventory/ContainerRepair.java
++++ ../src-work/minecraft/net/minecraft/inventory/ContainerRepair.java
+@@ -154,0 +155,3 @@
++            if (carpet.CarpetSettings.disableAnvilXpLimit) {
++                j = (int)Math.min(Integer.MAX_VALUE, (long)Math.max(0, itemstack.func_82838_A()) + (itemstack2.func_190926_b() ? 0 : Math.max(0, itemstack2.func_82838_A())));
++            }
+@@ -248 +251 @@
+-                                if (j2 > enchantment1.func_77325_b())
++                                if (j2 > (carpet.CarpetSettings.disableEnchantmentCap ? Short.MAX_VALUE : enchantment1.func_77325_b()))
+@@ -250 +253 @@
+-                                    j2 = enchantment1.func_77325_b();
++                                    j2 = carpet.CarpetSettings.disableEnchantmentCap ? Short.MAX_VALUE : enchantment1.func_77325_b();
+@@ -311 +314 @@
+-            this.field_82854_e = j + i;
++            this.field_82854_e = carpet.CarpetSettings.disableAnvilXpLimit ? (int)Math.min(Integer.MAX_VALUE, (long)j + i) : j + i;
+@@ -323 +326 @@
+-            if (this.field_82854_e >= 40 && !this.field_82855_n.field_71075_bZ.field_75098_d)
++            if (this.field_82854_e >= 40 && !this.field_82855_n.field_71075_bZ.field_75098_d && !carpet.CarpetSettings.disableAnvilXpLimit)
+@@ -339 +342 @@
+-                    k2 = k2 * 2 + 1;
++                    k2 = carpet.CarpetSettings.disableAnvilXpLimit ? (int)Math.min(Integer.MAX_VALUE, (long)Math.max(0, k2) * 2 + 1) : k2 * 2 + 1;

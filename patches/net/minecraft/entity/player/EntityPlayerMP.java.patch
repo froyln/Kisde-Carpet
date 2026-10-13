@@ -145,8 +145,14 @@
              if (this.field_71067_cb != this.field_71144_ck)
              {
                  this.field_71144_ck = this.field_71067_cb;
-@@ -503,6 +526,34 @@
-             this.field_71071_by.func_70436_m();
+@@ -503,6 +526,39 @@
+-            this.field_71071_by.func_70436_m();
++            Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70645_1_.func_76346_g());
++            try {
++                this.field_71071_by.func_70436_m();
++            } finally {
++                carpet.helpers.CarefulDrop.end(previousDropper);
++            }
          }
  
 +        // Allows players to drop there skulls when blown up by charged creeper CARPET-XCOM
@@ -180,7 +186,7 @@
          for (ScoreObjective scoreobjective : this.field_70170_p.func_96441_U().func_96520_a(IScoreCriteria.field_96642_c))
          {
              Score score = this.func_96123_co().func_96529_a(this.func_70005_c_(), scoreobjective);
-@@ -605,6 +656,7 @@
+@@ -605,6 +661,7 @@
  
              if (!flag && this.field_147101_bU > 0 && p_70097_1_ != DamageSource.field_76380_i)
              {
@@ -188,7 +194,7 @@
                  return false;
              }
              else
-@@ -615,6 +667,7 @@
+@@ -615,6 +672,7 @@
  
                      if (entity instanceof EntityPlayer && !this.func_96122_a((EntityPlayer)entity))
                      {
@@ -196,7 +202,7 @@
                          return false;
                      }
  
-@@ -624,6 +677,7 @@
+@@ -624,6 +682,7 @@
  
                          if (entityarrow.field_70250_c instanceof EntityPlayer && !this.func_96122_a((EntityPlayer)entityarrow.field_70250_c))
                          {
@@ -204,7 +210,7 @@
                              return false;
                          }
                      }
-@@ -704,6 +758,8 @@
+@@ -704,6 +763,8 @@
          if (p_147097_1_ != null)
          {
              SPacketUpdateTileEntity spacketupdatetileentity = p_147097_1_.func_189518_D_();
@@ -213,7 +219,7 @@
  
              if (spacketupdatetileentity != null)
              {
-@@ -1027,6 +1083,8 @@
+@@ -1027,6 +1088,8 @@
  
      public void func_71064_a(StatBase p_71064_1_, int p_71064_2_)
      {
@@ -222,7 +228,7 @@
          if (p_71064_1_ != null)
          {
              this.field_147103_bO.func_150871_b(this, p_71064_1_, p_71064_2_);
-@@ -1034,7 +1092,12 @@
+@@ -1034,7 +1097,12 @@
              for (ScoreObjective scoreobjective : this.func_96123_co().func_96520_a(p_71064_1_.func_150952_k()))
              {
                  this.func_96123_co().func_96529_a(this.func_70005_c_(), scoreobjective).func_96649_a(p_71064_2_);
@@ -235,7 +241,7 @@
          }
      }
  
-@@ -1169,7 +1232,7 @@
+@@ -1169,7 +1237,7 @@
  
      protected void func_70688_c(PotionEffect p_70688_1_)
      {
@@ -244,7 +250,7 @@
          this.field_71135_a.func_147359_a(new SPacketRemoveEntityEffect(this.func_145782_y(), p_70688_1_.func_188419_a()));
  
          if (p_70688_1_.func_188419_a() == MobEffects.field_188424_y)
-@@ -1178,6 +1241,7 @@
+@@ -1178,6 +1246,7 @@
          }
  
          CriteriaTriggers.field_193139_z.func_193153_a(this);
@@ -252,7 +258,7 @@
      }
  
      public void func_70634_a(double p_70634_1_, double p_70634_3_, double p_70634_5_)
-@@ -1216,13 +1280,17 @@
+@@ -1216,13 +1285,17 @@
  
          if (p_71033_1_ == GameType.SPECTATOR)
          {
@@ -270,7 +276,7 @@
  
          this.func_71016_p();
          this.func_175136_bO();
-@@ -1233,6 +1301,11 @@
+@@ -1233,6 +1306,11 @@
          return this.field_71134_c.func_73081_b() == GameType.SPECTATOR;
      }
  
@@ -282,7 +288,7 @@
      public boolean func_184812_l_()
      {
          return this.field_71134_c.func_73081_b() == GameType.CREATIVE;
-@@ -1439,4 +1512,113 @@
+@@ -1439,4 +1517,113 @@
      {
          return this.field_193110_cw;
      }

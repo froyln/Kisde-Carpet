@@ -1,10 +1,67 @@
 --- ../src-base/minecraft/net/minecraft/entity/item/EntityBoat.java
 +++ ../src-work/minecraft/net/minecraft/entity/item/EntityBoat.java
-@@ -82,6 +82,7 @@
-         this.field_70166_s = p_i1705_6_;
-     }
- 
+@@ -84,0 +85 @@
 +    public String cm_name() { return "Boat"; }
-     protected boolean func_70041_e_()
-     {
-         return false;
+@@ -127,7 +128,3 @@
+-        if (this.func_180431_b(p_70097_1_))
+-        {
+-            return false;
+-        }
+-        else if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
+-        {
+-            if (p_70097_1_ instanceof EntityDamageSourceIndirect && p_70097_1_.func_76346_g() != null && this.func_184196_w(p_70097_1_.func_76346_g()))
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70097_1_.func_76346_g());
++        try {
++            if (this.func_180431_b(p_70097_1_))
+@@ -136,0 +134,27 @@
++            else if (!this.field_70170_p.field_72995_K && !this.field_70128_L)
++            {
++                if (p_70097_1_ instanceof EntityDamageSourceIndirect && p_70097_1_.func_76346_g() != null && this.func_184196_w(p_70097_1_.func_76346_g()))
++                {
++                    return false;
++                }
++                else
++                {
++                    this.func_70269_c(-this.func_70267_i());
++                    this.func_70265_b(10);
++                    this.func_70266_a(this.func_70271_g() + p_70097_2_ * 10.0F);
++                    this.func_70018_K();
++                    boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
++
++                    if (flag || this.func_70271_g() > 40.0F)
++                    {
++                        if (!flag && this.field_70170_p.func_82736_K().func_82766_b("doEntityDrops"))
++                        {
++                            this.func_145778_a(this.func_184455_j(), 1, 0.0F);
++                        }
++
++                        this.func_70106_y();
++                    }
++
++                    return true;
++                }
++            }
+@@ -139,16 +162,0 @@
+-                this.func_70269_c(-this.func_70267_i());
+-                this.func_70265_b(10);
+-                this.func_70266_a(this.func_70271_g() + p_70097_2_ * 10.0F);
+-                this.func_70018_K();
+-                boolean flag = p_70097_1_.func_76346_g() instanceof EntityPlayer && ((EntityPlayer)p_70097_1_.func_76346_g()).field_71075_bZ.field_75098_d;
+-
+-                if (flag || this.func_70271_g() > 40.0F)
+-                {
+-                    if (!flag && this.field_70170_p.func_82736_K().func_82766_b("doEntityDrops"))
+-                    {
+-                        this.func_145778_a(this.func_184455_j(), 1, 0.0F);
+-                    }
+-
+-                    this.func_70106_y();
+-                }
+-
+@@ -157,4 +165,2 @@
+-        }
+-        else
+-        {
+-            return true;
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);

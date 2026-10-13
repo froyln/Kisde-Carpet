@@ -23,10 +23,15 @@ public class CarpetCommands {
         handler.registerCommand(new CommandEntityInfo());
         handler.registerCommand(new CommandFeel());
         handler.registerCommand(new CommandFillBiome());
+        handler.registerCommand(new CommandGM("gmc", net.minecraft.world.GameType.CREATIVE));
+        handler.registerCommand(new CommandGM("gms", net.minecraft.world.GameType.SURVIVAL));
+        handler.registerCommand(new CommandGM("gma", net.minecraft.world.GameType.ADVENTURE));
+        handler.registerCommand(new CommandGM("gmsp", net.minecraft.world.GameType.SPECTATOR));
         handler.registerCommand(new CommandGMC());
         handler.registerCommand(new CommandGMS());
         handler.registerCommand(new CommandGrow());
         handler.registerCommand(new CommandGolem());//Vales
+        handler.registerCommand(new CommandHat());
         handler.registerCommand(new CommandInventory());//Bullet
         handler.registerCommand(new CommandLagSpike());
         handler.registerCommand(new CommandLazyChunkBehavior());
@@ -34,6 +39,7 @@ public class CarpetCommands {
         handler.registerCommand(new CommandLight());
         handler.registerCommand(new CommandLoadedChunks());
         handler.registerCommand(new CommandLog());
+        handler.registerCommand(new CommandMore());
         handler.registerCommand(new CommandPalette());
         handler.registerCommand(new CommandPerimeter());
         handler.registerCommand(new CommandPing());

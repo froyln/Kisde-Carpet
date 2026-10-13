@@ -1,47 +1,20 @@
 --- ../src-base/minecraft/net/minecraft/entity/EntityLivingBase.java
 +++ ../src-work/minecraft/net/minecraft/entity/EntityLivingBase.java
-@@ -75,6 +75,9 @@
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
- 
+@@ -76,0 +77,3 @@
++
 +import carpet.CarpetSettings;
 +import carpet.logging.logHelpers.DamageReporter;
-+
- public abstract class EntityLivingBase extends Entity
- {
-     private static final Logger field_190632_a = LogManager.getLogger();
-@@ -151,6 +154,10 @@
-     private DamageSource field_189750_bF;
-     private long field_189751_bG;
- 
+@@ -153,0 +157,4 @@
 +    //CM
 +    public long birthTick;
 +    public String cm_name() { return "Other Living Entity"; }
 +
-     public void func_174812_G()
-     {
-         this.func_70097_a(DamageSource.field_76380_i, Float.MAX_VALUE);
-@@ -168,6 +175,8 @@
-         this.field_70177_z = (float)(Math.random() * (Math.PI * 2D));
-         this.field_70759_as = this.field_70177_z;
-         this.field_70138_W = 0.6F;
+@@ -170,0 +178,2 @@
 +        //CM
 +        this.birthTick = p_i1594_1_.func_82737_E();
-     }
- 
-     protected void func_70088_a()
-@@ -401,6 +410,7 @@
- 
-     protected boolean func_146066_aG()
-     {
+@@ -403,0 +413 @@
 +        if(CarpetSettings.duplicationFixPortalEntitys && field_70128_L) return false; // Fixes duplication when entity's are set to be removed and can still drop items.
-         return !this.func_70631_g_();
-     }
- 
-@@ -741,8 +751,16 @@
-             }
-             else
-             {
+@@ -744,2 +754,10 @@
 -                potioneffect.func_76452_a(p_70690_1_);
 -                this.func_70695_b(potioneffect, true);
 +                PotionEffect newEffect = potioneffect.combine(p_70690_1_);
@@ -54,173 +27,152 @@
 +                    // vanilla
 +                    this.func_70695_b(newEffect, true);
 +                }
-             }
-         }
-     }
-@@ -813,6 +831,11 @@
-         {
-             p_70688_1_.func_188419_a().func_111187_a(this, this.func_110140_aT(), p_70688_1_.func_76458_c());
-         }
+@@ -815,0 +834,5 @@
 +        // CM
 +        if (CarpetSettings.effectsFix && p_70688_1_.previous != null) {
 +            func_70690_d(p_70688_1_.previous);
 +        }
 +        // CM END
-     }
- 
-     public void func_70691_i(float p_70691_1_)
-@@ -847,14 +870,20 @@
-         }
-         else
-         {
+@@ -850 +873,5 @@
 -            this.field_70708_bq = 0;
 +            DamageReporter.register_damage(this, p_70097_1_, p_70097_2_); //CM
 +            if (!CarpetSettings.potionsDespawnFix) // CM run conditionally with vanilla behaviour
 +            {
 +                this.field_70708_bq = 0;
 +            }
- 
-             if (this.func_110143_aJ() <= 0.0F)
-             {
+@@ -853,0 +881 @@
 +                DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, 0.0f, "Already dead and can't take more damage"); //CM
-                 return false;
-             }
-             else if (p_70097_1_.func_76347_k() && this.func_70644_a(MobEffects.field_76426_n))
-             {
+@@ -857,0 +886 @@
 +                DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, 0.0f, "Resistance to fire"); //CM
-                 return false;
-             }
-             else
-@@ -864,6 +893,7 @@
-                 if ((p_70097_1_ == DamageSource.field_82728_o || p_70097_1_ == DamageSource.field_82729_p) && !this.func_184582_a(EntityEquipmentSlot.HEAD).func_190926_b())
-                 {
-                     this.func_184582_a(EntityEquipmentSlot.HEAD).func_77972_a((int)(p_70097_2_ * 4.0F + this.field_70146_Z.nextFloat() * p_70097_2_ * 2.0F), this);
+@@ -866,0 +896 @@
 +                    DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, p_70097_2_*0.75f, "wearing a helmet"); //CM
-                     p_70097_2_ *= 0.75F;
-                 }
- 
-@@ -872,6 +902,7 @@
-                 if (p_70097_2_ > 0.0F && this.func_184583_d(p_70097_1_))
-                 {
-                     this.func_184590_k(p_70097_2_);
+@@ -874,0 +905 @@
 +                    DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, 0.0f, "using a shield"); //CM
-                     p_70097_2_ = 0.0F;
- 
-                     if (!p_70097_1_.func_76352_a())
-@@ -894,9 +925,10 @@
-                 {
-                     if (p_70097_2_ <= this.field_110153_bc)
-                     {
+@@ -896,0 +928 @@
 +                        DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, 0.0f, "Recently hit"); //CM
-                         return false;
-                     }
+@@ -899 +931 @@
 -
 +                    DamageReporter.modify_damage(this, p_70097_1_, p_70097_2_, p_70097_2_ - this.field_110153_bc, "Recently hit"); //CM
-                     this.func_70665_d(p_70097_1_, p_70097_2_ - this.field_110153_bc);
-                     this.field_110153_bc = p_70097_2_;
-                     flag1 = false;
-@@ -1009,6 +1041,11 @@
-                 {
-                     this.func_184581_c(p_70097_1_);
-                 }
+@@ -1011,0 +1044,5 @@
 +                if (CarpetSettings.potionsDespawnFix)
 +                    // CM reset entity age is connected to making a hurt noise
 +                {
 +                    this.field_70708_bq = 0;
 +                }
- 
-                 boolean flag2 = !flag || p_70097_2_ > 0.0F;
- 
-@@ -1345,6 +1382,7 @@
-                 int i = (this.func_70660_b(MobEffects.field_76429_m).func_76458_c() + 1) * 5;
-                 int j = 25 - i;
-                 float f = p_70672_2_ * (float)j;
+@@ -1146,35 +1183,41 @@
+-        if (!this.field_70729_aU)
+-        {
+-            Entity entity = p_70645_1_.func_76346_g();
+-            EntityLivingBase entitylivingbase = this.func_94060_bK();
+-
+-            if (this.field_70744_aE >= 0 && entitylivingbase != null)
+-            {
+-                entitylivingbase.func_191956_a(this, this.field_70744_aE, p_70645_1_);
+-            }
+-
+-            if (entity != null)
+-            {
+-                entity.func_70074_a(this);
+-            }
+-
+-            this.field_70729_aU = true;
+-            this.func_110142_aN().func_94549_h();
+-
+-            if (!this.field_70170_p.field_72995_K)
+-            {
+-                int i = 0;
+-
+-                if (entity instanceof EntityPlayer)
+-                {
+-                    i = EnchantmentHelper.func_185283_h((EntityLivingBase)entity);
+-                }
+-
+-                if (this.func_146066_aG() && this.field_70170_p.func_82736_K().func_82766_b("doMobLoot"))
+-                {
+-                    boolean flag = this.field_70718_bc > 0;
+-                    this.func_184610_a(flag, i, p_70645_1_);
+-                }
+-            }
+-
+-            this.field_70170_p.func_72960_a(this, (byte)3);
++        Entity previousDropper = carpet.helpers.CarefulDrop.begin(p_70645_1_.func_76346_g());
++        try {
++            carpet.helpers.LifeTimeTracker.removed(this, "death");
++            if (!this.field_70729_aU)
++            {
++                Entity entity = p_70645_1_.func_76346_g();
++                EntityLivingBase entitylivingbase = this.func_94060_bK();
++
++                if (this.field_70744_aE >= 0 && entitylivingbase != null)
++                {
++                    entitylivingbase.func_191956_a(this, this.field_70744_aE, p_70645_1_);
++                }
++
++                if (entity != null)
++                {
++                    entity.func_70074_a(this);
++                }
++
++                this.field_70729_aU = true;
++                this.func_110142_aN().func_94549_h();
++
++                if (!this.field_70170_p.field_72995_K)
++                {
++                    int i = 0;
++
++                    if (entity instanceof EntityPlayer)
++                    {
++                        i = EnchantmentHelper.func_185283_h((EntityLivingBase)entity);
++                    }
++
++                    if (this.func_146066_aG() && this.field_70170_p.func_82736_K().func_82766_b("doMobLoot"))
++                    {
++                        boolean flag = this.field_70718_bc > 0;
++                        this.func_184610_a(flag, i, p_70645_1_);
++                    }
++                }
++
++                this.field_70170_p.func_72960_a(this, (byte)3);
++            }
++        } finally {
++            carpet.helpers.CarefulDrop.end(previousDropper);
+@@ -1347,0 +1391 @@
 +                DamageReporter.modify_damage(this, p_70672_1_, p_70672_2_, f / 25.0F, "Resistance status effect"); //CM
-                 p_70672_2_ = f / 25.0F;
-             }
- 
-@@ -1358,7 +1396,10 @@
- 
-                 if (k > 0)
-                 {
+@@ -1360,0 +1405 @@
 +                    float previous_damage = p_70672_2_;
-                     p_70672_2_ = CombatRules.func_188401_b(p_70672_2_, (float)k);
+@@ -1361,0 +1407,2 @@
 +                    DamageReporter.modify_damage(this, p_70672_1_, previous_damage, p_70672_2_,
 +                            String.format("enchantments (%.1f total points)", (float)k));
-                 }
- 
-                 return p_70672_2_;
-@@ -1370,15 +1411,21 @@
-     {
-         if (!this.func_180431_b(p_70665_1_))
-         {
+@@ -1372,0 +1420 @@
 +            float previous_amount = p_70665_2_; //CM
-             p_70665_2_ = this.func_70655_b(p_70665_1_, p_70665_2_);
+@@ -1373,0 +1422,3 @@
 +            DamageReporter.modify_damage(this, p_70665_1_, previous_amount, p_70665_2_, //CM
 +                    String.format("Armour %.1f, Toughness %.1f", (float)this.func_70658_aO(), (float)this.func_110148_a(SharedMonsterAttributes.field_189429_h).func_111126_e())); //CM
 +
-             p_70665_2_ = this.func_70672_c(p_70665_1_, p_70665_2_);
-             float f = p_70665_2_;
-             p_70665_2_ = Math.max(p_70665_2_ - this.func_110139_bj(), 0.0F);
-             this.func_110149_m(this.func_110139_bj() - (f - p_70665_2_));
+@@ -1377,0 +1429 @@
 +            DamageReporter.modify_damage(this, p_70665_1_, p_70665_2_, f, "Absorbtion"); //CM
- 
-             if (p_70665_2_ != 0.0F)
-             {
-                 float f1 = this.func_110143_aJ();
+@@ -1381,0 +1434 @@
 +                DamageReporter.register_final_damage(this, p_70665_1_, p_70665_2_); //CM
-                 this.func_70606_j(f1 - p_70665_2_);
-                 this.func_110142_aN().func_94547_a(p_70665_1_, f1, p_70665_2_);
-                 this.func_110149_m(this.func_110139_bj() - p_70665_2_);
-@@ -1828,7 +1875,10 @@
-                             }
-                         }
- 
+@@ -1830,0 +1884,2 @@
 +                        if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
 +                            carpet.carpetclient.CarpetClientChunkLogger.setReason("Entity walking around: " + func_70005_c_());
-                         this.func_70091_d(MoverType.SELF, this.field_70159_w, this.field_70181_x, this.field_70179_y);
+@@ -1831,0 +1887 @@
 +                        carpet.carpetclient.CarpetClientChunkLogger.resetReason();
- 
-                         if (this.field_70123_F && this.func_70617_f_())
-                         {
-@@ -2306,6 +2356,9 @@
- 
-     protected void func_85033_bc()
-     {
+@@ -2308,0 +2365,3 @@
 +        // Collision calculations are cancelled if canBePushed() is false. Return here to lag optimize the collision code. CARPET-XCOM
 +        if(CarpetSettings.optimizedCollisionCancellations && !func_70104_M() && !(this instanceof net.minecraft.entity.boss.EntityDragon)) return;
 +
-         List<Entity> list = this.field_70170_p.func_175674_a(this, this.func_174813_aQ(), EntitySelectors.func_188442_a(this));
- 
-         if (!list.isEmpty())
-@@ -2330,8 +2383,13 @@
-                 }
-             }
- 
+@@ -2333 +2392,6 @@
 -            for (int l = 0; l < list.size(); ++l)
 +            int limit = list.size();
 +            if (CarpetSettings.maxEntityCollisions > 0)
-             {
++            {
 +                limit = Math.min(limit,CarpetSettings.maxEntityCollisions);
 +            }
 +            for (int l = 0; l < limit; ++l)
-+            {
-                 Entity entity = list.get(l);
-                 this.func_82167_n(entity);
-             }
-@@ -2366,6 +2424,11 @@
-     {
-         this.field_70703_bu = p_70637_1_;
-     }
+@@ -2367,0 +2432,5 @@
++    }
 +    //CM
 +    public boolean getJumping()
 +    {
 +        return this.field_70703_bu;
-+    }
- 
-     public void func_71001_a(Entity p_71001_1_, int p_71001_2_)
-     {
-@@ -1144,2 +1144,3 @@
-     public void func_70645_a(DamageSource p_70645_1_)
-     {
-+        carpet.helpers.LifeTimeTracker.removed(this, "death");

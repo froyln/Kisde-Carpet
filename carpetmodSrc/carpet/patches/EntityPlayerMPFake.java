@@ -158,6 +158,10 @@ public class EntityPlayerMPFake extends EntityPlayerMP
     @Override
     public void onKillCommand()
     {
+        if (CarpetSettings.fakePlayerDropInventoryOnKill) {
+            this.destroyVanishingCursedItems();
+            this.inventory.dropAllItems();
+        }
         logout();
     }
 

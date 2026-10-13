@@ -1,0 +1,5 @@
+--- ../src-base/minecraft/net/minecraft/command/CommandEnchant.java
++++ ../src-work/minecraft/net/minecraft/command/CommandEnchant.java
+@@ -72 +72 @@
+-                        i = func_175764_a(p_184881_3_[2], enchantment.func_77319_d(), enchantment.func_77325_b());
++                        i = func_175764_a(p_184881_3_[2], enchantment.func_77319_d(), carpet.CarpetSettings.disableEnchantmentCap ? Short.MAX_VALUE : enchantment.func_77325_b());

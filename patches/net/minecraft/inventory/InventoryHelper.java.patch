@@ -10,7 +10,9 @@
  import net.minecraft.entity.Entity;
  import net.minecraft.entity.item.EntityItem;
  import net.minecraft.item.ItemStack;
-@@ -44,9 +47,16 @@
+@@ -38,0 +42 @@
++        carpet.helpers.CarefulDrop.collect(p_180173_0_, p_180173_7_);
+@@ -44,9 +48,16 @@
          {
              EntityItem entityitem = new EntityItem(p_180173_0_, p_180173_1_ + (double)f, p_180173_3_ + (double)f1, p_180173_5_ + (double)f2, p_180173_7_.func_77979_a(field_180177_a.nextInt(21) + 10));
              float f3 = 0.05F;

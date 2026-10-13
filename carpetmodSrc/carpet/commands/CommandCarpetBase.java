@@ -57,6 +57,13 @@ public abstract class CommandCarpetBase extends CommandBase
         return true;
     }
 
+    protected boolean commandPermitted(String rule, ICommandSender sender) {
+        String level = CarpetSettings.get(rule);
+        if ("true".equals(level) || "0".equals(level)) return true;
+        if ("ops".equals(level)) return sender.canUseCommand(2, getName());
+        return level.matches("[0-4]") && sender.canUseCommand(Integer.parseInt(level), getName());
+    }
+
     protected int parseChunkPosition(String arg, int base) throws NumberInvalidException {
         return arg.equals("~") ? base >> 4 : parseInt(arg);
     }

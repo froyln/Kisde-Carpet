@@ -41,3 +41,6 @@
          }
      }
  
+@@ -234,0 +235,2 @@
++        carpet.helpers.CarefulDrop.collect(this.field_70170_p, p_70099_1_);
++        if (p_70099_1_.func_190926_b()) return null;

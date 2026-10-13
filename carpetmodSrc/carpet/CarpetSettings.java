@@ -1171,6 +1171,30 @@ public class CarpetSettings
         return Arrays.asList("true", "false", "ops", "0", "1", "2", "3", "4").contains(value);
     }
 
+    @Rule(desc = "Killing entities while sneaking sends drops to your inventory; requires /subscribe carefulDrop", category = {FEATURE, SURVIVAL, KISDE})
+    public static boolean carefulDrop = false;
+
+    @Rule(desc = "Allows /enchant and anvil combining above normal enchantment levels, up to 32767", category = {CREATIVE, KISDE})
+    public static boolean disableEnchantmentCap = false;
+
+    @Rule(desc = "Allows anvil operations costing 40 or more levels; still charges the full XP cost", category = {SURVIVAL, KISDE})
+    public static boolean disableAnvilXpLimit = false;
+
+    @Rule(desc = "Enables self-only /gmc, /gms, /gma and /gmsp gamemode shortcuts", category = {COMMANDS, CREATIVE, KISDE}, options = {"true", "false", "ops", "0", "1", "2", "3", "4"}, validator = "validateCommandLifeTime")
+    public static String commandGM = "false";
+
+    @Rule(desc = "Enables /hat to equip one held item on your head", category = {COMMANDS, CREATIVE, KISDE}, options = {"true", "false", "ops", "0", "1", "2", "3", "4"}, validator = "validateCommandLifeTime")
+    public static String commandHat = "false";
+
+    @Rule(desc = "Enables /more to fill your held item to its maximum stack size", category = {COMMANDS, CREATIVE, KISDE}, options = {"true", "false", "ops", "0", "1", "2", "3", "4"}, validator = "validateCommandLifeTime")
+    public static String commandMore = "false";
+
+    @Rule(desc = "Allows anyone to use /op and grant operator access", category = {COMMANDS, CREATIVE, KISDE})
+    public static boolean commandPublicOp = false;
+
+    @Rule(desc = "Drops fake player inventories on /player kill or /kill, even with keepInventory", category = {FEATURE, KISDE})
+    public static boolean fakePlayerDropInventoryOnKill = false;
+
     @Rule(desc = "Enables OP cluster calculation, loading and creative loader construction", category = {COMMANDS, CREATIVE, VASTECH})
     public static boolean commandCluster = false;
 
