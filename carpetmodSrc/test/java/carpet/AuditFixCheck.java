@@ -142,8 +142,11 @@ public final class AuditFixCheck {
     }
     private static final class Server extends DedicatedServer {
         List<Runnable> tasks;
+        boolean protectedBlocks;
         Server() { super(null, null, null, null, null, null); }
         public boolean isServerRunning() { return true; }
+        public int getBuildLimit() { return 256; }
+        public boolean isBlockProtected(net.minecraft.world.World world, BlockPos pos, EntityPlayer player) { return protectedBlocks; }
         public void sendMessage(net.minecraft.util.text.ITextComponent text) { }
         public ListenableFuture<Object> addScheduledTask(Runnable task) { tasks.add(task); return Futures.immediateFuture(null); }
     }
@@ -299,6 +302,61 @@ public final class AuditFixCheck {
         }
         System.out.println("PASS revoked anvil overflow, nested/failed structure saves, duplicate/re-registration and diagonal redstone choices");
     }
+    private static final class MiningManager extends PlayerInteractionManager {
+        int starts, stops;
+        BlockPos position;
+        EnumFacing facing;
+        boolean instant, fail;
+        MiningManager(net.minecraft.world.World world) { super(world); }
+        public void onBlockClicked(BlockPos pos, EnumFacing side) {
+            starts++; position = pos; facing = side; instant = activateInstantMine;
+            if (fail) throw new IllegalStateException("fixture");
+        }
+        public void blockRemoving(BlockPos pos) { stops++; position = pos; }
+    }
+    private static PacketBuffer miningPacket(int bodyLength, boolean start, BlockPos pos, int facing, boolean instant) {
+        PacketBuffer data = new PacketBuffer(io.netty.buffer.Unpooled.buffer());
+        data.writeVarInt(bodyLength); data.writeBoolean(start); data.writeBlockPos(pos); data.writeByte(facing); data.writeBoolean(instant);
+        if (bodyLength == 12) data.writeBoolean(true);
+        return data;
+    }
+    private static void legacyMining() throws Exception {
+        Player player = player(); Server server = allocate(Server.class);
+        field(EntityPlayerMP.class, "server").set(player, server);
+        MiningManager manager = new MiningManager(player.world);
+        field(EntityPlayerMP.class, "interactionManager").set(player, manager);
+        player.posX = .5; player.posY = 1; player.posZ = .5;
+        World world = (World)player.world; BlockPos target = new BlockPos(0, 0, 1);
+        boolean previous = PlayerInteractionManager.activateInstantMine;
+        boolean careful = CarpetSettings.carefulBreak; CarpetSettings.carefulBreak = false;
+        try {
+            PlayerInteractionManager.activateInstantMine = false;
+            for (int body : new int[]{12, 11}) {
+                PacketBuffer data = miningPacket(body, true, target, EnumFacing.UP.getIndex(), true);
+                try { carpet.carpetclient.CarpetClientMining.handle(player, data); } finally { data.release(); }
+                check(manager.starts == (body == 12 ? 1 : 2) && manager.position.equals(target) && manager.facing == EnumFacing.UP && manager.instant, "Valid framed Carpet mining start rejected/misdecoded");
+                check(!PlayerInteractionManager.activateInstantMine && !CarpetSettings.carefulBreak, "Client preferences leaked server state");
+                data = miningPacket(body, false, target, EnumFacing.UP.getIndex(), false);
+                try { carpet.carpetclient.CarpetClientMining.handle(player, data); } finally { data.release(); }
+            }
+            check(manager.stops == 2, "Valid framed Carpet mining stop rejected");
+            for (int mode = 0; mode < 6; mode++) {
+                PacketBuffer data = miningPacket(12, true, mode == 1 ? new BlockPos(100, 0, 0) : mode == 2 ? new BlockPos(0, -1, 0) : target, mode == 3 ? 6 : 1, true);
+                server.protectedBlocks = mode == 4; world.loaded = mode != 5;
+                if (mode == 0) data.setByte(0, 11);
+                try { carpet.carpetclient.CarpetClientMining.handle(player, data); } finally { data.release(); }
+                check(manager.starts == 2, "Invalid/protected mining accepted");
+            }
+            check(!((Connection)player.connection).packets.isEmpty(), "Protected block did not resync");
+            server.protectedBlocks = false; world.loaded = true; manager.fail = true;
+            PacketBuffer data = miningPacket(12, true, target, 1, true);
+            try {
+                try { carpet.carpetclient.CarpetClientMining.handle(player, data); throw new AssertionError("Expected mining callback failure"); }
+                catch (IllegalStateException expected) { check(!PlayerInteractionManager.activateInstantMine, "Callback failure leaked instant mining"); }
+            } finally { data.release(); }
+        } finally { PlayerInteractionManager.activateInstantMine = previous; CarpetSettings.carefulBreak = careful; }
+        System.out.println("PASS actual framed Carpet mining start/stop, malformed/reach/protection and callback cleanup");
+    }
     private static void lifecycleAndCi() throws Exception {
         Player player = player(); String previous = CarpetSettings.commandLifeTime;
         CarpetSettings.commandLifeTime = "0"; check(LifeTimeTracker.permitted(player), "Lifetime zero denies ordinary player");
@@ -314,7 +372,7 @@ public final class AuditFixCheck {
         System.out.println("PASS lifetime zero/default, updater removal and CI check/artifact gates");
     }
     public static void main(String[] args) throws Exception {
-        Bootstrap.register(); structure(); mining(); sharing(); ticktimes(); config(); anvil(); followupBugs(); lifecycleAndCi();
+        Bootstrap.register(); structure(); mining(); sharing(); ticktimes(); config(); anvil(); followupBugs(); legacyMining(); lifecycleAndCi();
         System.out.println("Audit fix checks passed");
     }
 }

@@ -184,7 +184,7 @@ public final class SecurityCheck {
         check(!(Boolean) reach.invoke(null, 0.5, -2.0, 0.5, new BlockPos(0, -1, 0), 256), "Negative height accepted");
         check(!(Boolean) reach.invoke(null, 0.5, 255.0, 0.5, new BlockPos(0, 256, 0), 256), "Build limit accepted");
         check((Boolean) reach.invoke(null, -0.5, 63.0, -0.5, new BlockPos(-1, 64, -1), 256), "Negative-coordinate mining rejected");
-        for (int length : new int[] {0, 11, 13}) {
+        for (int length : new int[] {0, 11, 13, 14}) {
             PacketBuffer payload = new PacketBuffer(Unpooled.buffer());
             try { payload.writeZero(length); CarpetClientMining.handle(null, payload); }
             finally { payload.release(); }

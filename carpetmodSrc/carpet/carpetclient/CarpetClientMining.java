@@ -12,12 +12,14 @@ public final class CarpetClientMining {
     private CarpetClientMining() {}
 
     public static void handle(EntityPlayerMP player, PacketBuffer payload) {
-        if (payload.readableBytes() != 12 || player.hasDisconnected()) return;
-        payload.readBoolean();
+        int length = payload.readableBytes();
+        if (length != 12 && length != 13) return;
+        if (payload.readUnsignedByte() != length - 1 || player.hasDisconnected()) return;
         boolean start = payload.readBoolean();
         BlockPos pos = payload.readBlockPos();
         int facing = payload.readUnsignedByte();
         boolean instantMine = payload.readBoolean();
+        if (length == 13) payload.readBoolean();
         if (facing >= EnumFacing.values().length || !withinReach(player.posX, player.posY, player.posZ,
                 pos, player.server.getBuildLimit())) return;
         WorldServer world = player.getServerWorld();
