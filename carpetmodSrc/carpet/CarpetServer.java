@@ -46,6 +46,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     public static SchematicSaveHandler schematicSaveHandler;
     public static SchematicPasteHandler schematicPasteHandler;
     public static PcaInventoryPreviewHandler pcaInventoryPreviewHandler;
+    public static carpet.helpers.AnvilSync anvilSync;
     public static boolean playerInventoryStacking = false;
     public static int limitITTCounter;
 
@@ -63,6 +64,8 @@ public class CarpetServer // static for now - easier to handle all around the co
         minecraft_server = server;
         pluginChannels = new PluginChannelManager(server);
         pluginChannels.register(PUBSUB_MESSENGER);
+        anvilSync = new carpet.helpers.AnvilSync();
+        pluginChannels.register(anvilSync);
         schematicInventoryRules = new carpet.schematic.SchematicInventoryRules();
         pluginChannels.register(schematicInventoryRules);
         schematicSharingHandler = new carpet.schematic.SchematicSharingHandler(server);
@@ -143,6 +146,7 @@ public class CarpetServer // static for now - easier to handle all around the co
     {
         TickSpeed.tick(server);
         if (schematicSharingHandler != null) schematicSharingHandler.tick();
+        if (anvilSync != null) anvilSync.tick();
         carpet.helpers.PlayerSitHelper.tick(server);
         carpet.helpers.LifeTimeTracker.tick(server);
         if (CarpetSettings.redstoneMultimeterLegacy)

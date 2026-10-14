@@ -73,6 +73,7 @@ public class PluginChannelManager {
     private void processRegister(EntityPlayerMP player, PacketBuffer payload) {
         List<String> channels = getChannels(payload);
         for (String channel : channels) {
+            if (tracker.isRegistered(player, channel)) continue;
             PluginChannelHandler handler = channelHandlers.get(channel);
             if (handler != null && handler.register(channel, player)) {
                 tracker.register(player, channel);

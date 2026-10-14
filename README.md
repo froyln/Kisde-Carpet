@@ -42,7 +42,7 @@ See [server integrations](docs/usage/server-integrations.rst) for inventory prev
 
 ## Available rules
 
-Browse all 258 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
+Browse all 257 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -109,7 +109,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `commandRepopulate` | `false` | commands | Enables /repopulate command to repopulate given chunk |
 | `commandRNG` | `true` | commands | Enables /rng command to manipulate and query rng |
 | `commandSpawn` | `true` | commands | Enables /spawn command for spawn tracking |
-| `commandStructure` | `true` | commands | Enables /structure to manage NBT structures used by structure blocks |
+| `commandStructure` | `true` | commands | Enables /structure; saving and loading require operator permission and bounded loaded regions. |
 | `commandTick` | `true` | commands | Enables /tick command to control game speed |
 | `commandTicktimes` | `true` | commands | Enables /ticktimes command to to log ticktimes |
 | `commandUnload` | `true` | commands | Enables /unload command to inspect chunk unloading order |
@@ -294,7 +294,6 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `totallyNoBlockUpdates` | `false` | experimental, creative, vastech | Suppresses block neighbor, observer and comparator notifications |
 | `tpAcrossDimensions` | `true` | creative | /tp will teleport the players across dimensions |
 | `unloadedEntityFix` | `false` | experimental, creative | Entities pushed or moved into unloaded chunks no longer disappear |
-| `updateCarpetAll` | `false` | creative | Makes update carpet public for all users. |
 | `updateSuppressionCrashFix` | `false` | fix | Fixes updates suppression causing server crashes. |
 | `updateTabEveryGametick` | `false` | experimental, bullet | Tab info updates every gametick |
 | `viewDistance` | `0` | creative | Changes the view distance of the server. |

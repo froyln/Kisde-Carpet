@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,27 +16,32 @@ public class PrometheusExtension {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private HTTPServer httpServer;
-    private int port;
+    private int port = 1234;
     public static volatile MinecraftServer server;
     private MetricReg metricReg = new MetricReg(this);
-    Path path = Paths.get("Prometheus config.json");
+    final Path path;
 
     public PrometheusExtension() {
+        this(Paths.get("Prometheus config.json"));
+    }
+
+    PrometheusExtension(Path path) {
+        this.path = path;
         if (!Files.exists(path)) {
-            File file = new File("Prometheus config.json");
-            try {
-                BufferedWriter writer = Files.newBufferedWriter(this.path);
+            try (BufferedWriter writer = Files.newBufferedWriter(path)) {
                 writer.write("port:1234");
-                writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.warn("Unable to create Prometheus configuration; using port 1234", e);
             }
         }
-        try (BufferedReader reader = Files.newBufferedReader(this.path)) {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             String text = reader.readLine();
-            port = Integer.parseInt(text.split(":")[1]);
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (text == null || !text.startsWith("port:")) throw new IllegalArgumentException("Expected port:<number>");
+            int configured = Integer.parseInt(text.substring(5).trim());
+            if (configured < 2 || configured > 65535) throw new IllegalArgumentException("Port must be between 2 and 65535");
+            port = configured;
+        } catch (IOException | IllegalArgumentException e) {
+            LOGGER.warn("Invalid Prometheus configuration; using port 1234", e);
         }
     }
 

@@ -7,6 +7,9 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Semaphore;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketBuffer;
@@ -26,8 +29,14 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
     private final Map<UUID, Long> requestWindows = new HashMap<>();
     private final Map<UUID, Integer> requestCounts = new HashMap<>();
     private volatile boolean closed;
+    private final Semaphore validationSlots = new Semaphore(4);
+    private final Executor validationExecutor;
 
-    public SchematicSharingHandler(MinecraftServer server) { this.server = server; }
+    public SchematicSharingHandler(MinecraftServer server) { this(server, ForkJoinPool.commonPool()); }
+    SchematicSharingHandler(MinecraftServer server, Executor validationExecutor) {
+        this.server = server;
+        this.validationExecutor = validationExecutor;
+    }
     public String[] getChannels() { return new String[] {CHANNEL}; }
     public boolean register(String channel, EntityPlayerMP player) { players.add(player); status(player); return true; }
     public void unregister(String channel, EntityPlayerMP player) {
@@ -93,6 +102,7 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
     }
     private void available(EntityPlayerMP player) {
         if (uploads.containsKey(player.getUniqueID()) || downloads.containsKey(player.getUniqueID())) throw new IllegalArgumentException("A file transfer is already active");
+        if (validationSlots.availablePermits() == 0) throw new IllegalArgumentException("Server validation is busy; try again shortly");
         if (uploads.size() + downloads.size() >= 4) throw new IllegalArgumentException("Server transfers are busy; try again shortly");
     }
     private void begin(EntityPlayerMP player, NBTTagCompound data) throws IOException {
@@ -130,27 +140,40 @@ public final class SchematicSharingHandler implements PluginChannelHandler {
     private void finish(EntityPlayerMP player, NBTTagCompound data) throws IOException {
         Upload upload = upload(player, data);
         if (upload.finalizing || upload.offset != upload.length) throw new IllegalArgumentException("Incomplete upload");
-        upload.stream.close(); upload.finalizing = true;
-        CompletableFuture.runAsync(() -> {
-            String failure = null;
-            try {
-                if (!SharedSchematicStore.hash(upload.path).equals(upload.hash)) throw new IllegalArgumentException("File checksum mismatch");
-                SharedSchematicStore.validate(upload.path, upload.placement);
-            } catch (Exception e) { failure = e instanceof IllegalArgumentException ? e.getMessage() : "Invalid schematic file"; }
-            final String error = failure;
-            if (closed || !server.isServerRunning()) { remove(upload.path); return; }
-            server.addScheduledTask(() -> {
-                if (closed || uploads.get(player.getUniqueID()) != upload) { remove(upload.path); return; }
+        if (!validationSlots.tryAcquire()) throw new IllegalArgumentException("Server validation is busy; try again shortly");
+        try {
+            upload.stream.close(); upload.finalizing = true;
+            CompletableFuture.runAsync(() -> {
+                boolean scheduled = false;
                 try {
-                    if (error != null) throw new IllegalArgumentException(error);
-                    if (!CarpetSettings.schematicShare || !players.contains(player) || player.dimension != upload.dimension) throw new IllegalArgumentException("Sharing access or dimension changed during upload");
-                    NBTTagCompound entry = store().commit(upload.path, upload.id, player.getUniqueID(), player.getName(), player.canUseCommand(2, ""), upload.revision, upload.name, upload.dimension, upload.placement, upload.hash);
-                    uploads.remove(player.getUniqueID());
-                    for (EntityPlayerMP viewer : players) { NBTTagCompound update = message("Changed"); update.setTag("Entry", metadata(entry, viewer)); send(viewer, update); }
-                    NBTTagCompound complete = message("Uploaded"); complete.setString("Transfer", upload.token.toString()); complete.setString("Id", upload.id.toString()); send(player, complete);
-                } catch (Exception e) { cancel(player.getUniqueID()); error(player, e instanceof IllegalArgumentException ? e.getMessage() : "Unable to store shared schematic"); }
-            });
-        });
+                    String failure = null;
+                    try {
+                        if (!SharedSchematicStore.hash(upload.path).equals(upload.hash)) throw new IllegalArgumentException("File checksum mismatch");
+                        SharedSchematicStore.validate(upload.path, upload.placement);
+                    } catch (Exception e) { failure = e instanceof IllegalArgumentException ? e.getMessage() : "Invalid schematic file"; }
+                    final String error = failure;
+                    if (closed || !server.isServerRunning()) { remove(upload.path); return; }
+                    server.addScheduledTask(() -> {
+                        try {
+                            if (closed || uploads.get(player.getUniqueID()) != upload) { remove(upload.path); return; }
+                            if (error != null) throw new IllegalArgumentException(error);
+                            if (!CarpetSettings.schematicShare || !players.contains(player) || player.dimension != upload.dimension) throw new IllegalArgumentException("Sharing access or dimension changed during upload");
+                            NBTTagCompound entry = store().commit(upload.path, upload.id, player.getUniqueID(), player.getName(), player.canUseCommand(2, ""), upload.revision, upload.name, upload.dimension, upload.placement, upload.hash);
+                            uploads.remove(player.getUniqueID());
+                            for (EntityPlayerMP viewer : players) { NBTTagCompound update = message("Changed"); update.setTag("Entry", metadata(entry, viewer)); send(viewer, update); }
+                            NBTTagCompound complete = message("Uploaded"); complete.setString("Transfer", upload.token.toString()); complete.setString("Id", upload.id.toString()); send(player, complete);
+                        } catch (Exception e) { cancel(player.getUniqueID()); error(player, e instanceof IllegalArgumentException ? e.getMessage() : "Unable to store shared schematic"); }
+                        finally { validationSlots.release(); }
+                    });
+                    scheduled = true;
+                } finally {
+                    if (!scheduled) validationSlots.release();
+                }
+            }, validationExecutor);
+        } catch (IOException | RuntimeException e) {
+            validationSlots.release();
+            throw e;
+        }
     }
     private void download(EntityPlayerMP player, NBTTagCompound data) throws IOException {
         available(player); NBTTagCompound entry = store().get(UUID.fromString(data.getString("Id")));

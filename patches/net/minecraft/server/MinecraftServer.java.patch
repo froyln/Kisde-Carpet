@@ -1,27 +1,16 @@
 --- ../src-base/minecraft/net/minecraft/server/MinecraftServer.java
 +++ ../src-work/minecraft/net/minecraft/server/MinecraftServer.java
-@@ -1,5 +1,9 @@
- package net.minecraft.server;
- 
+@@ -2,0 +3,4 @@
 +import carpet.helpers.ScoreboardDelta;
 +import carpet.helpers.ThrowableSuppression;
 +import carpet.prometheus.PrometheusExtension;
 +import carpet.utils.Messenger;
- import com.google.common.collect.Lists;
- import com.google.common.collect.Queues;
- import com.google.common.util.concurrent.Futures;
-@@ -82,12 +86,27 @@
- import net.minecraft.world.storage.ISaveFormat;
- import net.minecraft.world.storage.ISaveHandler;
- import net.minecraft.world.storage.WorldInfo;
+@@ -84,0 +89,4 @@
 +
 +import redstone.multimeter.common.TickTask;
 +import redstone.multimeter.helper.WorldHelper;
 +
- import org.apache.commons.lang3.Validate;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
- 
+@@ -88,0 +97,9 @@
 +import carpet.CarpetServer;
 +import carpet.CarpetSettings;
 +import carpet.carpetclient.CarpetClientChunkLogger;
@@ -31,46 +20,37 @@
 +import carpet.utils.PistonFixes;
 +import carpet.utils.TickingArea;
 +
- public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
- {
+@@ -90,0 +108,2 @@
 +    //CM
 +    public static PrometheusExtension prometheusExtension = new PrometheusExtension();
-     private static final Logger field_147145_h = LogManager.getLogger();
-     public static final File field_152367_a = new File("usercache.json");
-     private final ISaveFormat field_71310_m;
-@@ -144,6 +163,7 @@
- 
-     public MinecraftServer(File p_i47054_1_, Proxy p_i47054_2_, DataFixer p_i47054_3_, YggdrasilAuthenticationService p_i47054_4_, MinecraftSessionService p_i47054_5_, GameProfileRepository p_i47054_6_, PlayerProfileCache p_i47054_7_)
-     {
+@@ -146,0 +166 @@
 +        CarpetServer.init(this); //CM init
-         this.field_110456_c = p_i47054_2_;
-         this.field_152364_T = p_i47054_4_;
-         this.field_147143_S = p_i47054_5_;
-@@ -273,7 +293,9 @@
- 
-         this.field_71318_t.func_72364_a(this.field_71305_c);
-         this.func_147139_a(this.func_147135_j());
+@@ -275,0 +296 @@
 +        CarpetServer.onLoadAllWorlds(this);
-         this.func_71222_d();
+@@ -276,0 +298 @@
 +        CarpetServer.loadBots(this);
-     }
- 
-     protected void func_71222_d()
-@@ -285,25 +307,32 @@
-         int i1 = 0;
-         this.func_71192_d("menu.generatingTerrain");
-         int j1 = 0;
+@@ -288,19 +310,26 @@
 -        field_147145_h.info("Preparing start region for level 0");
 -        WorldServer worldserver = this.field_71305_c[0];
 -        BlockPos blockpos = worldserver.func_175694_M();
 -        long k1 = func_130071_aq();
 -
 -        for (int l1 = -192; l1 <= 192 && this.func_71278_l(); l1 += 16)
-+        if (CarpetSettings.tickingAreas)
-         {
+-        {
 -            for (int i2 = -192; i2 <= 192 && this.func_71278_l(); i2 += 16)
 -            {
 -                long j2 = func_130071_aq();
+-
+-                if (j2 - k1 > 1000L)
+-                {
+-                    this.func_71216_a_("Preparing spawn area", i1 * 100 / 625);
+-                    k1 = j2;
+-                }
+-
+-                ++i1;
+-                worldserver.func_72863_F().func_186025_d(blockpos.func_177958_n() + l1 >> 4, blockpos.func_177952_p() + i2 >> 4);
++        if (CarpetSettings.tickingAreas)
++        {
 +            TickingArea.initialChunkLoad(this, true);
 +        }
 +        if (!CarpetSettings.disableSpawnChunks)
@@ -79,19 +59,13 @@
 +            WorldServer worldserver = this.field_71305_c[0];
 +            BlockPos blockpos = worldserver.func_175694_M();
 +            long k1 = func_130071_aq();
- 
--                if (j2 - k1 > 1000L)
++
 +            for (int l1 = -192; l1 <= 192 && this.func_71278_l(); l1 += 16)
 +            {
 +                for (int i2 = -192; i2 <= 192 && this.func_71278_l(); i2 += 16)
-                 {
--                    this.func_71216_a_("Preparing spawn area", i1 * 100 / 625);
--                    k1 = j2;
--                }
++                {
 +                    long j2 = func_130071_aq();
- 
--                ++i1;
--                worldserver.func_72863_F().func_186025_d(blockpos.func_177958_n() + l1 >> 4, blockpos.func_177952_p() + i2 >> 4);
++
 +                    if (j2 - k1 > 1000L)
 +                    {
 +                        this.func_71216_a_("Preparing spawn area", i1 * 100 / 625);
@@ -101,58 +75,28 @@
 +                    ++i1;
 +                    worldserver.func_72863_F().func_186025_d(blockpos.func_177958_n() + l1 >> 4, blockpos.func_177952_p() + i2 >> 4);
 +                }
-             }
-         }
- 
-@@ -341,7 +370,7 @@
- 
-     public abstract boolean func_183002_r();
- 
+@@ -344 +373 @@
 -    protected void func_71216_a_(String p_71216_1_, int p_71216_2_)
 +    public void func_71216_a_(String p_71216_1_, int p_71216_2_) // CM changed visibility to public
-     {
-         this.field_71302_d = p_71216_1_;
-         this.field_71303_e = p_71216_2_;
-@@ -375,6 +404,7 @@
-                 }
-             }
-         }
+@@ -377,0 +407 @@
 +        CarpetServer.onWorldsSaved(this);
-     }
- 
-     protected void func_71260_j()
-@@ -381,2 +411,3 @@
-     {
-         field_147145_h.info("Stopping server");
+@@ -382,0 +413,2 @@
++        carpet.commands.CommandTicktimes.stopLogging();
 +        if (CarpetServer.schematicSharingHandler != null) CarpetServer.schematicSharingHandler.close();
-@@ -389,6 +419,8 @@
-         if (this.field_71318_t != null)
-         {
-             field_147145_h.info("Saving players");
+@@ -391,0 +424,2 @@
 +            this.field_71318_t.removeBotTeam();
 +            this.field_71318_t.storeFakePlayerData();
-             this.field_71318_t.func_72389_g();
-             this.field_71318_t.func_72392_r();
-         }
-@@ -448,20 +480,38 @@
-         {
-             if (this.func_71197_b())
-             {
+@@ -450,0 +485,3 @@
 +                if (CarpetSettings.prometheusIntegration) {
 +                    prometheusExtension.onServerRun(this);
 +                }
-                 this.field_175591_ab = func_130071_aq();
-                 long i = 0L;
+@@ -453 +490,4 @@
 -                this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
 +                if ("_".equals(CarpetSettings.customMOTD))
 +                    this.field_147147_p.func_151315_a(new TextComponentString(this.field_71286_C));
 +                else
 +                    this.field_147147_p.func_151315_a(new TextComponentString(CarpetSettings.customMOTD));
-                 this.field_147147_p.func_151321_a(new ServerStatusResponse.Version("1.12.2", 340));
-                 this.func_184107_a(this.field_147147_p);
- 
-                 while (this.field_71317_u)
-                 {
+@@ -458,0 +499,13 @@
 +                    /* carpet mod commandTick */
 +                    //todo check if this check is necessary
 +                    if (TickSpeed.time_warp_start_time != 0)
@@ -166,31 +110,15 @@
 +                        continue;
 +                    }
 +                    /* end */
-                     long k = func_130071_aq();
-                     long j = k - this.field_175591_ab;
- 
-                     if (j > 2000L && this.field_175591_ab - this.field_71299_R >= 15000L)
-                     {
+@@ -464 +516,0 @@
 -                        field_147145_h.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
-                         j = 2000L;
-                         this.field_71299_R = this.field_175591_ab;
-                     }
-@@ -474,6 +524,7 @@
- 
-                     i += j;
-                     this.field_175591_ab = k;
+@@ -476,0 +529 @@
 +                    boolean falling_behind = false;
- 
-                     if (this.field_71305_c[0].func_73056_e())
-                     {
-@@ -482,14 +533,33 @@
-                     }
-                     else
-                     {
+@@ -485 +538,2 @@
 -                        while (i > 50L)
 +                        boolean keeping_up = false;
 +                        while (i > TickSpeed.mspt) /* carpet mod 50L */
-                         {
+@@ -487 +541,7 @@
 -                            i -= 50L;
 +                            i -= TickSpeed.mspt; /* carpet mod 50L */
 +                            if (CarpetSettings.watchdogFix && keeping_up)
@@ -199,15 +127,13 @@
 +                                this.field_71296_Q = true;
 +                                falling_behind = true;
 +                            }
-                             this.func_71217_p();
+@@ -488,0 +549,5 @@
 +                            keeping_up = true;
 +                            if (CarpetSettings.disableVanillaTickWarp) {
 +                                i = func_130071_aq() - k;
 +                                break;
 +                            }
-                         }
-                     }
- 
+@@ -492 +557,8 @@
 -                    Thread.sleep(Math.max(1L, 50L - i));
 +                    if (falling_behind)
 +                    {
@@ -217,18 +143,12 @@
 +                    {
 +                        Thread.sleep(Math.max(1L, TickSpeed.mspt - i)); /* carpet mod 50L */
 +                    }
-                     this.field_71296_Q = true;
-                 }
-             }
-@@ -592,8 +662,19 @@
-     protected void func_71217_p()
-     {
-         long i = System.nanoTime();
+@@ -595 +667,12 @@
 -        ++this.field_71315_w;
 +        if (TickSpeed.process_entities){ // CM
 +            ++this.field_71315_w;
 +        }
- 
++
 +        CarpetServer.tick(this);
 +        if (CarpetProfiler.tick_health_requested != 0L)
 +        {
@@ -237,38 +157,27 @@
 +
 +        CarpetServer.rsmmServer.tickStart(); // RSMM
 +        WorldHelper.startTickTask(TickTask.TICK); // RSMM
-+
-         if (this.field_71295_T)
-         {
-             this.field_71295_T = false;
-@@ -620,13 +701,23 @@
-             this.field_147147_p.func_151318_b().func_151330_a(agameprofile);
-         }
- 
+@@ -622,0 +706 @@
 +        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.AUTOSAVE, LagSpikeHelper.PrePostSubPhase.PRE);
-         if (this.field_71315_w % 900 == 0)
-         {
+@@ -624,0 +709 @@
 +            CarpetProfiler.start_section(null, "Autosave");
-             this.field_71304_b.func_76320_a("save");
+@@ -625,0 +711,2 @@
 +            WorldHelper.startTickTask(TickTask.AUTOSAVE); // RSMM
 +            this.field_71318_t.storeFakePlayerData();
-             this.field_71318_t.func_72389_g();
+@@ -626,0 +714,2 @@
 +            if(carpet.carpetclient.CarpetClientChunkLogger.logger.enabled)
 +                carpet.carpetclient.CarpetClientChunkLogger.setReason("Autosave queuing chunks for unloading");
-             this.func_71267_a(true);
+@@ -627,0 +717 @@
 +            carpet.carpetclient.CarpetClientChunkLogger.resetReason();
-             this.field_71304_b.func_76319_b();
+@@ -629 +719,4 @@
+-        }
 +            WorldHelper.endTickTask(); // RSMM
 +            CarpetProfiler.end_current_section();
-         }
++        }
 +        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.AUTOSAVE, LagSpikeHelper.PrePostSubPhase.POST);
- 
-         this.field_71304_b.func_76320_a("tallying");
-         this.field_71311_j[this.field_71315_w % 100] = System.nanoTime() - i;
-@@ -645,12 +736,34 @@
- 
-         this.field_71304_b.func_76319_b();
-         this.field_71304_b.func_76319_b();
+@@ -632,0 +726 @@
++        carpet.commands.CommandTicktimes.record(this.field_71311_j[this.field_71315_w % 100]);
+@@ -647,0 +742,19 @@
 +
 +        WorldHelper.endTickTask(); // RSMM
 +        CarpetServer.rsmmServer.tickEnd(); // RSMM
@@ -288,140 +197,72 @@
 +        if(CarpetSettings.scoreboardDelta > 0 && field_71315_w % 20 == 0){
 +            ScoreboardDelta.update();
 +        }
-     }
- 
-     public void func_71190_q()
-     {
+@@ -651,0 +765 @@
 +        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.TICK, LagSpikeHelper.PrePostSubPhase.PRE);
-         this.field_71304_b.func_76320_a("jobs");
+@@ -653 +767,3 @@
+-
 +        WorldHelper.startTickTask(TickTask.PACKETS); // RSMM
- 
++
 +        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.PLAYER, LagSpikeHelper.PrePostSubPhase.PRE);
-         synchronized (this.field_175589_i)
-         {
-             while (!this.field_175589_i.isEmpty())
-@@ -658,8 +771,10 @@
-                 Util.func_181617_a(this.field_175589_i.poll(), field_147145_h);
-             }
-         }
+@@ -660,0 +777 @@
 +        LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.PLAYER, LagSpikeHelper.PrePostSubPhase.POST);
- 
-         this.field_71304_b.func_76318_c("levels");
+@@ -662,0 +780 @@
 +        WorldHelper.swapTickTask(TickTask.LEVELS); // RSMM
- 
-         for (int j = 0; j < this.field_71305_c.length; ++j)
-         {
-@@ -672,6 +787,7 @@
-                 {
-                     return worldserver.func_72912_H().func_76065_j();
-                 });
+@@ -674,0 +793 @@
 +                LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.DIMENSION, LagSpikeHelper.PrePostSubPhase.PRE);
- 
-                 if (this.field_71315_w % 20 == 0)
-                 {
-@@ -686,27 +802,46 @@
-                 {
-                     worldserver.func_72835_b();
-                 }
+@@ -688,0 +808,4 @@
 +                catch (ThrowableSuppression e)
 +                {
 +                    Messenger.print_server_message(this, "You just caused a server crash in world tick.");
 +                }
-                 catch (Throwable throwable1)
-                 {
-                     CrashReport crashreport = CrashReport.func_85055_a(throwable1, "Exception ticking world");
-                     worldserver.func_72914_a(crashreport);
+@@ -693 +816,5 @@
 -                    throw new ReportedException(crashreport);
 +                    if(!CarpetSettings.updateSuppressionCrashFix || !(crashreport.func_71505_b() instanceof ThrowableSuppression) ) {
 +                        throw new ReportedException(crashreport);
 +                    } else {
 +                        Messenger.print_server_message(this, "You just caused a server crash in world tick.");
 +                    }
-                 }
- 
-                 try
-                 {
+@@ -697,0 +825 @@
 +                    WorldHelper.startTickTask(TickTask.ENTITIES); // RSMM
-                     worldserver.func_72939_s();
+@@ -698,0 +827,5 @@
 +                    WorldHelper.endTickTask(); // RSMM
-                 }
++                }
 +                catch (ThrowableSuppression e)
 +                {
 +                    Messenger.print_server_message(this, "You just caused a server crash in update entities.");
-+                }
-                 catch (Throwable throwable)
-                 {
-                     CrashReport crashreport1 = CrashReport.func_85055_a(throwable, "Exception ticking world entities");
-                     worldserver.func_72914_a(crashreport1);
+@@ -704 +837,5 @@
 -                    throw new ReportedException(crashreport1);
 +                    if(!CarpetSettings.updateSuppressionCrashFix || !(crashreport1.func_71505_b() instanceof ThrowableSuppression) ) {
 +                        throw new ReportedException(crashreport1);
 +                    } else {
 +                        Messenger.print_server_message(this, "You just caused a server crash in update entities.");
 +                    }
-                 }
- 
-                 this.field_71304_b.func_76319_b();
-                 this.field_71304_b.func_76320_a("tracker");
-                 worldserver.func_73039_n().func_72788_a();
+@@ -709,0 +847 @@
 +                LagSpikeHelper.processLagSpikes(null, LagSpikeHelper.TickPhase.DIMENSION, LagSpikeHelper.PrePostSubPhase.POST);
-                 this.field_71304_b.func_76319_b();
-                 this.field_71304_b.func_76319_b();
-             }
-@@ -714,13 +849,19 @@
-             this.field_71312_k[j][this.field_71315_w % 100] = System.nanoTime() - i;
-         }
- 
+@@ -716,0 +855 @@
 +        CarpetProfiler.start_section(null, "Network");
-         this.field_71304_b.func_76318_c("connection");
+@@ -717,0 +857 @@
 +        WorldHelper.swapTickTask(TickTask.CONNECTIONS); // RSMM
-         this.func_147137_ag().func_151269_c();
-         this.field_71304_b.func_76318_c("players");
+@@ -719,0 +860 @@
 +        WorldHelper.swapTickTask(TickTask.PLAYER_PING); // RSMM
-         this.field_71318_t.func_72374_b();
+@@ -720,0 +862 @@
 +        CarpetProfiler.end_current_section();
-         this.field_71304_b.func_76318_c("commandFunctions");
+@@ -721,0 +864 @@
 +        WorldHelper.swapTickTask(TickTask.COMMAND_FUNCTIONS); // RSMM
-         this.func_193030_aL().func_73660_a();
-         this.field_71304_b.func_76318_c("tickables");
+@@ -723,0 +867 @@
 +        WorldHelper.swapTickTask(TickTask.SERVER_GUI); // RSMM
- 
-         for (int k = 0; k < this.field_71322_p.size(); ++k)
-         {
-@@ -728,6 +869,9 @@
-         }
- 
-         this.field_71304_b.func_76319_b();
+@@ -730,0 +875,3 @@
 +        WorldHelper.endTickTask(); // RSMM
 +
 +        PistonFixes.onEndTick();
-     }
- 
-     public boolean func_71255_r()
-@@ -939,7 +1083,7 @@
- 
-     public String getServerModName()
-     {
+@@ -942 +1089 @@
 -        return "vanilla";
 +        return "Kisde-Carpet";
-     }
- 
-     public CrashReport func_71230_b(CrashReport p_71230_1_)
-@@ -1512,6 +1656,7 @@
-     {
-         if (this.func_152345_ab())
-         {
+@@ -1514,0 +1662 @@
 +            CarpetServer.rsmmServer.getMultimeter().reloadOptions(); // RSMM
-             this.func_184103_al().func_72389_g();
-             this.field_71305_c[0].func_184146_ak().func_186522_a();
-             this.func_191949_aK().func_192779_a();
-@@ -1523,4 +1668,9 @@
-             this.func_152344_a(this::func_193031_aM);
-         }
-     }
+@@ -1525,0 +1674,5 @@
 +
 +    // RSMM
 +    public boolean isPaused() {
 +        return false;
 +    }
- }

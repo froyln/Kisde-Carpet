@@ -1,11 +1,8 @@
 --- ../src-base/minecraft/net/minecraft/world/gen/structure/template/TemplateManager.java
 +++ ../src-work/minecraft/net/minecraft/world/gen/structure/template/TemplateManager.java
-@@ -20,7 +20,7 @@
- public class TemplateManager
- {
-     private final Map<String, Template> field_186240_a = Maps.<String, Template>newHashMap();
+@@ -23 +23 @@
 -    private final String field_186241_b;
 +    public final String field_186241_b; // CM: changed to public
-     private final DataFixer field_191154_c;
- 
-     public TemplateManager(String p_i47239_1_, DataFixer p_i47239_2_)
+@@ -161,0 +162,2 @@
++            File parent = file2.getParentFile();
++            if (!parent.isDirectory() && !parent.mkdirs()) return false;

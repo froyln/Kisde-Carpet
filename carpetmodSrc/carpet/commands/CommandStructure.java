@@ -66,6 +66,10 @@ public class CommandStructure extends CommandCarpetBase
         if (args.length < 1)
             throw new WrongUsageException(USAGE);
         
+        if (("load".equals(args[0]) || "save".equals(args[0])) && !sender.canUseCommand(2, getName())) {
+            throw new CommandException("commands.generic.permission");
+        }
+
         switch (args[0])
         {
         case "load":
@@ -173,6 +177,10 @@ public class CommandStructure extends CommandCarpetBase
             settings.setIntegrity(integrity).setSeed(seed);
         }
         
+        BlockPos size = template.getSize();
+        validateSize(size);
+        BlockPos opposite = Template.transformedBlockPos(settings, size.add(-1, -1, -1)).add(origin);
+        validateRegion(sender.getEntityWorld(), origin, opposite);
         template.addBlocksToWorldChunk(sender.getEntityWorld(), origin, settings);
         
         notifyCommandListener(sender, this, "Successfully loaded structure " + args[1]);
@@ -191,6 +199,8 @@ public class CommandStructure extends CommandCarpetBase
         StructureBoundingBox bb = new StructureBoundingBox(pos1, pos2);
         BlockPos origin = new BlockPos(bb.minX, bb.minY, bb.minZ);
         BlockPos size = new BlockPos(bb.getXSize(), bb.getYSize(), bb.getZSize());
+        validateSize(size);
+        validateRegion(sender.getEntityWorld(), pos1, pos2);
         
         boolean ignoreEntities = true;
         if (args.length >= 9)
@@ -205,11 +215,37 @@ public class CommandStructure extends CommandCarpetBase
         Template template = manager.getTemplate(server, new ResourceLocation(structureName));
         template.takeBlocksFromWorld(sender.getEntityWorld(), origin, size, !ignoreEntities, Blocks.STRUCTURE_VOID);
         template.setAuthor(sender.getName());
-        manager.writeTemplate(server, new ResourceLocation(structureName));
+        if (!manager.writeTemplate(server, new ResourceLocation(structureName))) {
+            throw new CommandException("Unable to save structure " + structureName);
+        }
         
         notifyCommandListener(sender, this, "Successfully saved structure " + structureName);
     }
     
+    static void validateSize(BlockPos size) throws CommandException {
+        try {
+            long volume = Math.multiplyExact(Math.multiplyExact((long) size.getX(), size.getY()), size.getZ());
+            if (size.getX() <= 0 || size.getY() <= 0 || size.getZ() <= 0 || volume > carpet.CarpetSettings.fillLimit) {
+                throw new CommandException("Structure exceeds the fillLimit or has invalid dimensions");
+            }
+        } catch (ArithmeticException e) {
+            throw new CommandException("Structure dimensions overflow");
+        }
+    }
+
+    static void validateRegion(net.minecraft.world.World world, BlockPos first, BlockPos second) throws CommandException {
+        BlockPos min = new BlockPos(Math.min(first.getX(), second.getX()), Math.min(first.getY(), second.getY()), Math.min(first.getZ(), second.getZ()));
+        BlockPos max = new BlockPos(Math.max(first.getX(), second.getX()), Math.max(first.getY(), second.getY()), Math.max(first.getZ(), second.getZ()));
+        if (min.getY() < 0 || max.getY() >= world.getActualHeight() || min.getX() < -30000000 || min.getZ() < -30000000 || max.getX() >= 30000000 || max.getZ() >= 30000000 || !world.getWorldBorder().contains(min) || !world.getWorldBorder().contains(max)) {
+            throw new CommandException("Structure outside world bounds");
+        }
+        for (int x = min.getX() >> 4; x <= max.getX() >> 4; x++) {
+            for (int z = min.getZ() >> 4; z <= max.getZ() >> 4; z++) {
+                if (!world.isBlockLoaded(new BlockPos(x << 4, min.getY(), z << 4))) throw new CommandException("Structure includes an unloaded chunk");
+            }
+        }
+    }
+
     private void listStructure(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         TemplateManager manager = server.worlds[0].getStructureTemplateManager();

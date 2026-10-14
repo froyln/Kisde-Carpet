@@ -72,9 +72,15 @@ Enchantment tables and loot generation retain their normal levels.
 levels. It still requires and charges the displayed operation's full level
 cost; creative players remain exempt. The normal rename-only cost cap remains.
 Prior-work costs saturate at the positive integer limit instead of overflowing.
-A vanilla client may still show the red “Too Expensive!” label for costs of
-40 or more; the server supplies the output and validates whether it can be
-picked up.
+The updated Kisde-Carpet companion receives the complete XP cost and shows it
+in the anvil screen, including costs above 32,767. It also reflects rule changes
+while the anvil is open. The server still checks your actual XP before allowing
+you to take the result.
+
+Clients without the updated companion retain normal anvil use and can complete
+costs up to 32,767, although vanilla may show its “Too Expensive!” label above
+39. Larger costs are rejected without consuming items or XP, with a message
+requesting the updated companion.
 
 Fake-player inventories
 -----------------------
@@ -86,3 +92,30 @@ false, those commands retain their existing logout behavior.
 
 Ordinary deaths keep their normal gamerule behavior. Login displacement,
 shadow-player despawn and server shutdown do not gain inventory drops.
+
+
+Structure commands
+------------------
+
+``/structure list`` remains available to everyone while ``commandStructure`` is
+enabled. ``/structure load`` and ``/structure save`` require permission level 2.
+Their block volume must fit ``fillLimit``; the selected or transformed area must
+stay inside the world's height and border and contain only loaded chunks.
+These checks happen before saving or placing blocks. Mirrors, rotations and
+entity options retain their existing behavior.
+
+Server maintenance
+------------------
+
+``/updateCarpet`` and ``updateCarpetAll`` have been removed. Install server
+updates through the normal release/build process. Old configuration lines for
+the removed rule can be deleted; they no longer enable a command.
+
+``/ticktimes start [filename]`` records completed tick durations in nanoseconds.
+``/ticktimes stop`` drains and closes the current writer before another session
+starts. Write errors stop logging and are reported instead of silently losing
+samples. The command still requires permission level 2.
+
+Prometheus retains its existing ``Prometheus config.json`` file format:
+``port:1234``. Empty, malformed, unreadable or out-of-range configurations now
+warn and fall back to port 1234 instead of preventing server startup.

@@ -200,6 +200,9 @@ public final class EssentialRuleCheck {
         check(!repair.getSlot(2).getStack().isEmpty() && repair.maximumCost > 40, "Uncapped cost missing");
         player.experienceLevel = repair.maximumCost - 1; check(!repair.getSlot(2).canTakeStack(player), "Insufficient XP accepted");
         player.experienceLevel = repair.maximumCost; check(repair.getSlot(2).canTakeStack(player), "Enough XP rejected");
+        check(anvil(player, 32767, Integer.MAX_VALUE).getSlot(2).getStack().isEmpty(), "Vanilla client accepted unsupported anvil cost");
+        CarpetServer.anvilSync = new carpet.helpers.AnvilSync();
+        CarpetServer.anvilSync.register(carpet.helpers.AnvilSync.CHANNEL, player);
         repair = anvil(player, 32767, Integer.MAX_VALUE);
         check(repair.maximumCost == Integer.MAX_VALUE && repair.getSlot(2).getStack().getRepairCost() == Integer.MAX_VALUE, "Anvil cost overflow");
         check(EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, repair.getSlot(2).getStack()) == 32767, "Anvil level overflow");

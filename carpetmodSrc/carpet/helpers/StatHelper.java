@@ -11,18 +11,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatCrafting;
-import net.minecraft.stats.StatisticsManager;
 import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +27,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class StatHelper {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Map<UUID, StatisticsManager> cache;
-    private static long cacheTime;
-    private static MinecraftServer cacheServer;
     private static final StatBase[] BLOCK_STATE_STATS = new StatBase[256 * 16];
     private static final Int2ObjectMap<StatBase> CRAFT_META_STATS = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<StatBase> OBJECT_USE_META_STATS = new Int2ObjectOpenHashMap<>();
@@ -44,44 +37,6 @@ public class StatHelper {
         File statsDir = new File(server.getWorld(0).getSaveHandler().getWorldDirectory(), "stats");
         File[] files = statsDir.listFiles((dir, name) -> name.endsWith(".json"));
         return files == null ? new File[0] : files;
-    }
-
-    public static Map<UUID, StatisticsManager> getAllStatistics(MinecraftServer server) {
-        if (cache != null && cacheServer == server && server.getTickCounter() >= cacheTime && server.getTickCounter() - cacheTime < 100) return cache;
-        File[] files = getStatFiles(server);
-        HashMap<UUID, StatisticsManager> stats = new HashMap<>();
-        PlayerList players = server.getPlayerList();
-        for (File file : files) {
-            String filename = file.getName();
-            String uuidString = filename.substring(0, filename.lastIndexOf(".json"));
-            try {
-                UUID uuid = UUID.fromString(uuidString);
-                EntityPlayerMP player = players.getPlayerByUUID(uuid);
-                if (player != null) {
-                    stats.put(uuid, players.getPlayerStatsFile(player));
-                } else {
-                    StatisticsManagerServer manager = new StatisticsManagerServer(server, file);
-                    manager.readStatFile();
-                    stats.put(uuid, manager);
-                }
-            } catch (IllegalArgumentException ignored) {}
-        }
-        cache = stats;
-        cacheServer = server;
-        cacheTime = server.getTickCounter();
-        return stats;
-    }
-
-    @Nullable
-    public static String getUsername(MinecraftServer server, UUID uuid) {
-        PlayerProfileCache profileCache = server.getPlayerProfileCache();
-        GameProfile profile = profileCache.getProfileByUUID(uuid);
-        if (profile != null) return profile.getName();
-        MinecraftSessionService sessionService = server.getMinecraftSessionService();
-        profile = sessionService.fillProfileProperties(new GameProfile(uuid, null), false);
-        if (profile.isComplete()) return profile.getName();
-        LOGGER.warn("Could not find name of user " + uuid);
-        return null;
     }
 
     public static void initialize(Scoreboard scoreboard, MinecraftServer server, ScoreObjective objective) {

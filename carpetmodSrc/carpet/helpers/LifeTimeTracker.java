@@ -36,7 +36,7 @@ public final class LifeTimeTracker
     public static boolean permitted(ICommandSender sender)
     {
         String level = CarpetSettings.commandLifeTime;
-        if ("true".equals(level)) return true;
+        if ("true".equals(level) || "0".equals(level)) return true;
         if ("false".equals(level)) return false;
         if ("ops".equals(level)) return sender.canUseCommand(2, "lifetime");
         return level.matches("[0-4]") && sender.canUseCommand(Integer.parseInt(level), "lifetime");
