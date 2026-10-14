@@ -119,3 +119,28 @@ samples. The command still requires permission level 2.
 Prometheus retains its existing ``Prometheus config.json`` file format:
 ``port:1234``. Empty, malformed, unreadable or out-of-range configurations now
 warn and fall back to port 1234 instead of preventing server startup.
+
+
+All mined-block scoreboard
+--------------------------
+
+``commandDig-All`` defaults to ``false``. Enable it to let players use
+``/dig-all``::
+
+    /carpet setDefault commandDig-All true
+    /dig-all
+
+The sidebar shows each player's recorded mined blocks and a server-wide
+``Total``. It combines existing block-mining statistics across tools and hand
+mining, including offline history whose player names can be resolved. It updates
+while players mine and persists with the world. Tool attacks, tilling and other
+item uses are excluded. Minecraft does not record creative breaks or blocks
+broken without a harvest-capable tool in its mining statistics.
+
+The objective is ``st.dig-all`` with the read-only criterion
+``stat.mineBlock.all``. Repeating the command reuses it. A conflicting objective
+with that name is preserved and reported as an error. Other objectives are
+preserved when the sidebar changes. Disabling the rule disables the command;
+existing scores continue updating. Scores are capped at 2,147,483,647,
+the vanilla scoreboard integer limit. Use normal scoreboard display commands
+or ``/sb clear`` to hide the sidebar.

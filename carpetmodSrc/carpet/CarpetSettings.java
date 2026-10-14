@@ -80,6 +80,9 @@ public class CarpetSettings
     @Rule(desc = "Enables /log command to monitor events in the game via chat and overlays", category = COMMANDS)
     public static boolean commandLog = true;
 
+    @Rule(name = "commandDig-All", desc = "Enables /dig-all to display total recorded blocks mined", category = {COMMANDS, KISDE})
+    public static boolean commandDigAll = false;
+
     @Rule(desc = "Enables /distance command to measure in game distance between points", category = COMMANDS, extra = {
             "Also enables brown carpet placement action if 'carpets' rule is turned on as well"
     })

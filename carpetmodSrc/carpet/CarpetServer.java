@@ -162,6 +162,7 @@ public class CarpetServer // static for now - easier to handle all around the co
         carpet.commands.CommandInventory.playerConnected(player);
         pluginChannels.onPlayerConnected(player);
         LoggerRegistry.playerConnected(player);
+        carpet.helpers.StatHelper.updateDigAll(player);
     }
 
     public static void playerDisconnected(EntityPlayerMP player)

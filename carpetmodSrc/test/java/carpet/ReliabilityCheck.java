@@ -191,13 +191,13 @@ public final class ReliabilityCheck {
         ScoreObjective objective = board.addScoreObjective("st.fixture", new ScoreCriteriaStat(stat));
         UUID first = UUID.randomUUID(), second = UUID.randomUUID(); Map<UUID, Integer> values = new HashMap<>(); Map<UUID, String> names = new HashMap<>();
         values.put(first, 2500); values.put(second, 1199); names.put(first, "Alice"); names.put(second, "Bob");
-        Method apply = method(StatHelper.class, "applyInitialScores", Scoreboard.class, net.minecraft.server.MinecraftServer.class, ScoreObjective.class, StatBase.class, int.class, Map.class, Map.class);
-        apply.invoke(null, board, server, objective, stat, 1200, values, names);
+        Method apply = method(StatHelper.class, "applyInitialScores", Scoreboard.class, net.minecraft.server.MinecraftServer.class, ScoreObjective.class, net.minecraft.scoreboard.IScoreCriteria.class, int.class, Map.class, Map.class);
+        apply.invoke(null, board, server, objective, objective.getCriteria(), 1200, values, names);
         check(board.getOrCreateScore("Alice", objective).getScorePoints() == 2 && board.getOrCreateScore("Total", objective).getScorePoints() == 2, "Divider or total changed");
         board.removeObjective(objective); ScoreObjective replacement = board.addScoreObjective("st.fixture", new ScoreCriteriaStat(stat));
-        apply.invoke(null, board, server, objective, stat, 1200, values, names);
+        apply.invoke(null, board, server, objective, objective.getCriteria(), 1200, values, names);
         check(board.getSortedScores(replacement).isEmpty(), "Stale worker changed replacement objective");
-        server.running = false; apply.invoke(null, board, server, replacement, stat, 1, values, names);
+        server.running = false; apply.invoke(null, board, server, replacement, replacement.getCriteria(), 1, values, names);
         check(board.getSortedScores(replacement).isEmpty(), "Stopped server accepted scores");
     }
     public static void main(String[] args) throws Exception {

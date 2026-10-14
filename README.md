@@ -40,9 +40,11 @@ Capture and paste require operator permission and creative mode. `schematicSave`
 
 See [server integrations](docs/usage/server-integrations.rst) for inventory previews and paste options, or [shared schematics](docs/usage/shared-schematics.rst) to enable the shared library.
 
+Enable the mined-block scoreboard with `/carpet setDefault commandDig-All true`, then run `/dig-all`. It combines saved block-mining statistics, updates as players mine, and shows a **Total** row. Tool attacks and other item uses are excluded.
+
 ## Available rules
 
-Browse all 257 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
+Browse all 258 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -85,6 +87,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `commandCameramode` | `true` | commands | Enables /c and /s commands to quickly switch between spectator and server modes |
 | `commandChunk` | `true` | commands | Enables /chunk command |
 | `commandCluster` | `false` | commands, creative, vastech | Enables OP cluster calculation, loading and creative loader construction |
+| `commandDig-All` | `false` | commands, kisde | Enables /dig-all to display each player’s recorded mined blocks and a server Total. |
 | `commandDistance` | `true` | commands | Enables /distance command to measure in game distance between points |
 | `commandEnderchest` | `false` | experimental, commands, bullet | Enables /enderchest <Player> to replace objective enderchest with your own one(Only for OPs) |
 | `commandEntityInfo` | `true` | commands | Enables /lazychunkbehavior command |
