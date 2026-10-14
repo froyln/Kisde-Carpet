@@ -316,7 +316,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 
 - [Server integrations](docs/usage/server-integrations.rst)
 - [Shared schematics](docs/usage/shared-schematics.rst)
-- [Careful pickup, command shortcuts and anvil rules](docs/usage/essential-rules.rst)
+- [Careful pickup, command shortcuts and anvil rules](docs/usage/server-rules.rst)
 - [Technical tools and cluster commands](docs/usage/vastech-tools.rst)
 - [Server installation](docs/usage/install.rst)
 - [Carpet manual](docs/index.rst)
@@ -329,4 +329,4 @@ The separate companion client project targets LiteLoader and Java 8. Its build i
 
 ## Credits
 
-Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), with selected additions from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition) and [EssentialAddons](https://github.com/Super-Santa/EssentialAddons).
+Based on [Bullet Carpet](https://github.com/Dioswilson/Bullet-carpet), with selected additions from [Carpet Vastech Addition](https://github.com/Void-Skeleton/Carpet-Vastech-Addition)
