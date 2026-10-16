@@ -1,5 +1,7 @@
 package carpet.helpers;
 
+import carpet.CarpetSettings;
+import carpet.patches.EntityPlayerMPFake;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -104,6 +106,7 @@ public class StatHelper {
         int total = 0;
         for (Map.Entry<UUID, Integer> entry : values.entrySet()) {
             EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(entry.getKey());
+            if (criteria == DIG_ALL && !CarpetSettings.fakePlayerStats && player instanceof EntityPlayerMPFake) continue;
             int value = (player == null ? entry.getValue() : statisticValue(server.getPlayerList().getPlayerStatsFile(player), criteria)) / divider;
             String name = player == null ? names.get(entry.getKey()) : player.getName();
             if (value == 0 || name == null) continue;
@@ -127,6 +130,7 @@ public class StatHelper {
     public static boolean isMiningStat(StatBase stat) { return MINING_STATS.contains(stat); }
 
     public static void updateDigAll(EntityPlayerMP player) {
+        if (!CarpetSettings.fakePlayerStats && player instanceof EntityPlayerMPFake) return;
         Scoreboard scoreboard = player.getWorldScoreboard();
         for (ScoreObjective objective : scoreboard.getObjectivesFromCriteria(DIG_ALL)) {
             scoreboard.getOrCreateScore(player.getName(), objective).setScorePoints(countMinedBlocks(player.getStatFile()));

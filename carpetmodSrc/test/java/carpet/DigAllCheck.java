@@ -3,6 +3,7 @@ package carpet;
 import carpet.commands.CommandDigAll;
 import carpet.helpers.StatHelper;
 import carpet.helpers.StatSubItem;
+import carpet.patches.EntityPlayerMPFake;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.mojang.authlib.GameProfile;
@@ -11,6 +12,7 @@ import java.nio.file.*;
 import java.util.*;
 import net.minecraft.command.CommandException;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.*;
@@ -46,8 +48,10 @@ public final class DigAllCheck {
         public Scoreboard getScoreboard() { return board; }
     }
     private static final class Players extends DedicatedPlayerList {
+        EntityPlayerMP online;
         Players() { super(null); }
-        public EntityPlayerMP getPlayerByUUID(UUID uuid) { return null; }
+        public EntityPlayerMP getPlayerByUUID(UUID uuid) { return online != null && online.getUniqueID().equals(uuid) ? online : null; }
+        public StatisticsManagerServer getPlayerStatsFile(EntityPlayer player) { return ((EntityPlayerMP)player).getStatFile(); }
     }
     private static final class Server extends DedicatedServer {
         World world; Players players; List<Runnable> tasks;
@@ -60,7 +64,7 @@ public final class DigAllCheck {
     }
     private static int score(Scoreboard board, ScoreObjective objective, String name) { return board.getOrCreateScore(name, objective).getScorePoints(); }
     public static void run() throws Exception {
-        boolean rule = CarpetSettings.commandDigAll;
+        boolean rule = CarpetSettings.commandDigAll, fakeStats = CarpetSettings.fakePlayerStats;
         try {
             check(CarpetSettings.hasRule("commandDig-All"), "Exact hyphenated rule missing");
             CarpetSettings.commandDigAll = false;
@@ -96,6 +100,23 @@ public final class DigAllCheck {
             check(StatHelper.countMinedBlocks(saved) == 9, "Saved history changed");
 
             Method apply = StatHelper.class.getDeclaredMethod("applyInitialScores",Scoreboard.class,MinecraftServer.class,ScoreObjective.class,IScoreCriteria.class,int.class,Map.class,Map.class); apply.setAccessible(true);
+            EntityPlayerMPFake bot = allocate(EntityPlayerMPFake.class); bot.world = server.world; bot.setUniqueId(UUID.randomUUID());
+            Field profile = EntityPlayer.class.getDeclaredField("gameProfile"); profile.setAccessible(true); profile.set(bot,new GameProfile(bot.getUniqueID(),"Bot"));
+            Field botStats = EntityPlayerMP.class.getDeclaredField("statsFile"); botStats.setAccessible(true);
+            botStats.set(bot,new StatisticsManagerServer(null,Files.createTempFile("kisde-dig-bot-", ".json").toFile()));
+            CarpetSettings.fakePlayerStats = false; StatHelper.updateDigAll(bot);
+            check(!board.entityHasObjective("Bot",objective), "Disabled fake-player stats created a bot row on join");
+            bot.getStatFile().unlockAchievement(bot,dirt,7); server.players.online = bot;
+            Map<UUID,Integer> botValues = new HashMap<>(); botValues.put(bot.getUniqueID(),7);
+            Map<UUID,String> botNames = new HashMap<>(); botNames.put(bot.getUniqueID(),"Bot");
+            apply.invoke(null,board,server,objective,StatHelper.DIG_ALL,1,botValues,botNames);
+            check(!board.entityHasObjective("Bot",objective) && score(board,objective,"Total") == 15, "History initialization included a disabled bot");
+            CarpetSettings.fakePlayerStats = true; bot.addStat(dirt,2);
+            check(score(board,objective,"Bot") == 9 && score(board,objective,"Total") == 24, "Enabled bot mining stats were excluded");
+            CarpetSettings.fakePlayerStats = false; bot.addStat(dirt,2); StatHelper.updateDigAll(bot);
+            check(score(board,objective,"Bot") == 9 && score(board,objective,"Total") == 24, "Disabled bot changed existing stats");
+            board.removeObjectiveFromEntity("Bot",objective); server.players.online = null;
+            StatHelper.updateDigAll(bob);
             UUID offline = UUID.randomUUID(); Map<UUID,Integer> values = new HashMap<>(); values.put(offline,7); Map<UUID,String> names = new HashMap<>(); names.put(offline,"Offline");
             apply.invoke(null,board,server,objective,StatHelper.DIG_ALL,1,values,names);
             check(score(board,objective,"Offline") == 7 && score(board,objective,"Total") == 22, "Offline initialization lost live rows/total");
@@ -113,6 +134,6 @@ public final class DigAllCheck {
             try { command.execute(server,alice,new String[0]); throw new AssertionError("Conflicting scoreboard overwritten"); } catch (CommandException expected) { }
             check(board.getObjective("st.dig-all") == replacement, "Conflict removed existing scoreboard");
             System.out.println("PASS dig-all rule, native metadata/base mining, history, live totals, saturation, persistence and stale/conflict guards");
-        } finally { CarpetSettings.commandDigAll = rule; }
+        } finally { CarpetSettings.commandDigAll = rule; CarpetSettings.fakePlayerStats = fakeStats; }
     }
 }
