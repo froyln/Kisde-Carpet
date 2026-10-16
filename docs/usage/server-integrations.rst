@@ -19,7 +19,7 @@ Rules and access
 * ``schematicPasteNoUpdates`` suppresses paste-generated block-added, neighbor,
   observer and inventory comparator updates independently of inventory paste.
   It defaults to false and retains the same operator/creative authorization.
-* ``pcaProtocol`` permits an operator to preview nearby server container
+* ``pcaProtocol`` permits an operator to preview server container
   inventories in Tweakeroo and Litematica. It is read-only and does not include
   player inventories or Ender Chest account data.
 
@@ -61,6 +61,11 @@ Inventory overlays refresh server contents about every 300 ms while rendered.
 Litematica's schematic inventory remains the saved inventory; its world
 inventory shows current server contents. Disabling ``pcaProtocol`` clears the
 server preview.
+
+Tweakeroo free camera targets inventories from the camera rather than the
+player's body, within six blocks of the camera. The server permits previews
+only in loaded chunks already sent to that player. Free camera does not load
+additional chunks or bypass operator permission or ``pcaProtocol``.
 
 Paste obeys Litematica's ``pasteReplaceBehavior`` setting: ``none`` preserves
 existing blocks, including their inventories. Select ``all`` to restore NBT in

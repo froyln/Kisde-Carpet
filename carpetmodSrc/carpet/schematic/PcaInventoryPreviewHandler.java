@@ -80,13 +80,10 @@ public final class PcaInventoryPreviewHandler implements PluginChannelHandler {
         IInventory inventory;
         if (entityId != null) {
             Entity entity = world.getEntityFromUuid(entityId);
-            boolean allowed = CarpetSettings.pcaProtocol && player.canUseCommand(2, "") && entity != null &&
-                    supportedMinecart(entity) && player.getDistanceSq(entity.posX, entity.posY, entity.posZ) <= 36.0;
+            boolean allowed = entity != null && supportedMinecart(entity) && canPreview(player, entity.getPosition());
             inventory = allowed ? (IInventory) entity : null;
         } else {
-            boolean allowed = CarpetSettings.pcaProtocol && player.canUseCommand(2, "") &&
-                    pos.getY() >= 0 && pos.getY() < world.getActualHeight() && world.isBlockLoaded(pos) &&
-                    world.getWorldBorder().contains(pos) && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 36.0;
+            boolean allowed = canPreview(player, pos);
             inventory = allowed ? findInventory(world, pos) : null;
         }
         if (inventory != null && inventory.getSizeInventory() <= 54 && (pos == null || !hasUnresolvedLoot(world, pos))) {
@@ -122,6 +119,14 @@ public final class PcaInventoryPreviewHandler implements PluginChannelHandler {
         } finally {
             if (!transferred && response.refCnt() > 0) response.release();
         }
+    }
+
+    private static boolean canPreview(EntityPlayerMP player, BlockPos pos) {
+        WorldServer world = player.getServerWorld();
+        return CarpetSettings.pcaProtocol && player.canUseCommand(2, "") &&
+                pos.getY() >= 0 && pos.getY() < world.getActualHeight() && world.isBlockLoaded(pos) &&
+                world.getWorldBorder().contains(pos) &&
+                world.getPlayerChunkMap().isPlayerWatchingChunk(player, pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     private static IInventory findInventory(WorldServer world, BlockPos pos) {
