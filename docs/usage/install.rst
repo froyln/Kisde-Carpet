@@ -5,7 +5,7 @@ Installation
 To use Carpet, you must first have the Carpet patches. You can either
 build the patches as detailed in the ``README.md`` file at the root of the
 git repository, or download them from the
-`releases page <https://github.com/gnembon/carpetmod/releases>`_.
+`releases page <https://github.com/froyln/Kisde-Carpet/releases>`_.
 
 Patching automatically
 ======================
@@ -37,7 +37,7 @@ First, create a clean directory (folder). For this tutorial, we call it
 * `Download the 1.12.2 vanilla server jar
   <https://launchermeta.mojang.com/v1/packages/cfd75871c03119093d7c96a6a99f21137d00c855/1.12.2.json>`_.
 * `Download the latest Carpet patch
-  <https://github.com/gnembon/carpetmod/releases/latest>`_.
+  <https://github.com/froyln/Kisde-Carpet/releases/latest>`_.
 
 .. note::
    For the remainder of this tutorial, we will assume that the server jar is

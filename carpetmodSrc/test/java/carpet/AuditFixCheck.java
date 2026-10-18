@@ -372,7 +372,7 @@ public final class AuditFixCheck {
         System.out.println("PASS lifetime zero/default, updater removal and CI check/artifact gates");
     }
     public static void main(String[] args) throws Exception {
-        Bootstrap.register(); structure(); mining(); sharing(); ticktimes(); config(); anvil(); followupBugs(); legacyMining(); DigAllCheck.run(); InventoryPreviewCheck.run(); lifecycleAndCi();
+        Bootstrap.register(); structure(); mining(); sharing(); ticktimes(); config(); anvil(); followupBugs(); legacyMining(); DigAllCheck.run(); InventoryPreviewCheck.run(); BedCameraCheck.run(); lifecycleAndCi();
         System.out.println("Audit fix checks passed");
     }
 }

@@ -1136,6 +1136,9 @@ public class CarpetSettings
 
     @Rule(desc = "Allows OPs to preview nearby server container inventories with Tweakeroo", category = {EXPERIMENTAL, KISDE})
     public static boolean pcaProtocol;
+    @Rule(desc = "Right-clicking a nearby bed sets your respawn point even during the day or near monsters", category = {SURVIVAL, KISDE})
+    public static boolean bedSetSpawn;
+
     @Rule(desc = "Toggle for end gateway cooldown", category = {SURVIVAL, KISDE})
     public static boolean endGatewayCooldown = true;
 

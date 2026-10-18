@@ -44,7 +44,7 @@ Enable the mined-block scoreboard with `/carpet setDefault commandDig-All true`,
 
 ## Available rules
 
-Browse all 258 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
+Browse all 259 registered server rules below. Defaults apply before `carpet.conf` overrides; `/carpet <rule>` shows details and accepted values.
 
 The `bullet`, `kisde` and `vastech` categories identify additions from each project; other categories describe their purpose. See [Vastech technical tools](docs/usage/vastech-tools.rst) for cluster commands and imported rule behavior.
 
@@ -62,6 +62,7 @@ The `bullet`, `kisde` and `vastech` categories identify additions from each proj
 | `autocrafter` | `false` | feature | Turns crafting tables into automated crafting tables with inventorys. |
 | `autoCraftingDropper` | `false` | feature | Auto-crafting dropper |
 | `bedrockDropsAsItem` | `false` | experimental | Allows bedrock to drop as bedrock item if broken, similar to 1.8 and lower versions. |
+| `bedSetSpawn` | `false` | survival, kisde | Right-clicking a nearby bed sets your respawn point even during the day or near monsters |
 | `blockCollisionsOptimization` | `false` | experimental | Optimized entity-block collision calculations. By masa |
 | `blockEventSerializer` | `false` | fix | Saves the block event on server shutdown and loads at server startup. |
 | `blockPlacementIgnoreEntity` | `false` | creative, kisde | Creative players can place blocks inside entities. |

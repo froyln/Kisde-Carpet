@@ -144,3 +144,17 @@ preserved when the sidebar changes. Disabling the rule disables the command;
 existing scores continue updating. Scores are capped at 2,147,483,647,
 the vanilla scoreboard integer limit. Use normal scoreboard display commands
 or ``/sb clear`` to hide the sidebar.
+
+Bed respawn and camera return
+----------------------------
+
+Enable ``/carpet bedSetSpawn true`` to set your respawn point by right-clicking a
+nearby, unoccupied bed, including during the day or when monsters prevent sleep.
+The bed head is saved with normal bed respawn checks; destroying or obstructing
+the bed still prevents respawning there. Nether and End beds keep their explosive
+behavior. The rule defaults to ``false``.
+
+``/s`` completes game-mode restoration after returning from ``/c``, including
+long-distance and cross-dimension returns. It uses the server's default game mode
+(survival if that default is spectator). ``alwaysSetPlayerIntoSurvival`` forces
+survival instead.

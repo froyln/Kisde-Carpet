@@ -161,12 +161,23 @@
 +                    KillLogHelper.onDudHit(this);
 +            }
 +            //CM END
-@@ -1913,0 +1987,4 @@
+@@ -1417,1 +1491,10 @@
++            if (CarpetSettings.bedSetSpawn && this.func_190774_a(p_180469_1_, enumfacing))
++            {
++                if (!p_180469_1_.equals(this.func_180470_cg()) || this.func_82245_bX())
++                {
++                    this.func_146105_b(new net.minecraft.util.text.TextComponentString("Respawn point set"), true);
++                }
++                this.func_180473_a(p_180469_1_, false);
++            }
++
+             if (this.field_70170_p.func_72935_r())
+@@ -1913,0 +1996,4 @@
 +        else if (CarpetSettings.disableBedrockPlacement && p_175151_3_.func_77973_b() == Item.func_150898_a(Blocks.field_150357_h) && !this.field_71075_bZ.field_75098_d)
 +        {
 +            return false;
 +        }
-@@ -2042,0 +2120,14 @@
+@@ -2042,0 +2129,14 @@
 +        this.func_192026_k(this.func_192025_dl());
 +        this.func_192031_i(new NBTTagCompound());
 +    }
@@ -181,7 +192,7 @@
 +    //dismount right parrot
 +    protected void dismount_right()
 +    {
-@@ -2309,0 +2401,7 @@
+@@ -2309,0 +2410,7 @@
 +    
 +    // CM: player collision
 +    @Override
@@ -189,9 +200,9 @@
 +    {
 +        return !CarpetSettings.disablePlayerCollision;
 +    }
-@@ -2336 +2434 @@
+@@ -2336 +2443 @@
 -    static class SleepEnemyPredicate implements Predicate<EntityMob>
 +    public static class SleepEnemyPredicate implements Predicate<EntityMob>
-@@ -2340 +2438 @@
+@@ -2340 +2447 @@
 -            private SleepEnemyPredicate(EntityPlayer p_i47461_1_)
 +            public SleepEnemyPredicate(EntityPlayer p_i47461_1_)
