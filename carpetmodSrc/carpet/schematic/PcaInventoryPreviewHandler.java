@@ -124,7 +124,7 @@ public final class PcaInventoryPreviewHandler implements PluginChannelHandler {
     private static boolean canPreview(EntityPlayerMP player, BlockPos pos) {
         WorldServer world = player.getServerWorld();
         return CarpetSettings.pcaProtocol && player.canUseCommand(2, "") &&
-                pos.getY() >= 0 && pos.getY() < world.getActualHeight() && world.isBlockLoaded(pos) &&
+                pos.getY() >= 0 && pos.getY() < world.getHeight() && world.isBlockLoaded(pos) &&
                 world.getWorldBorder().contains(pos) &&
                 world.getPlayerChunkMap().isPlayerWatchingChunk(player, pos.getX() >> 4, pos.getZ() >> 4);
     }

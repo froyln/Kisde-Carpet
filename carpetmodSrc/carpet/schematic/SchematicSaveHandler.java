@@ -88,7 +88,7 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
             int[] corners = inputRegions.getIntArray(name);
             if (corners.length != 6) throw new IllegalArgumentException("Invalid bounds for region " + name);
             Bounds region = new Bounds(corners);
-            if (region.minY < 0 || region.maxY >= world.getActualHeight()) throw new IllegalArgumentException("Region outside world height: " + name);
+            if (region.minY < 0 || region.maxY >= world.getHeight()) throw new IllegalArgumentException("Region outside world height: " + name);
             totalBlocks = Math.addExact(totalBlocks, region.volume);
             if (totalBlocks > MAX_BLOCKS) throw new IllegalArgumentException("Selection exceeds " + MAX_BLOCKS + " blocks");
             bounds.put(name, region);

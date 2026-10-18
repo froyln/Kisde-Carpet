@@ -107,7 +107,7 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
         if (!quota.acceptSequence(sequence)) return;
         WorldServer world = player.getServerWorld();
         BlockPos pos = new BlockPos(request.getInteger("x"), request.getInteger("y"), request.getInteger("z"));
-        if (pos.getY() < 0 || pos.getY() >= world.getActualHeight() || !world.isBlockLoaded(pos) || !world.getWorldBorder().contains(pos)) {
+        if (pos.getY() < 0 || pos.getY() >= world.getHeight() || !world.isBlockLoaded(pos) || !world.getWorldBorder().contains(pos)) {
             throw new IllegalArgumentException("Paste target is outside loaded world bounds");
         }
 
