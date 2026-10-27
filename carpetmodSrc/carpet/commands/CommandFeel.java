@@ -83,7 +83,18 @@ public class CommandFeel extends CommandBase
 
             BlockPos blockpos2 = new BlockPos(Math.min(blockpos.getX(), blockpos1.getX()), Math.min(blockpos.getY(), blockpos1.getY()), Math.min(blockpos.getZ(), blockpos1.getZ()));
             BlockPos blockpos3 = new BlockPos(Math.max(blockpos.getX(), blockpos1.getX()), Math.max(blockpos.getY(), blockpos1.getY()), Math.max(blockpos.getZ(), blockpos1.getZ()));
-            int i = (blockpos3.getX() - blockpos2.getX() + 1) * (blockpos3.getY() - blockpos2.getY() + 1) * (blockpos3.getZ() - blockpos2.getZ() + 1);
+            long sizeX = (long) blockpos3.getX() - blockpos2.getX() + 1;
+            long sizeY = (long) blockpos3.getY() - blockpos2.getY() + 1;
+            long sizeZ = (long) blockpos3.getZ() - blockpos2.getZ() + 1;
+            long volume;
+            try {
+                volume = Math.multiplyExact(Math.multiplyExact(sizeX, sizeY), sizeZ);
+            } catch (ArithmeticException e) {
+                volume = Long.MAX_VALUE;
+            }
+            if (volume > CarpetSettings.fillLimit) {
+                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {volume, CarpetSettings.fillLimit});
+            }
 
             if (blockpos2.getY() >= 0 && blockpos3.getY() < 256)
             {
@@ -109,7 +120,7 @@ public class CommandFeel extends CommandBase
 
                 FillType mode;
                 try {
-                    mode = args.length <= 8 ? FillType.REPLACE : FillType.valueOf(args[8].toUpperCase(Locale.ROOT));
+                    mode = args.length <= 8 ? FillType.REPLACE : "replace_noupdate".equalsIgnoreCase(args[8]) ? FillType.NOUPDATE : FillType.valueOf(args[8].toUpperCase(Locale.ROOT));
                 } catch (IllegalArgumentException e) {
                     mode = FillType.REPLACE;
                 }
@@ -126,7 +137,7 @@ public class CommandFeel extends CommandBase
                 NBTTagCompound worldEditTag = flag ? nbttagcompound : null;
 
                 List<BlockPos> list = Lists.<BlockPos>newArrayList();
-                i = 0;
+                int i = 0;
 
                 for (int l = blockpos2.getZ(); l <= blockpos3.getZ(); ++l)
                 {
@@ -143,12 +154,19 @@ public class CommandFeel extends CommandBase
                                     if (mode == FillType.DESTROY)
                                     {
                                         WorldEditBridge.recordBlockEdit(worldEditPlayer, world, blockpos4, Blocks.AIR.getDefaultState(), worldEditTag);
-                                        CapturedDrops.setCapturingDrops(true);
-                                        world.destroyBlock(blockpos4, true);
-                                        CapturedDrops.setCapturingDrops(false);
-                                        for (EntityItem drop : CapturedDrops.getCapturedDrops())
-                                            WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
                                         CapturedDrops.clearCapturedDrops();
+                                        try {
+                                            CapturedDrops.setCapturingDrops(true);
+                                            try {
+                                                world.destroyBlock(blockpos4, true);
+                                            } finally {
+                                                CapturedDrops.setCapturingDrops(false);
+                                            }
+                                            for (EntityItem drop : CapturedDrops.getCapturedDrops())
+                                                WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
+                                        } finally {
+                                            CapturedDrops.clearCapturedDrops();
+                                        }
                                     }
                                     else if (mode == FillType.KEEP)
                                     {
@@ -260,7 +278,7 @@ public class CommandFeel extends CommandBase
         }
         else
         {
-            return args.length == 10 && ("replace".equalsIgnoreCase(args[8]) || "noupdate".equalsIgnoreCase(args[8])) ? getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys()) : Collections.emptyList();
+            return args.length == 10 && ("replace".equalsIgnoreCase(args[8]) || "noupdate".equalsIgnoreCase(args[8]) || "replace_noupdate".equalsIgnoreCase(args[8])) ? getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys()) : Collections.emptyList();
         }
     }
 

@@ -52,6 +52,9 @@ public class CommandEnderchest extends CommandCarpetBase {
             if (checkPermission(server, sender)) {
                 if (args.length == 1) {
                     EntityPlayerMP sendingPlayer = (EntityPlayerMP) sender;
+                    if (sendingPlayer.getName().equalsIgnoreCase(args[0])) {
+                        throw new SyntaxErrorException("Cannot take your own ender chest", new Object[0]);
+                    }
                     GameProfile targetPlayerGameProfile = server.getPlayerProfileCache().getGameProfileForUsername(args[0]);
                     server.getPlayerList().saveAllPlayerData();
                     if (this.isPlayerOnline(server, args[0])) {

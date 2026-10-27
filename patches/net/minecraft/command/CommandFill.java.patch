@@ -13,15 +13,27 @@
  public class CommandFill extends CommandBase
  {
      public String func_71517_b()
-@@ -60,9 +66,9 @@
+@@ -60,9 +66,21 @@
              BlockPos blockpos3 = new BlockPos(Math.max(blockpos.func_177958_n(), blockpos1.func_177958_n()), Math.max(blockpos.func_177956_o(), blockpos1.func_177956_o()), Math.max(blockpos.func_177952_p(), blockpos1.func_177952_p()));
-             int i = (blockpos3.func_177958_n() - blockpos2.func_177958_n() + 1) * (blockpos3.func_177956_o() - blockpos2.func_177956_o() + 1) * (blockpos3.func_177952_p() - blockpos2.func_177952_p() + 1);
- 
--            if (i > 32768)
-+            if (i > CarpetSettings.fillLimit) //CM
+-            int i = (blockpos3.func_177958_n() - blockpos2.func_177958_n() + 1) * (blockpos3.func_177956_o() - blockpos2.func_177956_o() + 1) * (blockpos3.func_177952_p() - blockpos2.func_177952_p() + 1);
++            long sizeX = (long) blockpos3.func_177958_n() - blockpos2.func_177958_n() + 1;
++            long sizeY = (long) blockpos3.func_177956_o() - blockpos2.func_177956_o() + 1;
++            long sizeZ = (long) blockpos3.func_177952_p() - blockpos2.func_177952_p() + 1;
++            long volume;
++            try
++            {
++                volume = Math.multiplyExact(Math.multiplyExact(sizeX, sizeY), sizeZ);
++            }
++            catch (ArithmeticException e)
++            {
++                volume = Long.MAX_VALUE;
++            }
+
++-            if (i > 32768)
+++            if (volume > CarpetSettings.fillLimit) //CM
              {
--                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {i, Integer.valueOf(32768)});
-+                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {i, Integer.valueOf(CarpetSettings.fillLimit)}); //CM
+ -                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {i, Integer.valueOf(32768)});
+ +                throw new CommandException("commands.fill.tooManyBlocks", new Object[] {volume, Integer.valueOf(CarpetSettings.fillLimit)}); //CM
              }
              else if (blockpos2.func_177956_o() >= 0 && blockpos3.func_177956_o() < 256)
              {
@@ -29,23 +41,36 @@
                          throw new CommandException("commands.fill.tagError", new Object[] {nbtexception.getMessage()});
                      }
                  }
-+                
+
 +                EntityPlayerMP worldEditPlayer = p_184881_2_ instanceof EntityPlayerMP ? (EntityPlayerMP) p_184881_2_ : null;
 +                NBTTagCompound worldEditTag = flag ? nbttagcompound : null;
  
                  List<BlockPos> list = Lists.<BlockPos>newArrayList();
-                 i = 0;
-@@ -114,7 +123,13 @@
++                int i = 0;
+@@ -114,7 +123,26 @@
                                  {
                                      if ("destroy".equals(p_184881_3_[8]))
                                      {
 +                                        WorldEditBridge.recordBlockEdit(worldEditPlayer, world, blockpos4, Blocks.field_150350_a.func_176223_P(), worldEditTag);
-+                                        CapturedDrops.setCapturingDrops(true);
-                                         world.func_175655_b(blockpos4, true);
-+                                        CapturedDrops.setCapturingDrops(false);
-+                                        for (EntityItem drop : CapturedDrops.getCapturedDrops())
-+                                            WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
 +                                        CapturedDrops.clearCapturedDrops();
++                                        try
++                                        {
++                                            CapturedDrops.setCapturingDrops(true);
++                                            try
++                                            {
+                                                 world.func_175655_b(blockpos4, true);
++                                            }
++                                            finally
++                                            {
++                                                CapturedDrops.setCapturingDrops(false);
++                                            }
++                                            for (EntityItem drop : CapturedDrops.getCapturedDrops())
++                                                WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
++                                        }
++                                        finally
++                                        {
++                                            CapturedDrops.clearCapturedDrops();
++                                        }
                                      }
                                      else if ("keep".equals(p_184881_3_[8]))
                                      {

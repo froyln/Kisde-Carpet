@@ -103,12 +103,19 @@ public class CommandZetBlock extends CommandSetBlock {
 				if ("destroy".equals(args[5]))
 				{
 					WorldEditBridge.recordBlockEdit(worldEditPlayer, world, blockpos, Blocks.AIR.getDefaultState(), worldEditTag);
-					CapturedDrops.setCapturingDrops(true);
-					world.destroyBlock(blockpos, true);
-					CapturedDrops.setCapturingDrops(false);
-					for (EntityItem drop : CapturedDrops.getCapturedDrops())
-						WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
 					CapturedDrops.clearCapturedDrops();
+					try {
+						CapturedDrops.setCapturingDrops(true);
+						try {
+							world.destroyBlock(blockpos, true);
+						} finally {
+							CapturedDrops.setCapturingDrops(false);
+						}
+						for (EntityItem drop : CapturedDrops.getCapturedDrops())
+							WorldEditBridge.recordEntityCreation(worldEditPlayer, world, drop);
+					} finally {
+						CapturedDrops.clearCapturedDrops();
+					}
 
 					if (block == Blocks.AIR)
 					{

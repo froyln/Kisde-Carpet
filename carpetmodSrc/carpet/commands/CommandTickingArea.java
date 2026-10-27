@@ -39,6 +39,18 @@ public class CommandTickingArea extends CommandCarpetBase
     }
 
     @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+    {
+        return sender.canUseCommand(2, getName());
+    }
+
+    @Override
+    public int getRequiredPermissionLevel()
+    {
+        return 2;
+    }
+
+    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (!command_enabled("tickingAreas", sender))
@@ -113,6 +125,9 @@ public class CommandTickingArea extends CommandCarpetBase
         {
             area.setName(buildString(args, index));
         }
+
+        if (!area.isWithinChunkLimit())
+            throw new CommandException("Ticking area exceeds the 256 chunk limit");
         
         TickingArea.addTickingArea(sender.getEntityWorld(), area);
         

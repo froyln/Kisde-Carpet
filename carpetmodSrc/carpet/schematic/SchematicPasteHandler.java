@@ -121,7 +121,6 @@ public final class SchematicPasteHandler implements PluginChannelHandler {
             SchematicInventoryRules.retainInventory(existingData, tileData);
         }
         if (tileData != null && !state.getBlock().hasTileEntity()) throw new IllegalArgumentException("Block entity does not match block state");
-        if (tileData == null && state.getBlock().hasTileEntity()) throw new IllegalArgumentException("Missing block entity data");
 
         TileEntity replacement = null;
         if (tileData != null) {

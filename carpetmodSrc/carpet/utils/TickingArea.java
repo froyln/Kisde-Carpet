@@ -35,6 +35,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 public abstract class TickingArea
 {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int MAX_TICKING_AREA_CHUNKS = 256;
     
     // TICKING AREA LIST
     
@@ -50,6 +51,8 @@ public abstract class TickingArea
     
     public static void addTickingArea(World world, TickingArea area)
     {
+        if (!area.isWithinChunkLimit())
+            throw new IllegalArgumentException("Ticking area exceeds the 256 chunk limit");
         world.tickingAreas.add(area);
         for (ChunkPos pos : area.listIncludedChunks(world))
         {
@@ -151,6 +154,11 @@ public abstract class TickingArea
                         LOGGER.error("[CM]: Error in ticking area parameters, skipping");
                         return;
                     }
+                    if (!area.isWithinChunkLimit())
+                    {
+                        LOGGER.error("[CM]: Ticking area exceeds the 256 chunk limit, skipping");
+                        return;
+                    }
                     addTickingArea(world, area);
                 });
             }
@@ -245,6 +253,11 @@ public abstract class TickingArea
     }
     
     protected abstract boolean contains(World world, int chunkX, int chunkZ);
+
+    public boolean isWithinChunkLimit()
+    {
+        return true;
+    }
     
     public abstract List<ChunkPos> listIncludedChunks(World world);
     
@@ -332,16 +345,25 @@ public abstract class TickingArea
         public List<ChunkPos> listIncludedChunks(World world)
         {
             List<ChunkPos> includedChunks = new ArrayList<>();
-            
-            for (int x = min.x; x <= max.x; x++)
+
+            for (long x = min.x; x <= max.x; x++)
             {
-                for (int z = min.z; z <= max.z; z++)
+                for (long z = min.z; z <= max.z; z++)
                 {
-                    includedChunks.add(new ChunkPos(x, z));
+                    includedChunks.add(new ChunkPos((int) x, (int) z));
                 }
             }
             
             return includedChunks;
+        }
+
+        @Override
+        public boolean isWithinChunkLimit()
+        {
+            long sizeX = (long) max.x - min.x + 1;
+            long sizeZ = (long) max.z - min.z + 1;
+            return sizeX <= MAX_TICKING_AREA_CHUNKS && sizeZ <= MAX_TICKING_AREA_CHUNKS
+                    && sizeX <= MAX_TICKING_AREA_CHUNKS / sizeZ;
         }
         
         @Override
@@ -403,9 +425,28 @@ public abstract class TickingArea
         @Override
         protected boolean contains(World world, int chunkX, int chunkZ)
         {
-            int dx = center.x - chunkX;
-            int dz = center.z - chunkZ;
+            double dx = (double) center.x - chunkX;
+            double dz = (double) center.z - chunkZ;
             return dx * dx + dz * dz <= radius * radius;
+        }
+
+        @Override
+        public boolean isWithinChunkLimit()
+        {
+            if (!Double.isFinite(radius) || radius < 0 || radius > 16
+                    || center.x - radius < Integer.MIN_VALUE || center.x + radius > Integer.MAX_VALUE
+                    || center.z - radius < Integer.MIN_VALUE || center.z + radius > Integer.MAX_VALUE)
+                return false;
+            int count = 0;
+            for (long x = MathHelper.floor(center.x - radius); x <= center.x + radius; x++)
+            {
+                for (long z = MathHelper.floor(center.z - radius); z <= center.z + radius; z++)
+                {
+                    if (contains(null, (int) x, (int) z) && ++count > MAX_TICKING_AREA_CHUNKS)
+                        return false;
+                }
+            }
+            return true;
         }
         
         @Override
@@ -413,13 +454,13 @@ public abstract class TickingArea
         {
             List<ChunkPos> includedChunks = new ArrayList<>();
             
-            for (int x = MathHelper.floor(center.x - radius); x <= center.x + radius; x++)
+            for (long x = MathHelper.floor(center.x - radius); x <= center.x + radius; x++)
             {
-                for (int z = MathHelper.floor(center.z - radius); z <= center.z + radius; z++)
+                for (long z = MathHelper.floor(center.z - radius); z <= center.z + radius; z++)
                 {
-                    if (contains(world, x, z))
+                    if (contains(world, (int) x, (int) z))
                     {
-                        includedChunks.add(new ChunkPos(x, z));
+                        includedChunks.add(new ChunkPos((int) x, (int) z));
                     }
                 }
             }
