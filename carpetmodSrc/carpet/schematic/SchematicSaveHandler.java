@@ -3,11 +3,14 @@ package carpet.schematic;
 import carpet.CarpetSettings;
 import carpet.network.PacketSplitter;
 import carpet.network.PluginChannelHandler;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLongArray;
@@ -29,10 +32,10 @@ import java.util.UUID;
 public final class SchematicSaveHandler implements PluginChannelHandler {
     private static final String CHANNEL = "litematica:save";
     private static final int MAX_REQUEST_BYTES = 32767;
-    private static final int MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
+    private static final int MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
     private static final int MAX_REGIONS = 32;
     private static final long MAX_BLOCKS = 32768;
-    private static final long MAX_NBT_READ = 2097152L;
+    private static final long MAX_CAPTURE_NBT_READ = 64L * 1024 * 1024;
 
     @Override
     public String[] getChannels() {
@@ -133,7 +136,7 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
                         tag.setInteger("y", y - bounds.minY);
                         tag.setInteger("z", z - bounds.minZ);
                         tileNbtBytes[0] = Math.addExact(tileNbtBytes[0], encodedSize(tag));
-                        if (tileNbtBytes[0] > MAX_NBT_READ) throw new IllegalArgumentException("Capture exceeds the NBT size limit");
+                        if (tileNbtBytes[0] > MAX_RESPONSE_BYTES) throw new IllegalArgumentException("Capture exceeds the NBT size limit");
                         blockEntities.appendTag(tag);
                     }
                 }
@@ -217,17 +220,14 @@ public final class SchematicSaveHandler implements PluginChannelHandler {
         try {
             packet.writeCompoundTag(response);
             if (packet.writerIndex() > MAX_RESPONSE_BYTES) throw new IllegalArgumentException("Capture exceeds the response byte limit");
-            PacketBuffer checked = new PacketBuffer(packet.copy());
-            try {
-                checked.readCompoundTag();
-                if (checked.isReadable()) throw new IllegalArgumentException("Invalid encoded capture");
-            } finally {
-                checked.release();
-            }
-            PacketSplitter.send(player, CHANNEL, packet);
+            ByteBufInputStream input = new ByteBufInputStream(packet.duplicate());
+            CompressedStreamTools.read(input, new NBTSizeTracker(MAX_CAPTURE_NBT_READ));
+            if (input.available() != 0) throw new IllegalArgumentException("Invalid encoded capture");
         } catch (RuntimeException | IOException e) {
+            packet.release();
             throw e;
         }
+        PacketSplitter.send(player, CHANNEL, packet);
     }
 
     private static void sendError(EntityPlayerMP player, UUID id, String message) {

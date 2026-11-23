@@ -34,7 +34,7 @@ Capture and paste additionally require creative mode. With no Kisde-Carpet serve
 client data, checks access again while operations execute, and does not trust
 client-supplied positions, dimensions, NBT or capabilities. Requests are limited
 to loaded chunks and validated packet sizes. Capture
-responses have size limits; paste has no 32,768-block or 16 MiB total-operation
+responses are limited to 16 MiB encoded; paste has no 32,768-block or 16 MiB total-operation
 cutoff. Paste follows Litematica's configured command rate; network bursts do
 not abort an authorized operation.
 
@@ -85,8 +85,8 @@ paste path, not ordinary ``/setblock`` or other mods' placement paths.
 
 Capture uses Litematica's AllAtOnce server-save flow. The supported capture
 scope is blocks and block entities; entity and scheduled-tick data are not
-included. The native client reader has a 2 MiB NBT accounting limit, so large
-captures can be rejected. Paste uses the client's normal region, layer,
+included. Large server captures require the updated LiteLoader companion, which allows up
+to 64 MiB of NBT accounting for a 16 MiB encoded response. Paste uses the client's normal region, layer,
 replacement and transform traversal, but operations may stop after applying a subset if the connection or server
 policy changes. High paste rates can cause server lag; use Litematica's command
 rate setting to pace large jobs.
